@@ -1,0 +1,681 @@
+/*-
+ * #%L
+ * eTEXAS
+ * %%
+ * Copyright (C) 2016 - 2018 Harmonia Holdings Group, LLC
+ * %%
+ * All rights reserved.
+-
+SBIR DATA RIGHTS
+Harmonia Holdings Group, LLC
+2020 Kraft Drive Suite 2400
+Blacksburg, VA 24060
+Contract No: DTRT57-16-c-10008
+Start Date: 01/05/2016
+End Date: 01/05/2018
+Expiration of SBIR Data Rights Period: 01/05/2022
+-
+The Government's rights to use, modify, reproduce, release, perform,
+display, or disclose technical data or computer software marked with
+this legend are restricted during the period shown as provided in
+paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+Computer Software-Small Business Innovation Research (SBIR) Program
+clause contained in the above identified contract. No restrictions
+apply after the expiration date shown above. Any reproduction of
+technical data, computer software, or portions thereof marked with
+this legend must also reproduce the markings.
+-
+Contributors:
+Harmonia Holdings Group LLC: Initial API and implementation.
+ * #L%
+ */
+/* MadCap Table Style: */
+
+/*<meta Version="7" />*/
+
+mcTableStyle
+{
+	name: Steps_images;
+	border-collapse: collapse;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-left-color: #000000;
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-top-style: solid;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	max-id: 4;
+	cell-padding-top: 1px;
+	cell-padding-bottom: 1px;
+}
+
+mcTableColumnStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Column1;
+	id: 0;
+}
+
+mcTableHeadStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Header1;
+	id: 2;
+	text-align: left;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Body1;
+	id: 1;
+	background-color: #dcdcdc;
+	cell-padding-left: 2px;
+	cell-padding-right: 2px;
+	cell-padding-top: 2px;
+	cell-padding-bottom: 2px;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	id: 4;
+	name: Body2;
+	cell-padding-left: 2px;
+	cell-padding-right: 2px;
+	cell-padding-top: 2px;
+	cell-padding-bottom: 2px;
+	separator-style: solid;
+	separator-width: 1px;
+}
+
+mcTableFootStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Footer1;
+	id: 3;
+}
+
+
+/* Cell Styles: */
+ 
+.TableStyle-Steps_images
+{
+	border-collapse: collapse;
+	border-left-style: solid;
+	border-left-color: #000000;
+	border-left-width: 1px;
+	border-right-style: solid;
+	border-right-color: #000000;
+	border-right-width: 1px;
+	border-top-style: solid;
+	border-top-color: #000000;
+	border-top-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #000000;
+	border-bottom-width: 1px;
+	border-spacing: 0px 0px;
+}
+
+.TableStyle-Steps_images .Column-Column1
+{
+	
+}
+
+.TableStyle-Steps_images .Head-Header1
+{
+	
+}
+
+.TableStyle-Steps_images .HeadI-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	text-align: left;
+}
+
+.TableStyle-Steps_images .HeadI-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .HeadE-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	text-align: left;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Steps_images .HeadE-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .HeadF-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	text-align: left;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Steps_images .HeadF-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .HeadH-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	text-align: left;
+}
+
+.TableStyle-Steps_images .HeadH-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .HeadD-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	text-align: left;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Steps_images .HeadD-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .HeadC-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	text-align: left;
+}
+
+.TableStyle-Steps_images .HeadC-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .HeadB-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	text-align: left;
+}
+
+.TableStyle-Steps_images .HeadB-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .HeadA-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	text-align: left;
+}
+
+.TableStyle-Steps_images .HeadA-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .HeadG-Column1-Header1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	text-align: left;
+}
+
+.TableStyle-Steps_images .HeadG-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-Steps_images .Foot-Footer1
+{
+	
+}
+
+.TableStyle-Steps_images .FootI-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.TableStyle-Steps_images .FootI-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .FootE-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-Steps_images .FootE-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .FootF-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-Steps_images .FootF-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .FootH-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Steps_images .FootH-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .FootD-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-Steps_images .FootD-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .FootC-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.TableStyle-Steps_images .FootC-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .FootB-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Steps_images .FootB-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .FootA-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.TableStyle-Steps_images .FootA-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .FootG-Column1-Footer1
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.TableStyle-Steps_images .FootG-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-Steps_images .Body-Body1
+{
+	
+}
+
+.TableStyle-Steps_images .BodyI-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.TableStyle-Steps_images .BodyI-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyE-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Steps_images .BodyE-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyF-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Steps_images .BodyF-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyH-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Steps_images .BodyH-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyD-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Steps_images .BodyD-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyC-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.TableStyle-Steps_images .BodyC-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyB-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Steps_images .BodyB-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyA-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.TableStyle-Steps_images .BodyA-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyG-Column1-Body1
+{
+	background-color: #dcdcdc;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.TableStyle-Steps_images .BodyG-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Steps_images .Body-Body2
+{
+	
+}
+
+.TableStyle-Steps_images .BodyI-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.TableStyle-Steps_images .BodyI-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyE-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Steps_images .BodyE-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyF-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Steps_images .BodyF-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyH-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Steps_images .BodyH-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyD-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Steps_images .BodyD-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyC-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.TableStyle-Steps_images .BodyC-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyB-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Steps_images .BodyB-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyA-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.TableStyle-Steps_images .BodyA-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Steps_images .BodyG-Column1-Body2
+{
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.TableStyle-Steps_images .BodyG-Column1-Body2 p
+{
+	
+}
+
+

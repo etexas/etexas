@@ -1,0 +1,7291 @@
+      SUBROUTINE ADLVAI
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'DIAMON'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      INTEGER           I,IVATIN,J,KV,MPRES
+C4    INTEGER           IC4
+C+602 FORMAT(2I2,I6,I2,F7.2,' ADLVAI')
+C4701 FORMAT(9H IVATIN =,I3,9H NVATIN =,I3,9H LVATIN =,14I7,/,33X,11I7)
+C4702 FORMAT(24X,9H TVATIN =,14F7.1,/,33X,11F7.1)
+C
+C-----SUBROUTINE ADLVAI ADDS THE STOPPED VEHICLE TO THE LIST OF VEHICLES
+C-----AT THE INTERSECTION
+C
+C[    I          = -2147483647
+C[    IVATIN     = -2147483647
+C[    J          = -2147483647
+C[    MPRES      = -2147483647
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'ADLVAI'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+                    IF ( ISET(IV) . NE . 1 )     GO TO 1010
+C-----END THE LANE CHANGE AND RESET THE LANE CHANGE FLAG
+      CALL  ENDLCH
+C-----FIND AN INTERSECTION PATH FOR THIS VEHICLE BASED ON THE CURRENT
+C-----APPROACH, CURRENT LANE, AND THE DESIRED OUTBOUND APPROACH
+      CALL  PATHF   ( .TRUE.,0,'ADLVAI' )
+ 1010 CONTINUE
+C-----IF THE VEHICLE MAY PROCEED INTO THE INTERSECTION THEN RETURN
+                    IF ( MPRO(IV) )              RETURN
+C-----IF THE INTERSECTION IS SIGNAL CONTROLLED THEN RETURN
+                    IF ( ICONTR . GE . ICPSIG )  RETURN
+C-----CHECK IF THERE IS A MAJOR COLLISION
+      IF ( MAJCLB(IV) . OR . MAJCLL(IV) )        THEN
+C-----  THERE IS A VEHICLE AHEAD WITH A MAJOR COLLISION THUS DO NOT ADD
+C-----  THIS VEHICLE TO THE LIST OF VEHICLES STOPPED AT THE INTERSECTION
+        RETURN
+      END IF
+      IVATIN = 1
+C-----IF THERE ARE NO VEHICLES ON THE LIST OF VEHICLES AT THE
+C-----INTERSECTION THEN ADD THIS VEHICLE AS THE FIRST VEHICLE ON THE
+C-----LIST OF VEHICLES AT THE INTERSECTION
+                    IF ( NVATIN . LE . 0 )       GO TO 4020
+C-----CHECK EACH VEHICLE ON THE LIST OF VEHICLES AT THE INTERSECTION TO
+C-----SEE IF THIS VEHICLE IS ALREADY ON THE LIST
+      DO 2010  IVATIN = 1 , NVATIN
+C-----IF THIS VEHICLE IS ALREADY ON THE LIST OF VEHICLES AT THE
+C-----INTERSECTION THEN ERROR
+                    IF ( IV.EQ.LVATIN(IVATIN) )  GO TO 9080
+ 2010 CONTINUE
+C-----CHECK EACH VEHICLE ON THE LIST OF VEHICLES AT THE INTERSECTION TO
+C-----SEE IF ANY SHOULD YIELD TO THIS VEHICLE
+      DO 3010  IVATIN = 1 , NVATIN
+      KV = LVATIN(IVATIN)
+      IF ( DIAMON )                              THEN
+C-----  SKIP IF VEHICLES ARE ON OPPOSITE SIDES OF THE DIAMOND
+        IF ( ( IA              . LE . 4 ) . AND .
+     *       ( ISNA(LPRES(KV)) . GE . 5 ) )
+     *                                           THEN
+          GO TO 3010
+        END IF
+        IF ( ( IA              . GE . 5 ) . AND .
+     *       ( ISNA(LPRES(KV)) . LE . 4 ) )
+     *                                           THEN
+          GO TO 3010
+        END IF
+      END IF
+C-----IF THE VEHICLE ON THE LIST OF VEHICLES AT THE INTERSECTION IS NOT
+C-----AN EMERGENCY VEHICLE AND THIS VEHICLE IS AN EMERGENCY VEHICLE THEN
+C-----HE SHOULD YIELD TO ME
+      IF ( ( IAND( VEHTYP(KV),LAVTE ) .EQ. 0 ) . AND .
+     *     ( IAND( VEHTYP(IV),LAVTE ) .NE. 0 ) ) THEN
+        GO TO 3020
+      END IF
+C-----IF THE VEHICLE ON THE LIST OF VEHICLES AT THE INTERSECTION ARRIVED
+C-----GREATER THAN PIJR SECONDS AGO THEN SKIP TO THE NEXT VEHICLE ON THE
+C-----LIST OF VEHICLES AT THE INTERSECTION
+      IF ( TIME-TVATIN(IVATIN) . GT . PIJR(IDRICL(IV)) )
+     *                                           THEN
+        GO TO 3010
+      END IF
+      MPRES = LPRES(KV)
+C-----IF THE VEHICLE ON THE LIST OF VEHICLES AT THE INTERSECTION IS ON
+C-----AN APPROACH TO THE LEFT THEN HE SHOULD YIELD TO ME
+            IF ( ISNA(MPRES) . EQ . IALEFT(IA) ) GO TO 3020
+ 3010 CONTINUE
+C-----NONE OF THE VEHICLES ON THE LIST OF VEHICLES AT THE INTERSECTION
+C-----SHOULD YIELD TO ME SO ADD THIS VEHICLE TO THE END OF THE LIST
+      IVATIN = NVATIN + 1
+ 3020 CONTINUE
+C[    IF ( IVATIN             .EQ.-2147483647   )STOP 'ADLVAI IVATIN 01'
+                    IF ( IVATIN . GT . NVATIN )  GO TO 4020
+C-----MOVE EACH VEHICLE ON THE LIST OF VEHICLES AT THE INTERSECTION FROM
+C-----IVATIN TO NVATIN DOWN ONE TO MAKE ROOM FOR THIS VEHICLE AT IVATIN
+      DO 4010  I = IVATIN , NVATIN
+      J = NVATIN - I + IVATIN
+      LVATIN(J+1) = LVATIN(J)
+      TVATIN(J+1) = TVATIN(J)
+ 4010 CONTINUE
+ 4020 CONTINUE
+C-----INCREMENT THE NUMBER OF VEHICLES AT THE INTERSECTION
+      NVATIN = NVATIN + 1
+                    IF ( NVATIN . GT . NIL )     GO TO 9090
+C-----SET THIS VEHICLE AS THE IVATIN VEHICLE ON THE LIST OF VEHICLES
+C-----AT THE INTERSECTION
+C[    IF ( IVATIN             .EQ.-2147483647   )STOP 'ADLVAI IVATIN 02'
+      LVATIN(IVATIN) = IV
+C-----IF THIS VEHICLE IS THE LAST VEHICLE ON THE LIST OF VEHICLES AT THE
+C-----INTERSECTION THEN SET THE TIME THIS VEHICLE ARRIVED AT THE
+C-----INTERSECTION TO THE TIME INTO THE SIMULATION ELSE SET THE TIME
+C-----THIS VEHICLE ARRIVED AT THE INTERSECTION TO THE TIME THE NEXT
+C-----VEHICLE ON THE LIST OF VEHICLES AT THE INTERSECTION ARRIVED AT THE
+C-----INTERSECTION (HE SHOULD YIELD TO ME)
+      IF ( IVATIN . EQ . NVATIN )                THEN
+        TVATIN(IVATIN) = TIME
+      ELSE
+        TVATIN(IVATIN) = TVATIN(IVATIN+1)
+      END IF
+C5          IF ( IAND( IPRTLO(IV),1 ) . EQ . 0 ) GO TO 101
+C4                  IF ( TIME . LT . TPRINT )    GO TO 101
+C4    WRITE (6,701) IVATIN,NVATIN,(LVATIN(IC4),IC4=1,NVATIN)
+C4    WRITE (6,702) (TVATIN(IC4),IC4=1,NVATIN)
+C4101 CONTINUE
+C+    WRITE (IDH,602) IA,ILN,IQ(IV),ITURN(IV),TIME
+      RETURN
+C-----PROCESS THE EXECUTION ERRORS AND STOP
+ 9080 CONTINUE
+      CALL  ABORTR  ( 'STOP 908 - IV ALREADY ON LVATIN - ADLVAI' )
+      STOP  908
+ 9090 CONTINUE
+      CALL  ABORTR  ( 'STOP 909 - NVATIN GT NIL - ADLVAI' )
+      STOP  909
+      END                                                               ADLVAI
+C
+C
+C
+      FUNCTION   ATAN36 ( Y,X )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'CONSTN'
+      DOUBLE PRECISION  X,Y
+      DOUBLE PRECISION  ATAN36
+C
+C-----FUNCTION ATAN36 FINDS THE ARC TANGENT OF A COORDINATE AND RETURNS
+C-----THE ANGLE FROM 0 TO 360 DEGREES (EAST ZERO AND COUNTER-CLOCKWISE
+C-----POSITIVE)
+C
+      ATAN36 = PIT2
+            IF ( Y.EQ.0.0D0.AND.X.GE.0.0D0 )     ATAN36 = 0.0D0
+            IF ( X.EQ.0.0D0.AND.Y.GT.0.0D0 )     ATAN36 = PID2
+            IF ( Y.EQ.0.0D0.AND.X.LT.0.0D0 )     ATAN36 = PI
+            IF ( X.EQ.0.0D0.AND.Y.LT.0.0D0 )     ATAN36 = PIT1P5
+                    IF ( ATAN36 . NE . PIT2 )    RETURN
+      ATAN36 = DATAN( Y/X )
+                    IF ( X . LT . 0.0D0 )        ATAN36 = ATAN36 + PI
+            IF ( X.GT.0.0D0.AND.Y.LT.0.0D0 )     ATAN36 = ATAN36 + PIT2
+      RETURN
+      END                                                               ATAN36
+C
+C
+C
+      FUNCTION   AVTYPS ( AVTVAL )
+      IMPLICIT          NONE                                            CCODE=C.
+      INCLUDE 'PARAMS'
+      CHARACTER*4       AVTYPS
+      INTEGER           AVTVAL
+C-----SET ALLOWED VEHICLE TYPES STRING
+      AVTYPS = '    '
+C-----SET BICYCLE
+      IF ( IAND( AVTVAL,LAVTB ) . NE . 0 )       AVTYPS(1:1) = 'B'
+C-----SET EMERGENCY VEHICLE
+      IF ( IAND( AVTVAL,LAVTE ) . NE . 0 )       AVTYPS(2:2) = 'E'
+C-----SET RAIL VEHICLE
+      IF ( IAND( AVTVAL,LAVTR ) . NE . 0 )       AVTYPS(3:3) = 'R'
+C-----SET NORMAL VEHICLE
+      IF ( IAND( AVTVAL,LAVTV ) . NE . 0 )       AVTYPS(4:4) = 'V'
+      RETURN
+      END                                                               AVTYPS
+C
+C
+C
+      FUNCTION   AZIM36 ( Y,X )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'CONSTN'
+      DOUBLE PRECISION  X,Y
+      DOUBLE PRECISION  ATAN36,AZIM36
+C
+C-----FUNCTION AZIM36 FINDS THE ARC TANGENT OF A COORDINATE AND RETURNS
+C-----THE AZIMUTH FROM 0 TO 360 DEGREES (NORTH ZERO AND CLOCKWISE
+C-----POSITIVE)
+C
+      AZIM36 = RAD2DG*ATAN36( X,Y )
+      RETURN
+      END                                                               AZIM36
+C
+C
+C
+      SUBROUTINE CCLEAR ( JP,KP,CLEARD,DIVRGE,CLEART )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      LOGICAL           DIVRGE
+      INTEGER           JP,KP
+      DOUBLE PRECISION  CLEARD,CLEART,CLRJP,CLRKP,RADICL,RADJP,RADKP
+C
+C-----SUBROUTINE CCLEAR CALCULATES THE MINIMUM CLEART FOR INTERSECTION
+C-----PATH JP AND KP GIVEN CLEARD AND WHETHER IT IS A DIVERGE (BEGINNING
+C-----OF INTERSECTION PATHS) OR A MERGE (END OF INTERSECTION PATHS)
+C
+C-----FOR A DIVERGE, BOTH INTERSECTION PATHS MUST COME FROM THE SAME
+C-----LINKING INBOUND LANE OR INTERNAL INBOUND LANE AND CLEART IS THE
+C-----DISTANCE FROM THE BEGINNING OF THE INTERSECTION PATH
+C
+C-----FOR A MERGE, BOTH INTERSECTION PATHS MUST GO TO THE SAME LINKING
+C-----INTERNAL INBOUND LANE OR OUTBOUND LANE AND CLEART IS THE DISTANCE
+C-----FROM THE END OF THE INTERSECTION PATH
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'CCLEAR'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----SET THE RADIUS FOR EACH INTERSECTION PATH
+      RADJP = 0.0D0
+      RADKP = 0.0D0
+      IF ( DIVRGE )                              THEN
+        IF ( LIBL(JP) . NE . LIBL(KP) )          GO TO 9500
+        IF ( IRA1(JP) . GT . 0 )                 THEN
+          RADJP = DBLE( IRA1(JP) )
+        END IF
+        IF ( IRA1(KP) . GT . 0 )                 THEN
+          RADKP = DBLE( IRA1(KP) )
+        END IF
+      ELSE
+        IF ( LOBL(JP) . NE . LOBL(KP) )          GO TO 9500
+        IF      ( IRA2(JP) . GT . 0 )            THEN
+          RADJP = DBLE( IRA2(JP) )
+        ELSE IF ( IRA1(JP) . GT . 0 )            THEN
+          RADJP = DBLE( IRA1(JP) )
+        END IF
+        IF      ( IRA2(KP) . GT . 0 )            THEN
+          RADKP = DBLE( IRA2(KP) )
+        ELSE IF ( IRA1(KP) . GT . 0 )            THEN
+          RADKP = DBLE( IRA1(KP) )
+        END IF
+      END IF
+C-----CALCULATE CLEART FOR EACH INTERSECTION PATH
+      CLRJP = POSBIG
+      CLRKP = POSBIG
+      IF ( RADJP . GT . 0.0D0 )                  THEN
+        RADICL = 2.0D0*RADJP*CLEARD - CLEARD**2
+        IF ( ( RADICL . GE . -2.0D0 ) . AND .
+     *       ( RADICL . LT .  0.0D0 ) )          THEN
+          RADICL = 0.0D0
+        END IF
+        IF ( RADICL . GE . 0.0D0 )               THEN
+          CLRJP = RADJP*DASIN( DSQRT( RADICL )/RADJP )
+          IF ( DIVRGE )                          THEN
+            CLRJP = CLRJP + DBLE( LL1(JP) )
+          ELSE
+            CLRJP = CLRJP + DBLE( LL2(JP) )
+          END IF
+        END IF
+      END IF
+      IF ( RADKP . GT . 0.0D0 )                  THEN
+        RADICL = 2.0D0*RADKP*CLEARD - CLEARD**2
+        IF ( ( RADICL . GE . -2.0D0 ) . AND .
+     *       ( RADICL . LT .  0.0D0 ) )          THEN
+          RADICL = 0.0D0
+        END IF
+        IF ( RADICL . GE . 0.0D0 )               THEN
+          CLRKP = RADKP*DASIN( DSQRT( RADICL )/RADKP )
+          IF ( DIVRGE )                          THEN
+            CLRKP = CLRKP + DBLE( LL1(KP) )
+          ELSE
+            CLRKP = CLRKP + DBLE( LL2(KP) )
+          END IF
+        END IF
+      END IF
+      CLEART = DMIN1( CLRJP,CLRKP )
+      IF ( CLEART . EQ . POSBIG )                THEN
+        CLEART = 0.0D0
+      END IF
+      RETURN
+C-----PROCESS THE EXECUTION ERROR AND STOP
+ 9500 CONTINUE
+      CALL  ABORTR  ( 'STOP 950 - INTERSECTION PATH ERROR - CCLEAR' )
+      STOP  950
+      END                                                               CCLEAR
+C
+C
+C
+      SUBROUTINE CHKLDT ( JL,POSOFB,POSNFB )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'CHARAC'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'LOOPS'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHF'
+      DOUBLE PRECISION  NOTSET
+      PARAMETER       ( NOTSET = -99999.0D0 )
+      INTEGER           I,ILDL,JL,JLDL
+      DOUBLE PRECISION  DSTOP,DSTRT,POSNFB,POSNRB,POSOFB,POSORB,T,TT
+C 601 FORMAT(' T=',F7.2,' LD=',I2,' LB=',F5.0,' LE=',F5.0,' PO=',F7.2,
+C    *       ' PN=',F7.2,' VN=',F6.2,' AN=',F6.2,' SN=',F6.2,' LV=',I2,
+C    *       ' IV=',I3,' CLS=',A,' LEN=',F5.1,' P1=',F7.2,' P2=',F7.2,
+C    *       ' P3=',F7.2,' P4=',F7.2,' VBE=',F6.2,' V=',F6.2,' A=',F6.2,
+C    *       ' S=',F6.2,' FB=',F7.2,' FE=',F7.2,' RE=',F7.2,' VL=',F7.2,
+C    *       ' AL=',F7.2,' SL=',F7.2)
+C;701 FORMAT(3H IV,I5,9H POSORB =,F6.1,9H POSOFB =,F6.1,9H POSNRB =,
+C;   *       F6.1,9H POSNFB =,F6.1,7H JLDL =,I2,9H STRTLD =,F6.1,
+C;   *       9H STOPLD =,F6.1,2X,A)
+C
+C-----SUBROUTINE CHKLDT CHECKS EACH DETECTOR FOR THIS LANE TO SEE IF
+C-----THIS VEHICLE TRIPPED ANY OF THEM THIS DT
+C
+C[    ILDL       = -2147483647
+C[    JLDL       = -2147483647
+C[    DSTOP      = -2147483647.0
+C[    DSTRT      = -2147483647.0
+C[    POSORB     = -2147483647.0
+C[    POSNRB     = -2147483647.0
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'CHKLDT'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      POSORB = POSOFB - LENVAP
+      POSNRB = POSNFB - LENVAP
+C-----CHECK EACH DETECTOR FOR THIS LANE TO SEE IF THIS VEHICLE TRIPPED
+C-----ANY OF THEM THIS DT
+      DO 2010  ILDL = 1 , NLDL(JL)
+      JLDL  = LLDL(ILDL,JL)
+      DSTRT = STRTLD(JLDL)
+      DSTOP = STOPLD(JLDL)
+C-----PROCESS CLASSIFY DETECTOR
+      IF ( ITYPLD(JLDL) . EQ . ICLAS )           THEN
+C-----  IF THE FRONT BUMPER CROSSED THE START OF THE DETECTOR THEN SET
+C-----  NEW VEHICLE ENTERING DETECTOR
+        IF ( ( POSOFB . LT . DSTRT ) . AND .
+     *       ( POSNFB . GE . DSTRT ) )           THEN
+          IF ( DABS( POSNFB-DSTRT ).LE.0.01D0 )  THEN
+            T = DT
+          ELSE
+            DETACC(JLDL) = NOTSET
+            DETALV(JLDL) = NOTSET
+            DETCLS(JLDL) = '        '
+            DETIV (JLDL) = IV
+            DETLEN(JLDL) = NOTSET
+            DETP1 (JLDL) = NOTSET
+            DETP2 (JLDL) = NOTSET
+            DETP3 (JLDL) = NOTSET
+            DETP4 (JLDL) = POSNFB
+            DETSLP(JLDL) = NOTSET
+            DETSLV(JLDL) = NOTSET
+            CALL  TIMPOS  ( DSTRT,POSOFB,VELOLD,ACCOLD,SLPOLD,
+     *                      DT,1.05D0*DT,T                     )
+                    IF ( T . EQ . TIMERR )       GO TO 9440
+          END IF
+          DETTFB(JLDL) = TIME - DT + T
+          DETTFE(JLDL) = NOTSET
+          DETTRE(JLDL) = NOTSET
+          DETVBE(JLDL) = NOTSET
+          DETVEL(JLDL) = NOTSET
+          DETVLV(JLDL) = NOTSET
+C         WRITE (6,601) TIME,JLDL,DSTRT,DSTOP,POSOFB,POSNFB,VELNEW,
+C    *                  ACCNEW,SLPNEW,LENV(IVEHCL(IV)),
+C    *                  DETIV (JLDL),DETCLS(JLDL),DETLEN(JLDL),
+C    *                  DETP1 (JLDL),DETP2 (JLDL),DETP3 (JLDL),
+C    *                  DETP4 (JLDL),DETVBE(JLDL),DETVEL(JLDL),
+C    *                  DETACC(JLDL),DETSLP(JLDL),DETTFB(JLDL),
+C    *                  DETTFE(JLDL),DETTRE(JLDL),DETVLV(JLDL),
+C    *                  DETALV(JLDL),DETSLV(JLDL)
+C-----  IF THE SAME VEHICLE AND THE FRONT BUMPER IS BETWEEN THE START
+C-----  AND END OF THE DETECTOR THEN THE DETECTOR CAN CALCULATE VELOCITY
+C-----  AND POSSIBLY ACCELERATION AND SLOPE
+        ELSE IF ( ( DETIV(JLDL) . EQ . IV    ) . AND .
+     *            ( POSNFB      . GE . DSTRT ) . AND .
+     *            ( POSNFB      . LE . DSTOP ) ) THEN
+          DETP1(JLDL) = DETP2 (JLDL)
+          DETP2(JLDL) = DETP3 (JLDL)
+          DETP3(JLDL) = DETP4 (JLDL)
+          DETP4(JLDL) = POSNFB
+          IF ( DETP4(JLDL) . EQ . DETP3(JLDL) )  THEN
+            DETVEL(JLDL) = NOTSET
+            DETACC(JLDL) = NOTSET
+            DETSLP(JLDL) = NOTSET
+          ELSE
+            DETVEL(JLDL) = (DETP4(JLDL)-DETP3(JLDL))/DT
+            DETVLV(JLDL) = DETVEL(JLDL)
+            IF ( DETP2(JLDL) . NE . NOTSET )     THEN
+              DETACC(JLDL) =
+     *                      (DETP4(JLDL)-2*DETP3(JLDL)+DETP2(JLDL))/DTSQ
+              DETALV(JLDL) = DETACC(JLDL)
+            END IF
+            IF ( DETP1(JLDL) . NE . NOTSET )     THEN
+              DETSLP(JLDL) =
+     *        (DETP4(JLDL)-3*DETP3(JLDL)+3*DETP2(JLDL)-DETP1(JLDL))/DTCU
+              DETSLV(JLDL) = DETSLP(JLDL)
+            END IF
+          END IF
+C         WRITE (6,601) TIME,JLDL,DSTRT,DSTOP,POSOFB,POSNFB,VELNEW,
+C    *                  ACCNEW,SLPNEW,LENV(IVEHCL(IV)),
+C    *                  DETIV (JLDL),DETCLS(JLDL),DETLEN(JLDL),
+C    *                  DETP1 (JLDL),DETP2 (JLDL),DETP3 (JLDL),
+C    *                  DETP4 (JLDL),DETVBE(JLDL),DETVEL(JLDL),
+C    *                  DETACC(JLDL),DETSLP(JLDL),DETTFB(JLDL),
+C    *                  DETTFE(JLDL),DETTRE(JLDL),DETVLV(JLDL),
+C    *                  DETALV(JLDL),DETSLV(JLDL)
+        END IF
+C-----  IF THE SAME VEHICLE AND THE FRONT BUMPER CROSSED THE END OF THE
+C-----  DETECTOR THEN SET DETTFE
+        IF ( ( DETIV(JLDL) . EQ . IV    ) . AND .
+     *       ( POSOFB      . LT . DSTOP ) . AND .
+     *       ( POSNFB      . GE . DSTOP ) )      THEN
+          IF ( DABS( POSNFB-DSTOP ).LE.0.01D0 )  THEN
+            T = DT
+          ELSE
+            DETACC(JLDL) = NOTSET
+            DETP1 (JLDL) = NOTSET
+            DETP2 (JLDL) = NOTSET
+            DETP3 (JLDL) = NOTSET
+            DETP4 (JLDL) = NOTSET
+            DETSLP(JLDL) = NOTSET
+            DETVEL(JLDL) = NOTSET
+            CALL  TIMPOS  ( DSTOP,POSOFB,VELOLD,ACCOLD,SLPOLD,
+     *                      DT,1.05D0*DT,T                     )
+                    IF ( T . EQ . TIMERR )       GO TO 9440
+          END IF
+          DETTFE(JLDL) = TIME - DT + T
+          TT = DETTFE(JLDL) - DETTFB(JLDL)
+          IF ( TT . GT . 0.0D0 )                 THEN
+            DETVBE(JLDL) = (DSTOP-DSTRT)/TT
+          END IF
+C         WRITE (6,601) TIME,JLDL,DSTRT,DSTOP,POSOFB,POSNFB,VELNEW,
+C    *                  ACCNEW,SLPNEW,LENV(IVEHCL(IV)),
+C    *                  DETIV (JLDL),DETCLS(JLDL),DETLEN(JLDL),
+C    *                  DETP1 (JLDL),DETP2 (JLDL),DETP3 (JLDL),
+C    *                  DETP4 (JLDL),DETVBE(JLDL),DETVEL(JLDL),
+C    *                  DETACC(JLDL),DETSLP(JLDL),DETTFB(JLDL),
+C    *                  DETTFE(JLDL),DETTRE(JLDL),DETVLV(JLDL),
+C    *                  DETALV(JLDL),DETSLV(JLDL)
+        END IF
+C-----  IF THE SAME VEHICLE AND THE REAR BUMPER CROSSED THE END OF THE
+C-----  DETECTOR THEN SET DETTRE, SET DETLEN, AND CLASSIFY THE VEHICLE
+C-----  USING DETLEN
+        IF ( ( DETIV(JLDL) . EQ . IV    ) . AND .
+     *       ( POSORB      . LT . DSTOP ) . AND .
+     *       ( POSNRB      . GE . DSTOP ) )      THEN
+          IF ( DABS( POSNRB-DSTOP ).LE.0.01D0 )  THEN
+            T = DT
+          ELSE
+            CALL  TIMPOS  ( DSTOP,POSORB,VELOLD,ACCOLD,SLPOLD,
+     *                      DT,1.05D0*DT,T                     )
+                    IF ( T . EQ . TIMERR )       GO TO 9440
+          END IF
+          DETTRE(JLDL) = TIME - DT + T
+          TT = DETTRE(JLDL) - DETTFE(JLDL)
+          IF ( ( DETVLV(JLDL) . NE . NOTSET ) . AND .
+     *         ( TT           . GT . 0.0D0  ) )  THEN
+            DETLEN(JLDL) = DETVLV(JLDL)*TT
+            IF ( DETALV(JLDL) . NE . NOTSET )    THEN
+              DETLEN(JLDL) = DETLEN(JLDL) + 0.5D0*DETALV(JLDL)*TT**2
+            END IF
+            IF ( DETSLV(JLDL) . NE . NOTSET )    THEN
+              DETLEN(JLDL) = DETLEN(JLDL) + ONED6*DETSLV(JLDL)*TT**3
+            END IF
+            IF ( DETLEN(JLDL) . LT .   0.0D0 )   THEN
+              DETLEN(JLDL) = 0.0D00
+              DETCLS(JLDL) = IUNCLL
+              GO TO 1006
+            END IF
+            IF ( DETLEN(JLDL) . GT . 999.0D0 )   THEN
+              DETLEN(JLDL) = 999.0D0
+              DETCLS(JLDL) = IUNCLU
+              GO TO 1006
+            END IF
+            DO 1004 I = 1 , DETCLK(JLDL)
+            IF ( ( DETLEN(JLDL) . GT . DBLE( DETCLL(I,JLDL) ) ) . AND .
+     *           ( DETLEN(JLDL) . LE . DBLE( DETCLU(I,JLDL) ) ) )
+     *                                           THEN
+              DETCLS(JLDL) = DETCLN(I,JLDL)
+              GO TO 1006
+            END IF
+ 1004       CONTINUE
+            GO TO 9450
+ 1006       CONTINUE
+          END IF
+C         WRITE (6,601) TIME,JLDL,DSTRT,DSTOP,POSOFB,POSNFB,VELNEW,
+C    *                  ACCNEW,SLPNEW,LENV(IVEHCL(IV)),
+C    *                  DETIV (JLDL),DETCLS(JLDL),DETLEN(JLDL),
+C    *                  DETP1 (JLDL),DETP2 (JLDL),DETP3 (JLDL),
+C    *                  DETP4 (JLDL),DETVBE(JLDL),DETVEL(JLDL),
+C    *                  DETACC(JLDL),DETSLP(JLDL),DETTFB(JLDL),
+C    *                  DETTFE(JLDL),DETTRE(JLDL),DETVLV(JLDL),
+C    *                  DETALV(JLDL),DETSLV(JLDL)
+        END IF
+      END IF 
+C-----IF THE FRONT BUMPER CROSSED THE START OF THE DETECTOR THEN THE
+C-----DETECTOR IS CROSSED AND TRIPPED
+      IF ( ( POSOFB . LT . DSTRT ) . AND .
+     *     ( POSNFB . GE . DSTRT ) )             THEN
+        LDCROS(JLDL) = .TRUE.
+        IF ( ITYPLD(JLDL) . EQ . IPULS )       THEN
+C-----    PULSE DETECTOR MUST CLEAR THIS DT 
+          LDCLER(JLDL) = .TRUE.
+        END IF
+        GO TO 1010
+      END IF
+C-----IF THE REAR BUMPER CROSSED THE END OF THE DETECTOR THEN THE
+C-----DETECTOR IS CLEARED AND NOT TRIPPED BY THIS VEHICLE
+      IF ( ITYPLD(JLDL) . NE . IPULS )           THEN
+        IF ( ( POSORB . LT . DSTOP ) . AND .
+     *       ( POSNRB . GE . DSTOP ) )           THEN
+          LDCLER(JLDL) = .TRUE.
+        END IF
+      END IF
+C-----IF THE DETECTOR HAS ALREADY BEEN TRIPPED THEN SKIP TO THE NEXT
+C-----DETECTOR
+                    IF ( LDTRIP(JLDL) )          GO TO 2010
+C-----IF THE DETECTOR TYPE = (PULSE   ) THEN THE DETECTOR HAS NOT BEEN
+C-----TRIPPED AND SKIP TO THE NEXT DETECTOR
+                    IF ( ITYPLD(JLDL).EQ.IPULS ) GO TO 2010
+C-----IF THE FRONT BUMPER IS BETWEEN THE START AND END OF THE DETECTOR
+C-----THEN THE DETECTOR IS TRIPPED
+      IF ( (POSNFB.GE.DSTRT) . AND .
+     *     (POSNFB.LE.DSTOP) )                   GO TO 1010
+C-----IF THE REAR BUMPER CROSSED THE START OF THE DETECTOR THEN THE
+C-----DETECTOR IS TRIPPED
+      IF ( (POSORB.LT.DSTRT) . AND .
+     *     (POSNRB.GE.DSTRT) )                   GO TO 1010
+C-----IF THE REAR BUMPER IS BETWEEN THE START AND END OF THE DETECTOR
+C-----THEN THE DETECTOR IS TRIPPED
+      IF ( (POSNRB.GE.DSTRT) . AND .
+     *     (POSNRB.LE.DSTOP) )                   GO TO 1010
+C-----IF THE VEHICLE IS STRADDLING THE DETECTOR THEN THE DETECTOR IS
+C-----TRIPPED
+      IF ( (POSNFB.GE.DSTOP) . AND .
+     *     (POSNRB.LE.DSTRT) )                   GO TO 1010
+C-----THE DETECTOR HAS NOT BEEN TRIPPED THUS SKIP TO THE NEXT DETECTOR
+      GO TO 2010
+ 1010 CONTINUE
+C-----SET THE DETECTOR TRIPPED
+C[    IF ( JLDL               .EQ.-2147483647   )STOP 'CHKLDT JLDL   01'
+      IF ((ICONTR .EQ. ICNEMV) .AND. LDCROS(JLDL))   THEN
+C-----VOLUME DENSITY - ONLY COUNT WHEN LOOP IS NOT OCCUPIED WHEN CROSSED 
+        VDCNT(JLDL) = .NOT. LDTRIP(JLDL)
+      END IF
+      LDTRIP(JLDL) = .TRUE.
+      GO TO 1030
+ 1020 CONTINUE
+      IF ((ICONTR .EQ. ICNEMV) .AND. LDCROS(JLDL))   THEN
+C-----VOLUME DENSITY - ONLY COUNT WHEN LOOP IS NOT OCCUPIED WHEN CROSSED 
+        VDCNT(JLDL) = .NOT. LDTRIP(JLDL)
+      END IF
+ 1030 CONTINUE
+C5          IF ( IAND( IPRTLO(IV),1 ) . EQ . 0 ) GO TO 102
+C;                  IF ( TIME . LT . TPRINT )    GO TO 101
+C[    IF ( DSTOP              .EQ.-2147483647.0 )STOP 'CHKLDT DSTOP  01'
+C[    IF ( DSTRT              .EQ.-2147483647.0 )STOP 'CHKLDT DSTRT  01'
+C[    IF ( JLDL               .EQ.-2147483647   )STOP 'CHKLDT JLDL   02'
+C[    IF ( POSNRB             .EQ.-2147483647.0 )STOP 'CHKLDT POSNRB 01'
+C[    IF ( POSORB             .EQ.-2147483647.0 )STOP 'CHKLDT POSORB 01'
+C;    WRITE (6,701) IV,POSORB,POSOFB,POSNRB,POSNFB,JLDL,DSTRT,DSTOP,
+C;   *              ITYPLD(JLDL)
+C;101 CONTINUE
+C5102 CONTINUE
+C-----END OF DETECTOR LOOP
+ 2010 CONTINUE
+      RETURN
+C-----PROCESS THE EXECUTION ERROR AND STOP
+ 9440 CONTINUE
+      CALL  ABORTR  ( 'STOP 944 - T NOT FOUND - CHKLDT' )
+      STOP  944
+ 9450 CONTINUE
+      CALL  ABORTR  ( 'STOP 945 - VEHICLE CLASS NOT FOUND - CHKLDT' )
+      STOP  945
+      END                                                               CHKLDT
+C
+C
+C
+      SUBROUTINE CKISET ( JV,POSCHK )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'LANECH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      INCLUDE 'VEHIL'
+      INTEGER           JV
+      DOUBLE PRECISION  POSCHK,XCRIT
+C
+C-----SUBROUTINE CKISET CHECKS IF ISET CAN BE SET TO 5 FOR VEHICLE JV
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'CKISET'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+                    IF ( ISET  (JV) . NE . 6 )   RETURN
+                    IF ( MININT(JV)  )           RETURN
+                    IF ( LNEXT (JV) . EQ . 0 )   RETURN
+C-----IF EMERGENCY VEHICLE THEN SET ISET TO 5 AND RETURN
+      IF ( IAND( VEHTYP(JV),LAVTE ) . NE . 0 )   THEN
+        ISET(JV) = 5
+        RETURN
+      END IF
+C-----CALCULATE THE THRESHOLD DISTANCE FROM THE START OF THE LANE THAT
+C-----VEHICLE JV CAN DEDICATE ITSELF TO AN INTERSECTION PATH (LET THE
+C-----THRESHOLD DISTANCE BE THE ACCEPTABLE LAG GAP FOR LANE CHANGING)
+      XCRIT = (4.0D0+1.4D0*IVEL(JV)) /
+     *        (FACTOR*DCHAR(IDRICL(JV))*VCHAR(IVEHCL(JV)))
+      XCRIT = DBLE( LGEOM(1,LPRES(JV)) ) + XRELMI + XCRIT + LVAP(JV)
+C-----IF THE DISTANCE FROM THE START OF THE LANE IS LT THE THRESHOLD
+C-----DISTANCE THEN RETURN AND WAIT UNTIL THE VEHICLE IS FURTHER DOWN
+C-----THE LANE
+                    IF ( POSCHK . LT . XCRIT )   RETURN
+C-----SET ISET TO 5 AND RETURN
+      ISET(JV) = 5
+      RETURN
+      END                                                               CKISET
+C
+C
+C
+      SUBROUTINE CLCCLN ( JV,JL,LCCLN )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           LCCLN
+      INTEGER           JL,JV,LWID1,LWID2
+      DOUBLE PRECISION  COSVAL,DISLCH,DSPLCH,DVFACT,PER,PEROP1,POSLAT,
+     *                  TLDIST,VELLCH,VEHLNG,WIDV1,WIDV2,XOLD,XTOT
+C
+C-----SUBROUTINE CLCCLN CHECKS LANE CHANGING VEHICLE JV TO DETERMINE
+C-----WHETHER IT IS CLEAR OF THE ORIGINAL LANE
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'CLCCLN'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      LCCLN = .TRUE.
+                    IF ( ISET(JV) . NE . 1 )     RETURN
+      DVFACT = DCHAR(IDRICL(JV))*VCHAR(IVEHCL(JV))
+      POSLAT = LATPOS(JV)
+      TLDIST = 0.5D0*LEGAL(JV)
+C-----DEFINE THE LENGTH OF THE LANE CHANGE TO BE TIMELC SECONDS
+C-----AT THE VELOCITY OF THE VEHICLE WITH A MINIMUM OF 1.5
+C-----VEHICLE LENGTHS WITH A MAXIMUM VEHICLE LENGTH OF 25.0 FEET
+      DSPLCH = DBLE( ISPD(JV) )
+      IF ( IDISPD(JV) )                          THEN
+        DSPLCH = 0.5D0*DSPLCH
+      END IF
+      IF ( ISPDP (JV) . EQ . 1 )                 THEN
+        IF ( MININT(JV) )                        THEN
+          IF ( LOBL(IP) . GT . 0 )               THEN
+            DSPLCH = DSPLCH*DBLE( ISLIM(ISNA (LOBL(IP))) )
+     *             /        DBLE( LIMP (           IP  ) )
+          END IF
+        ELSE
+          DSPLCH   = DSPLCH*DBLE( ISLIM(           IA  ) )
+     *             /        DBLE( LIMP (LNEXT(     JV )) )
+        END IF
+      END IF
+      VELLCH = 0.2D0*DSPLCH
+      VELLCH = DMAX1( VELLCH,VELOLD,VELNEW )
+      VEHLNG = DMIN1( 25.0D0,LVAP(JV) )
+      DISLCH = 0.5D0*(ENDLN-POSNEW)
+      DISLCH = DMIN1( DISLCH,TIMELC*VELLCH )
+      DISLCH = DMAX1( DISLCH,1.5D0*VEHLNG )
+      IF ( MAJRLC(JV) )                          THEN
+        DISLCH = 0.5D0*XRELMI
+      END IF
+      XTOT   = DISLCH/DVFACT
+      XOLD   = XTOT*DACOS(2.0D0*DABS(POSLAT)/TLDIST-1.0D0)/PI
+      PER    = XOLD/XTOT
+      LWID1  = LWID(IL)
+      LWID2  = LWID(JL)
+      WIDV1  = WIDV(IVEHCL(IV))
+      WIDV2  = WIDV(IVEHCL(JV))
+      COSVAL = (LWID1-LWID2-2.0D0*WIDV1)/(LWID1+LWID2)
+      COSVAL = DMAX1(DMIN1(COSVAL,1.0D0),-1.0D0)
+      PEROP1 = DACOS(COSVAL)/PI
+C-----IF THE NEW POSITION OF THE VEHICLE ON THE COSINE CURVE IS
+C-----GE THE PERCENT OF THE TOTAL LENGTH OF THE LANE CHANGE
+C-----REQUIRED TO MAKE THE VEHICLE TOTALLY WITHIN THE NEW LANE
+C-----THEN SET TRUE ELSE FALSE
+      LCCLN = ( PER . GE . PEROP1 )
+      RETURN
+      END                                                               CLCCLN
+C
+C
+C
+      SUBROUTINE CLMJCL ( JL,NP,I2P,KV,LCHKCF,LBVSTP,POSMJC )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           EVRESP,LBVSTP,JCHKCF,LCHKCF
+      INTEGER           I,I2P,JL,KL,KP,KV,KVMIN,LV,NOFKV,NP,PADDP1
+      DOUBLE PRECISION  ACCVEH,CLEARD,CLEART,DISAVL,DISCLR,HWH,HWM,
+     *                  PCHKCF,POSADD,POSCLR,POSMJC,POSMJP,POSMJ2,
+     *                  POSNRB,POSVEH,SAFR,SAFVEL,SLPVEH,VELVEH
+C
+C-----SUBROUTINE CLMJCL CHECKS VEHICLES AHEAD OF THE CURRENT VEHICLE IN
+C-----LANE JL, VEHICLES ON LANE JLS LINKING INTERSECTION PATH, VEHICLES
+C-----ON OTHER INTERSECTION PATHS ORIGINATING FROM LANE JL, VEHICLES ON
+C-----CONFLICTING INTERSECTION PATHS, AND VEHICLES ON THE LINKING
+C-----OUTBOUND LANE FOR LANE JLS LINKING INTERSECTION PATH FOR A MAJOR
+C-----COLLISION AND RETURNS KV=0 IF NONE FOUND OR KV=THE BLOCKING
+C-----VEHICLE AND SETS LCHKCF WHETHER THERE IS A VEHICLE ON A 
+C-----CONFLICTING INTERSECTION PATH WITH A MAJOR COLLISION AND SETS
+C-----LBVSTP WHETHER VEHICLE KV IS STOPPED
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'CLMJCL'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      KV     = 0
+      KVMIN  = 0
+      LCHKCF = .FALSE.
+      LBVSTP = .FALSE.
+      PCHKCF = POSBIG
+      POSMJC = POSBIG
+      PADDP1 = 0
+      EVRESP = .FALSE.
+C-----CHECK IF THERE IS A MAJOR COLLISION SOMEWHERE IN THE SYSTEM
+      IF ( SMJCOL )                              THEN
+C
+C-----  IF THIS VEHICLE IS INVOLVED IN A MAJOR COLLISION THEN SET THIS
+C-----  VEHICLE
+C
+        IF ( MAJCOL(IV) )                        THEN
+          IF ( IPOS(IV) . LT . POSMJC )          THEN
+            KVMIN  = IV
+            LCHKCF = .TRUE.
+            LBVSTP = (VELOLD.EQ.0.0D0)
+            POSMJC = IPOS(IV)
+          END IF
+        END IF
+C
+C-----  CHECK VEHICLES AHEAD OF THE CURRENT VEHICLE IN LANE JL
+C
+        KV = IFVL(JL)
+        DO WHILE ( KV . GT . 0 )
+          IF ( KV . EQ . IV )                    EXIT
+          CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                   .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+          IF ( POSVEH . LT . POSNEW )            EXIT
+          IF ( ( MAJCOL(KV)                       ) . OR .
+     *         ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+C-----      A VEHICLE AHEAD OF THE CURRENT VEHICLE IN LANE JL HAS A
+C-----      MAJOR COLLISION THUS SET VEHICLE KV IF IT IS CLOSER TO THE
+C-----      CURRENT VEHICLE
+            IF ( POSVEH . LT . POSMJC )          THEN
+              KVMIN  = KV
+              LCHKCF = .TRUE.
+              LBVSTP = (VELVEH.EQ.0.0D0)
+              POSMJC = POSVEH
+            END IF
+          END IF
+          KV = NOR(KV)
+        END DO
+C
+C-----  CHECK IF THE REAR BUMPER OF THE LAST VEHICLE ON ANY INTERSECTION
+C-----  PATH FROM LANE JL HAS NOT TRAVELED FAR ENOUGH TO CLEAR THIS
+C-----  VEHICLE HAS A MAJOR COLLISION
+C
+        HWM = 0.5D0*WIDV(IVEHCL(IV))
+        DO  I = 1 , NPINT(JL)
+          KP = LINTP(I,JL)
+          KV = ILVP(KP)
+          IF ( KV . EQ . 0 )                     THEN
+            KL = LOBL(KP)
+                    IF ( KL . EQ . 0 )           CYCLE
+            KV = ILVL(KL)
+                    IF (       KV  . EQ . 0  )   CYCLE
+                    IF ( LPREV(KV) . NE . KP )   CYCLE
+            IF ( ( MAJCOL(KV)                       ) . OR .
+     *           ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+              CALL  SPVAS   ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                        .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+              POSNRB = POSVEH - LVAP(KV)
+              IF ( POSNRB . GE .
+     *             DBLE( LGEOM(1,KL) ) )         CYCLE
+              PADDP1 = DBLE( LENP(KP) - LGEOM(1,KL) )
+            ELSE
+              CYCLE
+            END IF
+          ELSE
+            IF ( ( MAJCOL(KV)                       ) . OR .
+     *           ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+              CALL  SPVAS   ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                        .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+              PADDP1 = 0
+            ELSE
+              CYCLE
+            END IF
+          END IF
+          POSNRB = POSVEH - LVAP(KV) + PADDP1
+          POSVEH = POSVEH + DBLE( LGEOM(4,JL) ) + PADDP1
+          IF ( POSNRB . LE . 0.0D0 )             THEN
+            IF ( KP . EQ . NP )                  THEN
+C-----        THERE IS A COLLISION VEHICLE ON LANE JLS INTERSECTION PATH
+C-----        WHOSE REAR BUMPER IS STILL ON LANE JL THUS SET VEHICLE KV
+C-----        IF IT IS CLOSER TO THE CURRENT VEHICLE
+              IF ( POSVEH . LT . POSMJC )        THEN
+                KVMIN  = KV
+                LCHKCF = .TRUE.
+                LBVSTP = (VELVEH.EQ.0.0D0)
+                POSMJC = POSVEH
+              END IF
+            END IF
+            IF ( VELVEH . EQ . 0.0D0 )           THEN
+C-----        THERE IS A COLLISION VEHICLE ON ANOTHER INTERSECTION PATH
+C-----        ORIGINATING FROM LANE JL WHOSE REAR BUMPER IS ON LANE JL
+C-----        AND IS STOPPED THUS SET VEHICLE KV IF IT IS CLOSER TO THE
+C-----        CURRENT VEHICLE
+              IF ( POSVEH . LT . POSMJC )        THEN
+                KVMIN  = KV
+                LCHKCF = .TRUE.
+                LBVSTP = .TRUE.
+                POSMJC = POSVEH
+              END IF
+            END IF
+          END IF
+          IF ( NP . EQ . 0 )                     CYCLE
+          IF ( KP . EQ . NP )                    CYCLE
+          HWH    = 0.5D0*WIDV(IVEHCL(KV))
+          SAFVEL = DMAX1( IVEL(IV),DBLE( ISPD(IV) ),
+     *                    IVEL(KV),DBLE( ISPD(KV) ) )
+          SAFR   = (SAFDIS+(SAFVEL/SAFSPD))/DCHAR(IDRICL(IV))
+C-----    IF THIS VEHICLE IS NOT AN EMERGENCY VEHICLE AND THE KV
+C-----    VEHICLE IS AN EMERGENCY VEHICLE THEN SET EVRESP TRUE ELSE
+C-----    FALSE
+          EVRESP = ( ( IAND( VEHTYP(IV),LAVTE ) . EQ . 0 ) . AND .
+     *               ( IAND( VEHTYP(KV),LAVTE ) . NE . 0 ) )
+          IF ( EVRESP )                          THEN
+            SAFR = DMAX1( SAFR,EVEHRZ*SAFVEL )
+          END IF
+          CLEARD = HWM + SAFR + HWH
+          CALL  CCLEAR  ( NP,KP,CLEARD,.TRUE.,CLEART )
+          IF ( POSNRB . LE . CLEART )            THEN
+            IF ( ( MAJCOL(KV)                       ) . OR .
+     *           ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+              IF ( VELVEH . EQ . 0.0D0 )         THEN
+C-----          THERE IS A COLLISION VEHICLE ON ANOTHER INTERSECTION
+C-----          PATH ORIGINATING FROM LANE JL THAT HAS NOT TRAVELED FAR
+C-----          ENOUGH TO CLEAR THIS VEHICLE AND IS STOPPED THUS SET
+C-----          VEHICLE KV IF IT IS CLOSER TO THE CURRENT VEHICLE
+                IF ( POSVEH . LT . POSMJC )      THEN
+                  KVMIN  = KV
+                  LCHKCF = .TRUE.
+                  LBVSTP = .TRUE.
+                  POSMJC = POSVEH
+                END IF
+              ELSE
+C-----          THERE IS A COLLISION VEHICLE ON ANOTHER INTERSECTION
+C-----          PATH ORIGINATING FROM LANE JL THAT HAS NOT TRAVELED FAR
+C-----          ENOUGH TO CLEAR THIS VEHICLE AND IS NOT STOPPED THUS SET
+C-----          LCHKCF
+                LCHKCF = .TRUE.
+                PCHKCF = DMIN1( PCHKCF,POSVEH )
+              END IF
+            END IF
+C-----      THE KV VEHICLES REAR BUMPER IS WITHIN THE CLEAR DISTANCE
+C-----      THUS SAVE THE DISTANCE NEEDED TO CLEAR AND THE POSITION OF
+C-----      THE FRONT BUMPER OF THE KV VEHICLE
+            DISCLR = CLEART - POSVEH
+            POSCLR = POSVEH + LVAP(KV) + XRELMI
+C-----      CHECK IF THE PATH HAS A MAJOR COLLISION
+            IF ( PMJCOL(KP) )                    THEN
+C-----        FIND THE FIRST COLLISION VEHICLE IN THE PATH STARTING
+C-----        FROM THE FIRST VEHICLE IN THE PATH
+              CALL  FFCVLP  ( .FALSE.,KP,.TRUE.,LV,POSADD )
+              IF ( LV . GT . 0 )                 THEN
+C-----          A VEHICLE ON ANOTHER INTERSECTION PATH ORIGINATING
+C-----          FROM THE LINKING INBOUND LANE FOR INTERSECTION PATH NP
+C-----          WHOSE REAR BUMPER HAS NOT TRAVELED FAR ENOUGH TO CLEAR
+C-----          THIS VEHICLE OR A VEHICLE ON THE SAME INTERSECTION
+C-----          PATH HAS A MAJOR COLLISION THUS SET VEHICLE KV IF IT IS
+C-----          CLOSER TO THE CURRENT VEHICLE
+                CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                         .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+                POSVEH = POSVEH + POSADD + DBLE( LGEOM(4,JL) ) + PADDP1
+                IF ( POSVEH . LT . POSMJC )      THEN
+                  KVMIN  = KV
+                  LCHKCF = .TRUE.
+                  LBVSTP = (VELVEH.EQ.0.0D0)
+                  POSMJC = POSVEH
+                END IF
+              END IF
+            END IF
+            IF ( LOBL(KP) . GT . 0 )             THEN
+              IF ( LMJCOL(LOBL(KP)) )            THEN
+C-----          FIND THE FIRST COLLISION VEHICLE IN THE LANE STARTING
+C-----          FROM THE LAST VEHICLE IN THE LANE
+                CALL  FFCVLP  ( .TRUE.,LOBL(KP),.FALSE.,LV,POSADD )
+                IF ( LV . GT . 0 )               THEN
+C-----            THERE IS A VEHICLE ON THE LINKING OUTBOUND LANE FOR
+C-----            INTERSECTION PATH KP WITH A MAJOR COLLISION THUS CHECK
+C-----            IF THERE IS ENOUGH DISTANCE FOR THE KV VEHICLE TO MOVE
+C-----            OUT OF THE WAY
+                  CALL  SPVAS  ( LV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                           .TRUE.,.TRUE.,.FALSE.,.TRUE.    )
+                  POSVEH = POSVEH + POSADD
+                  DISAVL = POSVEH - POSCLR
+                  NOFKV  = NOF(KV)
+                  DO WHILE ( NOFKV . GT. 0 )
+C-----              DECREMENT DISAVL FOR ALL NOF VEHICLES
+                    DISAVL = DISAVL - LVAP(NOFKV) - XRELMI
+                    NOFKV = NOF(NOFKV)
+                  END DO
+                  IF ( DISAVL . LE . CLEART )    THEN
+C-----              A VEHICLE ON ANOTHER INTERSECTION PATH ORIGINATING
+C-----              FROM THE LINKING INBOUND LANE FOR INTERSECTION PATH
+C-----              NP WHOSE REAR BUMPER HAS NOT TRAVELED FAR ENOUGH TO
+C-----              CLEAR THIS VEHICLE HAS A VEHICLE AHEAD ON THE
+C-----              LINKING OUTBOUND LANE FOR THE INTERSECTION PATH THAT
+C-----              HAS A MAJOR COLLISION AND THERE IS INADEQUATE
+C-----              DISTANCE FOR ALL NOF VEHICLES TO MOVE UP ENOUGH FOR
+C-----              US TO CLEAR THE KV VEHICLE THUS SET VEHICLE KV IF IT
+C-----              IS CLOSER TO THE CURRENT VEHICLE
+                    CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                             .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+                    POSVEH = POSVEH + POSADD + DBLE( LGEOM(4,JL) ) +
+     *                       PADDP1
+                    IF ( POSVEH . LT . POSMJC )  THEN
+                      KVMIN  = KV
+                      LCHKCF = .TRUE.
+                      LBVSTP = (VELVEH.EQ.0.0D0)
+                      POSMJC = POSVEH
+                    END IF
+                  END IF
+                END IF
+              END IF
+            END IF
+          END IF
+          IF ( ( MAJCOL(KV)                       ) . OR .
+     *         ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+            CLEARD = HWM + 2.0D0*SAFR + HWH
+            CALL  CCLEAR  ( NP,KP,CLEARD,.TRUE.,CLEART )
+            IF ( POSNRB . LE . CLEART )          THEN
+C-----        THERE IS A COLLISION VEHICLE ON ANOTHER INTERSECTION PATH
+C-----        ORIGINATING FROM THIS LANE THAT HAS NOT TRAVELED FAR
+C-----        ENOUGH TO CLEAR THIS VEHICLES SAFETY ZONE THUS SET LCHKCF
+              CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                       .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+              LCHKCF = .TRUE.
+              PCHKCF = DMIN1( PCHKCF,POSVEH+DBLE( LGEOM(4,JL) )+PADDP1 )
+            END IF
+          END IF
+C-----    END OF LOOP FOR INTERSECTION PATHS ORIGINATING FROM THIS LANE
+        END DO
+C
+C-----  CHECK VEHICLES ON LANE JLS LINKING INTERSECTION PATH AND THE
+C-----  LINKING OUTBOUND LANE FOR THE LINKING INTERSECTION PATH
+C
+        IF ( NP . GT . 0 )                       THEN
+C-----    CHECK INTERSECTION PATH NP AND VEHICLES DOWNSTREAM FOR A MAJOR
+C-----    COLLISION
+          CALL  CPMJCL  ( NP,KV,JCHKCF,LBVSTP,POSMJP )
+          POSVEH = POSMJP + DBLE( LGEOM(4,JL) )
+          IF ( KV . GT . 0 )                     THEN
+C-----      THERE IS A COLLISION VEHICLE ON INTERSECTION PATH NP BEFORE
+C-----      THIS VEHICLE OR DOWNSTREAM THUS SET VEHICLE KV IF IT IS
+C-----      CLOSER TO THE CURRENT VEHICLE
+            IF ( POSVEH . LT . POSMJC )          THEN
+              KVMIN  = KV
+              LCHKCF = .TRUE.
+              LBVSTP = (IVEL(KV).EQ.0.0D0)
+              POSMJC = POSVEH
+            END IF
+          END IF
+          IF ( JCHKCF )                          THEN
+            LCHKCF = .TRUE.
+            PCHKCF = DMIN1( PCHKCF,POSVEH )
+          END IF
+        END IF
+C
+C-----  CHECK VEHICLES ON THIS VEHICLES LINKING INTERSECTION 2 PATH
+C
+        IF ( ( NP  . GT . 0  ) . AND .
+     *       ( I2P . GT . 0  ) . AND .
+     *       ( I2P . NE . NP ) )                 THEN
+          IF ( LOBL(NP) . GT . 0 )               THEN
+C-----      CHECK INTERSECTION PATH NP AND VEHICLES DOWNSTREAM FOR A
+C-----      MAJOR COLLISION
+            CALL  CPMJCL  ( I2P,KV,JCHKCF,LBVSTP,POSMJ2 )
+            IF ( KV . GT . 0 )                   THEN
+C-----        THERE IS A COLLISION VEHICLE ON INTERSECTION PATH NP
+C-----        BEFORE THIS VEHICLE OR DOWNSTREAM THUS SET VEHICLE KV IF
+C-----        IT IS CLOSER TO THE CURRENT VEHICLE
+              POSVEH =
+     *          POSMJ2 + DBLE( LGEOM(4,JL)+LENP(NP)+LGEOM(4,LOBL(NP)) )
+              IF ( POSVEH . LT . POSMJC )        THEN
+                KVMIN  = KV
+                LCHKCF = .TRUE.
+                LBVSTP = (IVEL(KV).EQ.0.0D0)
+                POSMJC = POSVEH
+              END IF
+            END IF
+            IF ( JCHKCF )                        THEN
+              LCHKCF = .TRUE.
+              PCHKCF = DMIN1( PCHKCF,POSVEH )
+            END IF
+          END IF
+        END IF
+        KV = KVMIN
+        IF ( KV . GT . 0 )                       THEN
+C-----    IF THIS VEHICLE IS NOT AN EMERGENCY VEHICLE AND THE KV
+C-----    VEHICLE IS AN EMERGENCY VEHICLE THEN SET EVRESP TRUE ELSE
+C-----    FALSE
+          EVRESP = ( ( IAND( VEHTYP(IV),LAVTE ) . EQ . 0 ) . AND .
+     *               ( IAND( VEHTYP(KV),LAVTE ) . NE . 0 ) )
+          RESPEV = ( RESPEV . OR . EVRESP )
+        ELSE
+          POSMJC = PCHKCF
+        END IF
+      END IF
+      RETURN
+      END                                                               CLMJCL
+C
+C
+C
+      SUBROUTINE CONST  ( MEAN,CONVAL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      DOUBLE PRECISION  CONVAL,MEAN
+C
+C-----SUBROUTINE CONST GENERATES A CONSTANT RANDOM DEVIATE
+C
+C-----CONSTAN PARAMETER - NONE
+      CONVAL = MEAN
+      RETURN
+      END                                                               CONST
+C
+C
+C
+      SUBROUTINE CPMJCL ( NP,KV,LCHKCF,LBVSTP,POSMJC )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONCHK'
+      INCLUDE 'CONFLT'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           EVRESP,LBVSTP,LCHKCF
+      INTEGER           I,INDEX,IVCONF,JH,JNDEX,JL,JM,JP,JPRC,KL,KOUNT,
+     *                  KP,KV,KVMIN,LGEOME,LV,LVH,MIBL,MOBL,NOFC,NOFKV,
+     *                  NP,PADDP1
+      DOUBLE PRECISION  ACCVEH,ACM,CLEARD,CLEART,DCM,DISAVL,DISCLR,
+     *                  DISLCH,DVM,HWH,HWM,MLENV,PAD,PCHKCF,PCM,POP,
+     *                  POSADD,POSCLR,POSMJC,POSNRB,POSVEH,RADNP,SAFF,
+     *                  SAFR,SAFVEL,SCM,SLPVEH,TCM,VCM,VELLCH,VEHLNG,
+     *                  VELVEH
+C
+C-----SUBROUTINE CPMJCL CHECKS VEHICLES AHEAD OF THE CURRENT VEHICLE ON
+C-----INTERSECTION PATH NP, VEHICLES ON OTHER INTERSECTION PATHS
+C-----ORIGINATING FROM THIS PATHS LINKING INBOUND LANE, VEHICLES ON
+C-----CONFLICTING INTERSECTION PATHS, AND VEHICLES ON THE LINKING
+C-----OUTBOUND LANE FOR THIS INTERSECTION PATH FOR A MAJOR COLLISION AND
+C-----RETURNS KV=0 IF NONE FOUND OR KV=THE BLOCKING VEHICLE AND SETS
+C-----LCHKCF WHETHER THERE IS A VEHICLE ON A CONFLICTING INTERSECTION
+C-----PATH WITH A MAJOR COLLISION AND SETS LBVSTP WHETHER VEHICLE KV IS
+C-----STOPPED
+C
+C[    LPRTM      = -2147483647
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'CPMJCL'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      IX     = NP
+      KV     = 0
+      KVMIN  = 0
+      LCHKCF = .FALSE.
+      LBVSTP = .FALSE.
+      PCHKCF = POSBIG
+      POSMJC = POSBIG
+      PADDP1 = 0
+      EVRESP = .FALSE.
+C-----CHECK IF THERE IS A MAJOR COLLISION SOMEWHERE IN THE SYSTEM
+      IF ( SMJCOL )                              THEN
+C
+C-----  IF THIS VEHICLE IS INVOLVED IN A MAJOR COLLISION THEN SET THIS
+C-----  VEHICLE
+C
+        IF ( MAJCOL(IV) )                        THEN
+          IF ( IPOS(IV) . LT . POSMJC )          THEN
+            KVMIN  = IV
+            LCHKCF = .TRUE.
+            LBVSTP = (VELOLD.EQ.0.0D0)
+            POSMJC = IPOS(IV)
+          END IF
+        END IF
+C
+C-----  CHECK VEHICLES AHEAD OF THE CURRENT VEHICLE ON INTERSECTION PATH
+C-----  NP
+C
+C-----  FIND OUT IF VEHICLE IV IS ON INTERSECTION PATH NP
+        KV = IFVP(NP)
+        DO WHILE ( KV . GT . 0 )
+          IF ( KV . EQ . IV )                    EXIT
+          KV = NOR(KV)
+        END DO
+C-----  IF VEHICLE IV IS NOT ON INTERSECTION PATH NP THEN START WITH THE
+C-----  LAST VEHICLE ON INTERSECTION PATH NP ELSE START WITH THE NOF OF
+C-----  VEHICLE IV
+        IF ( KV . EQ . 0 )                       THEN
+          KV = ILVP(NP)
+        ELSE
+          KV = NOF(IV)
+        END IF
+C-----  CHECK VEHICLE KV AND VEHICLES DOWNSTREAM OF VEHICLE KV
+        DO WHILE ( KV . GT . 0 )
+          IF ( ( MAJCOL(KV)                       ) . OR .
+     *         ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+C-----      A VEHICLE AHEAD OF THE CURRENT VEHICLE ON INTERSECTION PATH
+C-----      NP HAS A MAJOR COLLISION THUS SET VEHICLE KV IF IT IS CLOSER
+C-----      TO THE CURRENT VEHICLE
+            CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                     .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+            IF ( POSVEH . LT . POSMJC )          THEN
+              KVMIN  = KV
+              LCHKCF = .TRUE.
+              LBVSTP = (VELVEH.EQ.0.0D0)
+              POSMJC = POSVEH
+            END IF
+          END IF
+          KV = NOF(KV)
+        END DO
+C
+C-----  CHECK VEHICLES ON OTHER INTERSECTION PATHS ORIGINATING FROM
+C-----  THE LINKING INBOUND LANE FOR INTERSECTION PATH NP
+C
+        HWM   = 0.5D0*WIDV(IVEHCL(IV))
+        RADNP = RADMAX(NP)
+        MIBL  = LIBL(NP)
+        DO  I = 1 , NPINT(MIBL)
+          KP = LINTP(I,MIBL)
+C-----    IF THE INTERSECTION PATH KP IS INTERSECTION PATH NP THEN SKIP
+          IF ( KP . EQ . NP  )                   CYCLE
+          KV = ILVP(KP)
+          IF ( KV . EQ . 0 )                     THEN
+            KL = LOBL(KP)
+                    IF ( KL . EQ . 0 )           CYCLE
+            KV = ILVL(KL)
+                    IF (       KV  . EQ . 0  )   CYCLE
+                    IF ( LPREV(KV) . NE . KP )   CYCLE
+            IF ( ( MAJCOL(KV)                       ) . OR .
+     *           ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+C-----        CHECK IF THE REAR BUMPER OF THE LAST VEHICLE ON
+C-----        INTERSECTION PATH KP HAS NOT TRAVELED FAR ENOUGH TO CLEAR
+C-----        THIS VEHICLE
+              CALL  SPVAS   ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                        .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+              POSNRB = POSVEH - LVAP(KV)
+              IF ( POSNRB . GE .
+     *             DBLE( LGEOM(1,KL) ) )         CYCLE
+              PADDP1 = DBLE( LENP(KP) - LGEOM(1,KL) )
+            ELSE
+              CYCLE
+            END IF
+          ELSE
+            IF ( ( MAJCOL(KV)                       ) . OR .
+     *           ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+C-----        CHECK IF THE REAR BUMPER OF THE LAST VEHICLE ON
+C-----        INTERSECTION PATH KP HAS NOT TRAVELED FAR ENOUGH TO CLEAR
+C-----        THIS VEHICLE
+              CALL  SPVAS   ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                        .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+              PADDP1 = 0
+            ELSE
+              CYCLE
+            END IF
+          END IF
+          POSNRB = POSVEH - LVAP(KV) + PADDP1
+          POSVEH = POSVEH + PADDP1
+          IF ( ( MAJCOL(KV)                       ) . OR .
+     *         ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+            IF ( POSNRB . LE . 0.0D0 )           THEN
+C-----        THERE IS A COLLISION VEHICLE ON ANOTHER INTERSECTION PATH
+C-----        ORIGINATING FROM THE LINKING INBOUND LANE FOR INTERSECTION
+C-----        PATH NP WHOSE REAR BUMPER IS ON THE LINKING INBOUND LANE
+C-----        AND IS STOPPED THUS SET VEHICLE KV IF IT IS CLOSER TO THE
+C-----        CURRENT VEHICLE
+              IF ( POSVEH . LT . POSMJC )        THEN
+                KVMIN  = KV
+                LCHKCF = .TRUE.
+                LBVSTP = .TRUE.
+                POSMJC = POSVEH
+              END IF
+            END IF
+          END IF
+          HWH    = 0.5D0*WIDV(IVEHCL(KV))
+          SAFVEL = DMAX1( IVEL(IV),DBLE( ISPD(IV) ),
+     *                    IVEL(KV),DBLE( ISPD(KV) ) )
+          SAFR   = (SAFDIS+(SAFVEL/SAFSPD))/DCHAR(IDRICL(IV))
+C-----    IF THIS VEHICLE IS NOT AN EMERGENCY VEHICLE AND THE KV
+C-----    VEHICLE IS AN EMERGENCY VEHICLE THEN SET EVRESP TRUE ELSE
+C-----    FALSE
+          EVRESP = ( ( IAND( VEHTYP(IV),LAVTE ) . EQ . 0 ) . AND .
+     *               ( IAND( VEHTYP(KV),LAVTE ) . NE . 0 ) )
+          IF ( EVRESP )                          THEN
+            SAFR = DMAX1( SAFR,EVEHRZ*SAFVEL )
+          END IF
+          CLEARD = HWM + SAFR + HWH
+          CALL  CCLEAR  ( NP,KP,CLEARD,.TRUE.,CLEART )
+          IF ( POSNRB . LE . CLEART )            THEN
+            IF ( ( MAJCOL(KV)                       ) . OR .
+     *           ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+              IF ( VELVEH . EQ . 0.0D0 )         THEN
+C-----          THERE IS A COLLISION VEHICLE ON ANOTHER INTERSECTION
+C-----          PATH ORIGINATING FROM THE LINKING INBOUND LANE FOR
+C-----          INTERSECTION PATH NP THAT HAS NOT TRAVELED FAR ENOUGH TO
+C-----          CLEAR THIS VEHICLE AND IS STOPPED THUS SET VEHICLE KV IF
+C-----          IT IS CLOSER TO THE CURRENT VEHICLE
+                IF ( POSVEH . LT . POSMJC )      THEN
+                  KVMIN  = KV
+                  LCHKCF = .TRUE.
+                  LBVSTP = .TRUE.
+                  POSMJC = POSVEH
+                END IF
+              ELSE
+C-----          THERE IS A COLLISION VEHICLE ON ANOTHER INTERSECTION
+C-----          PATH ORIGINATING FROM THE LINKING INBOUND LANE FOR
+C-----          INTERSECTION PATH NP THAT HAS NOT TRAVELED FAR ENOUGH TO
+C-----          CLEAR THIS VEHICLE AND IS NOT STOPPED THUS SET LCHKCF
+                LCHKCF = .TRUE.
+                PCHKCF = DMIN1( PCHKCF,POSVEH )
+              END IF
+            END IF
+C-----      THE KV VEHICLES REAR BUMPER IS WITHIN THE CLEAR DISTANCE
+C-----      THUS SAVE THE DISTANCE NEEDED TO CLEAR AND THE POSITION OF
+C-----      THE FRONT BUMPER OF THE KV VEHICLE
+            DISCLR = CLEART - POSVEH
+            POSCLR = POSVEH + LVAP(KV) + XRELMI
+C-----      CHECK IF THE PATH HAS A MAJOR COLLISION
+            IF ( PMJCOL(KP) )                    THEN
+C-----        FIND THE FIRST COLLISION VEHICLE IN THE PATH STARTING
+C-----        FROM THE FIRST VEHICLE IN THE PATH
+              CALL  FFCVLP  ( .FALSE.,KP,.TRUE.,LV,POSADD )
+              IF ( LV . GT . 0 )                 THEN
+C-----          A VEHICLE ON ANOTHER INTERSECTION PATH ORIGINATING
+C-----          FROM THE LINKING INBOUND LANE FOR INTERSECTION PATH NP
+C-----          WHOSE REAR BUMPER HAS NOT TRAVELED FAR ENOUGH TO CLEAR
+C-----          THIS VEHICLE OR A VEHICLE ON THE SAME INTERSECTION
+C-----          PATH HAS A MAJOR COLLISION THUS SET VEHICLE KV IF IT IS
+C-----          CLOSER TO THE CURRENT VEHICLE
+                CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                         .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+                POSVEH = POSVEH + POSADD + PADDP1
+                IF ( POSVEH . LT . POSMJC )      THEN
+                  KVMIN  = KV
+                  LCHKCF = .TRUE.
+                  LBVSTP = (VELVEH.EQ.0.0D0)
+                  POSMJC = POSVEH
+                END IF
+              END IF
+            END IF
+            IF ( LOBL(KP) . GT . 0 )             THEN
+              IF ( LMJCOL(LOBL(KP)) )            THEN
+C-----          FIND THE FIRST COLLISION VEHICLE IN THE LANE STARTING
+C-----          FROM THE LAST VEHICLE IN THE LANE
+                CALL  FFCVLP  ( .TRUE.,LOBL(KP),.FALSE.,LV,POSADD )
+                IF ( LV . GT . 0 )               THEN
+C-----            THERE IS A VEHICLE ON THE LINKING OUTBOUND LANE FOR
+C-----            INTERSECTION PATH KP WITH A MAJOR COLLISION THUS
+C-----            CHECK IF THERE IS ENOUGH DISTANCE FOR THE KV VEHICLE
+C-----            TO MOVE OUT OF THE WAY
+                  CALL  SPVAS  ( LV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                           .TRUE.,.TRUE.,.FALSE.,.TRUE.    )
+                  POSVEH = POSVEH + POSADD + PADDP1
+                  DISAVL = POSVEH - POSCLR
+                  NOFKV  = NOF(KV)
+                  DO WHILE ( NOFKV . GT. 0 )
+C-----              DECREMENT DISAVL FOR ALL NOF VEHICLES
+                    DISAVL = DISAVL - LVAP(NOFKV) - XRELMI
+                    NOFKV = NOF(NOFKV)
+                  END DO
+                  IF ( DISAVL . LE . CLEART )    THEN
+C-----              A VEHICLE ON ANOTHER INTERSECTION PATH ORIGINATING
+C-----              FROM THE LINKING INBOUND LANE FOR INTERSECTION PATH
+C-----              NP WHOSE REAR BUMPER HAS NOT TRAVELED FAR ENOUGH TO
+C-----              CLEAR THIS VEHICLE HAS A VEHICLE AHEAD ON THE
+C-----              LINKING OUTBOUND LANE FOR THE INTERSECTION PATH THAT
+C-----              HAS A MAJOR COLLISION AND THERE IS INADEQUATE
+C-----              DISTANCE FOR ALL NOF VEHICLES TO MOVE UP ENOUGH FOR
+C-----              US TO CLEAR THE KV VEHICLE THUS SET VEHICLE KV IF IT
+C-----              IS CLOSER TO THE CURRENT VEHICLE
+                    CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                             .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+                    POSVEH = POSVEH + POSADD + PADDP1
+                    IF ( POSVEH . LT . POSMJC )  THEN
+                      KVMIN  = KV
+                      LCHKCF = .TRUE.
+                      LBVSTP = (VELVEH.EQ.0.0D0)
+                      POSMJC = POSVEH
+                    END IF
+                  END IF
+                END IF
+              END IF
+            END IF
+          END IF
+          IF ( ( MAJCOL(KV)                       ) . OR .
+     *         ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+            CLEARD = HWM + 2.0D0*SAFR + HWH
+            CALL  CCLEAR  ( NP,KP,CLEARD,.TRUE.,CLEART )
+            IF ( POSNRB . LE . CLEART )          THEN
+C-----        THERE IS A COLLISION VEHICLE ON ANOTHER INTERSECTION PATH
+C-----        ORIGINATING FROM THE LINKING INBOUND LANE FOR INTERSECTION
+C-----        PATH NP THAT HAS NOT TRAVELED FAR ENOUGH TO CLEAR THIS
+C-----        VEHICLES SAFETY ZONE THUS SET LCHKCF
+              CALL  SPVAS   ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                        .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+              LCHKCF = .TRUE.
+              PCHKCF = DMIN1( PCHKCF,POSVEH+PADDP1 )
+            END IF
+          END IF
+C-----    END OF LOOP FOR INTERSECTION PATHS ORIGINATING FROM THE
+C-----    LINKING INBOUND LANE FOR INTERSECTION PATH NP
+        END DO
+C
+C-----  CHECK VEHICLES ON CONFLICTING INTERSECTION PATHS THUS IF THERE
+C-----  ARE NO GEOMETRIC CONFLICTING PATHS THEN GO TO 1080
+C
+                IF ( NGEOCP(NP) . LE . 0 )       GO TO 1080
+C-----  CHECK EACH GEOMETRIC CONFLICTING INTERSECTION PATH
+        HWM = 0.5D0*WIDV(IVEHCL(IV))
+        DO 1070  INDEX = 1 , NGEOCP(NP)
+C-----  INITIALIZE SOME PARAMETERS FOR CPMJCL
+        JNDEX = IGEOCP(INDEX,NP)
+        KOUNT = 0
+        IF ( NP . EQ . ICONP(1,JNDEX) )          THEN
+          JH = 2
+          JM = 1
+        ELSE
+          JH = 1
+          JM = 2
+        END IF
+        JP = ICONP(JH,JNDEX)
+C-----  FIND THE FIRST COLLISION VEHICLE IN THE PATH STARTING FROM THE
+C-----  FIRST VEHICLE IN THE PATH
+        CALL  FFCVLP  ( .FALSE.,JP,.FALSE.,LV,POSADD )
+                  IF ( LV . EQ . 0 )             GO TO 1070
+        JL = LIBL(JP)
+        IVCONF = IFVP(JP)
+        IF ( IVCONF . EQ . 0 )                   THEN
+          IVCONF = ICONV(JH,JNDEX)
+        END IF
+        IF ( IVCONF . EQ . 0 )                   THEN
+          IVCONF = LV
+        END IF
+C-----  SET NOFC TO THE IVCONF VEHICLE
+        NOFC = IVCONF
+        IF ( MININT(NOFC) )                      GO TO 1020
+        IF ( LPRES(NOFC) . EQ . LOBL(JP) )       GO TO 1020
+C-----  THE NOFC VEHICLE WAS NOT IN THE INTERSECTION THUS SET THE NOFC
+C-----  VEHICLE TO THE FIRST VEHICLE IN THE OTHER LANE
+        NOFC = IFVL(JL)
+ 1020   CONTINUE
+C-----  SET THIS VEHICLES PARAMETERS FOR PREDICTING TIME AND VELOCITY
+C-----  TO AN INTERSECTION CONFLICT
+        CALL  SETPTV  ( MIBL )
+        SO = SLPNEW
+        IF ( MININT(IV) )                        THEN
+          PO = PO + LGEOM4
+        END IF
+C[      IF ( JM                 .EQ.-2147483647 )STOP 'CPMJCL JM     01'
+C[      IF ( JNDEX              .EQ.-2147483647 )STOP 'CPMJCL JNDEX  01'
+        P = ICOND(JM,JNDEX) + LGEOM4
+        DVM = JSPD
+        DCM = P - PO
+C-----  IF THERE IS NO DISTANCE TO TRAVEL TO THE INTERSECTION CONFLICT FOR
+C-----  ME THEN GO TO 1070 AND SKIP TO THE NEXT INTERSECTION CONFLICT
+                      IF ( P-PO . LE . 0.0D0 )   GO TO 1070
+C-----  PREDICT THE TIME AND VELOCITY TO AN INTERSECTION CONFLICT
+        CALL  SNOFPV  ( NP )
+        CALL  PREDTV  ( TCM,PCM,VCM,ACM,SCM )
+C-----  IF THERE IS NO TIME TO THE INTERSECTION CONFLICT FOR ME THEN
+C-----  SET VCM TO MY DESIRED VELOCITY
+                  IF ( TCM . LE . 0.0D0 )        VCM = DESVEL
+ 1030   CONTINUE
+C-----  START OF LOOP FOR CHECKING FOR THIS INTERSECTION CONFLICT
+C[      IF ( KOUNT          .EQ.-2147483647   )  STOP 'CPMJCL KOUNT  01'
+        KOUNT = KOUNT + 1
+                  IF ( KOUNT . GT . 50 )         GO TO 9330
+C-----  IF THE NOFC VEHICLE IS THE IVCONF VEHICLE THEN GO TO 1040 AND
+C-----   CHECK THE IVCONF VEHICLE
+C[      IF ( IVCONF         .EQ.-2147483647   )  STOP 'CPMJCL IVCONF 01'
+C[      IF ( NOFC           .EQ.-2147483647   )  STOP 'CPMJCL NOFC   01'
+                  IF ( NOFC . EQ . IVCONF )      GO TO 1040
+C-----  IF THE NOFC VEHICLE HAS NOT SET CONFLICTS THEN HE MAY NOT
+C-----  PROCEED INTO THE INTERSECTION THUS HE WILL BLOCK THE IVCONF
+C-----  VEHICLE FROM PROCEEDING INTO THE INTERSECTION ALSO THUS THERE
+C-----  CAN BE NO INTERSECTION CONFLICT WITH THE IVCONF VEHICLE THUS
+C-----  GO TO 1070 AND SKIP TO THE NEXT INTERSECTION CONFLICT (THIS
+C-----  ONE IS CLEAR)
+        IF      ( IPRC(1,NOFC) . EQ . JP )       THEN
+          JPRC = 1
+        ELSE IF ( IPRC(2,NOFC) . EQ . JP )       THEN
+          JPRC = 2
+        ELSE IF ( IPRC(1,NOFC) . EQ .  0 )       THEN
+          JPRC = 1
+          NORC(1,NOFC) = NVEP1
+        ELSE IF ( IPRC(2,NOFC) . EQ .  0 )       THEN
+          JPRC = 2
+          NORC(2,NOFC) = NVEP1
+        ELSE
+          GO TO 9460
+        END IF
+        IF ( NORC(JPRC,NOFC) . EQ . NVEP1 )      GO TO 1070
+C-----  SET THE NOFC VEHICLE TO THE NOR VEHICLE FOR THE CURRENT NOFC
+C-----  VEHICLE
+        IF ( NOR(NOFC) . EQ . 0 )                THEN
+          IF ( LPRES(NOFC) . EQ . LOBL(JP) )     THEN
+            NOFC = NORC(JPRC,NOFC)
+          ELSE
+            NOFC = IFVL(JL)
+          END IF
+        ELSE
+          NOFC = NOR(NOFC)
+        END IF
+C-----  IF THERE IS A NEW NOFC VEHICLE THEN GO TO 1030 AND CHECK AGAIN
+                  IF ( NOFC . GT . 0 )           GO TO 1030
+C-----  THE OLD NOFC VEHICLE HAD TO BE THE LAST VEHICLE ON THE
+C-----  INTERSECTION PATH THUS SET THE NOFC VEHICLE TO THE FIRST
+C-----  VEHICLE ON THE LANE AND GO TO 1030 AND CHECK AGAIN
+C[      IF ( JL             .EQ.-2147483647   )  STOP 'CPMJCL JL     01'
+        NOFC = IFVL(JL)
+        GO TO 1030
+ 1040   CONTINUE
+        IF ( ( MAJCOL(IVCONF)                           ) . OR .
+     *       ( MAJCLB(IVCONF).AND.IVEL(IVCONF).EQ.0.0D0 ) )
+     *                                           THEN
+          GO TO 1045
+        END IF
+        GO TO 1060
+ 1045   CONTINUE
+C-----  SET THE IVCONF VEHICLES PARAMETERS FOR PREDICTING TIME AND
+C-----  VELOCITY TO AN INTERSECTION CONFLICT
+C[      IF ( IVCONF         .EQ.-2147483647   )  STOP 'CPMJCL IVCONF 02'
+        CALL  SPVAS  ( IVCONF,PO,VO,AO,SO,
+     *                 .FALSE.,.FALSE.,.TRUE.,.FALSE. )
+C-----  IF THIS VEHICLE IS NOT AN EMERGENCY VEHICLE AND THE IVCONF
+C-----  VEHICLE IS AN EMERGENCY VEHICLE THEN SET EVRESP TRUE ELSE FALSE
+        EVRESP = ( ( IAND( VEHTYP(IV    ),LAVTE ) . EQ . 0 ) . AND .
+     *             ( IAND( VEHTYP(IVCONF),LAVTE ) . NE . 0 ) )
+C[      IF ( JL             .EQ.-2147483647   )  STOP 'CPMJCL JL     02'
+        POP    = PO
+        LGEOM4 = LGEOM(4,JL)
+        PO     = PO + LGEOM4
+C-----  IF THE IVCONF VEHICLE IS IN THE INTERSECTION THEN GO TO 1050
+C-----  AND CONTINUE ELSE SET SOME ADDITIONAL PARAMETERS
+                  IF ( MININT(IVCONF) )          GO TO 1050
+        IF ( LPRES(IVCONF) . EQ . LIBL(JP) )     THEN
+C-----    IVCONF VEHICLE IS ON THE INBOUND LANE FOR THE INTERSECTION PATH
+          POP = POP - LGEOM4
+          PO  = PO  - LGEOM4
+        ELSE
+C-----    IVCONF VEHICLE IS ON THE OUTBOUND LANE FOR THE INTERSECTION PATH
+          PAD = DBLE( LENP(JP) - LGEOM(1,LPRES(IVCONF)) )
+          POP = POP + PAD
+          PO  = PO  + PAD
+        END IF
+ 1050   CONTINUE
+C[      IF ( JH             .EQ.-2147483647   )  STOP 'CPMJCL JH     01'
+C[      IF ( JNDEX          .EQ.-2147483647   )  STOP 'CPMJCL JNDEX  02'
+        P = ICOND(JH,JNDEX) + LGEOM4
+C-----  THE IVCONF VEHICLE IS INVOLVED IN A MAJOR COLLISION THEN IT
+C-----  WILL NEVER MOVE THUS CHECK DISTANCES
+        HWH = 0.5D0*WIDV(IVEHCL(IVCONF))
+        LVH =       LVAP(       IVCONF )
+C[      IF ( VCM            .EQ.-2147483647.0 )  STOP 'CPMJCL VCM    01'
+        SAFF = (SAFDIS+(VCM/SAFSPD))/DCHAR(IDRICL(IV))
+        SAFR = SAFF
+        IF ( EVRESP )                            THEN
+          SAFF = DMAX1( SAFF,EVEHFZ*VCM )
+          SAFR = DMAX1( SAFR,EVEHRZ*VCM )
+        END IF
+        IF ( LOBL(NP) . EQ . LOBL(JP) )          THEN
+C-----    INTERSECTION PATH NP MERGES WITH INTERSECTION PATH JP INTO AN
+C-----    INTERNAL INBOUND LANE OR AN OUTBOUND LANE
+          CLEARD = HWM + SAFR + HWH
+          CALL  CCLEAR  ( NP,JP,CLEARD,.FALSE.,CLEART )
+          IF ( (POP+CLEART).GE.DBLE( LENP(JP) ) )THEN
+C-----      A VEHICLE ON A CONFLICTING INTERSECTION PATH THAT MERGES
+C-----      WITH INTERSECTION PATH NP AT THE OUTBOUND LANE BLOCKS THE
+C-----      POINT OF INTERSECTION CONFLICT THUS SET VEHICLE IVCONF IF IT
+C-----      IS CLOSER TO THE CURRENT VEHICLE
+            KV = IVCONF
+            CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                     .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+            POSVEH = DBLE( ICOND(JM,JNDEX) )
+            IF ( POSVEH . LT . POSMJC )        THEN
+              KVMIN  = KV
+              LCHKCF = .TRUE.
+              LBVSTP = (VELVEH.EQ.0.0D0)
+              POSMJC = POSVEH
+            END IF
+          END IF
+        END IF
+C-----  IF THE VEHICLES FRONT BUMPER PLUS EXTRA SAFETY ZONE HAS ARRIVED
+C-----  AT THE INTERSECTION CONFLICT AND THE VEHICLES REAR BUMPER PLUS
+C-----  EXTRA SAFETY ZONE HAS NOT PASSED THE INTERSECTION CONFLICT THEN
+C-----  SET THAT THE VEHICLE MUST CHECK CONFLICTS BUT MAY NOT BE BLOCKED
+        IF ( ((PO    +SAFCON*SAFF+HWM) .GE. P ) . AND .
+     *       ((PO-LVH-SAFCON*SAFR-HWM) .LE. P ) )THEN
+          LCHKCF = .TRUE.
+          PCHKCF = DMIN1( PCHKCF,DBLE( ICOND(JM,JNDEX) ) )
+        END IF
+C-----  IF THE VEHICLES FRONT BUMPER HAS NOT ARRIVED AT THE 
+C-----  INTERSECTION CONFLICT THEN GO TO 1070 AND SKIP TO THE NEXT
+C-----  INTERSECTION CONFLICT
+              IF ( (PO    +SAFF+HWM) . LT . P )  GO TO 1070
+C-----  IF THE VEHICLES REAR BUMPER HAS PASSED THE INTERSECTION
+C-----  CONFLICT THEN GO TO 1060 AND PROCESS THE NORC VEHICLE
+              IF ( (PO-LVH-SAFR-HWM) . GT . P )  GO TO 1060
+C-----  A VEHICLE ON A CONFLICTING INTERSECTION PATH BLOCKS THE POINT
+C-----  OF INTERSECTION CONFLICT THUS SET VEHICLE IVCONF IF IT IS CLOSER
+C-----  TO THE CURRENT VEHICLE
+        KV = IVCONF
+        CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                 .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+        POSVEH = DBLE( ICOND(JM,JNDEX) )
+        IF ( POSVEH . LT . POSMJC )              THEN
+          KVMIN  = KV
+          LCHKCF = .TRUE.
+          LBVSTP = (VELVEH.EQ.0.0D0)
+          POSMJC = POSVEH
+        END IF
+ 1060   CONTINUE
+C-----  SET THE NOFC VEHICLE TO THE IVCONF VEHICLE AND SET THE IVCONF
+C-----  VEHICLE TO THE NEXT VEHICLE THAT SHOULD HAVE TO CLEAR THE SAME
+C-----  INTERSECTION CONFLICT
+C[      IF ( IVCONF         .EQ.-2147483647   )  STOP 'CPMJCL IVCONF 08'
+        NOFC = IVCONF
+        IF      ( IPRC(1,NOFC) . EQ . JP )       THEN
+          JPRC = 1
+        ELSE IF ( IPRC(2,NOFC) . EQ . JP )       THEN
+          JPRC = 2
+        ELSE
+          GO TO 9460
+        END IF
+        IVCONF = NORC(JPRC,NOFC)
+C-----  IF THERE IS ANOTHER VEHICLE THAT HAS TO CLEAR THE SAME
+C-----  INTERSECTION CONFLICT AND THIS VEHICLE HAS TO GO BEHIND THE
+C-----  LAST IVCONF VEHICLE THEN GO TO 1030 AND CHECK THE NEW IVCONF
+C-----  VEHICLE
+                  IF ( IVCONF . GT . 0 )         GO TO 1030
+C-----  END OF GEOMETRIC CONFLICTING PATH LOOP
+ 1070   CONTINUE
+ 1080   CONTINUE
+C
+C-----  CHECK VEHICLES ON THE LINKING OUTBOUND LANE FOR INTERSECTION
+C-----  PATH NP
+C
+C-----  CHECK THE LAST VEHICLE ON THE LINKING OUTBOUND LANE FOR
+C-----  INTERSECTION PATH NP IF THE REAR BUMPER IS STILL ON
+C-----  INTERSECTION PATH NP
+        MOBL = LOBL(NP)
+        IF ( MOBL . GT . 0 )                     THEN
+          KV = ILVL(MOBL)
+          IF ( KV . GT . 0 )                     THEN
+            IF ( LPREV(KV) . EQ . NP )           THEN
+              IF ( ( MAJCOL(KV)                       ) . OR .
+     *             ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+                CALL  SPVAS   ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                          .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+                POSNRB = POSVEH - LVAP(KV)
+                IF ( POSNRB . LE . 0.0D0 )       THEN
+C-----            THE LAST VEHICLE ON THE LINKING OUTBOUND LANE FOR
+C-----            INTERSECTION PATH NP HAS ITS REAR BUMPER STILL ON
+C-----            INTERSECTION PATH NP AND HAS A MAJOR COLLISION THUS
+C-----            SET VEHICLE KV IF IT IS CLOSER TO THE CURRENT VEHICLE
+                  POSVEH = POSVEH + DBLE( LENP(NP) )
+                  IF ( POSVEH . LT . POSMJC )    THEN
+                    KVMIN  = KV
+                    LCHKCF = .TRUE.
+                    LBVSTP = (VELVEH.EQ.0.0D0)
+                    POSMJC = POSVEH
+                  END IF
+                END IF
+              END IF
+            END IF
+          END IF
+C-----    FIND THE FIRST COLLISION VEHICLE IN THE LANE STARTING FROM THE
+C-----    LAST VEHICLE IN THE LANE
+          CALL  FFCVLP  ( .TRUE.,MOBL,.FALSE.,KV,POSADD )
+          IF ( KV . GT . 0 )                     THEN
+            IF ( NLANES(ISNA(MOBL)) . EQ . 1 )   THEN
+C-----        A VEHICLE ON THE LINKING OUTBOUND LANE FOR INTERSECTION
+C-----        PATH NP HAS A MAJOR COLLISION AND THERE IS ONLY ONE
+C-----        OUTBOUND LANE ON THE LEG THUS SET VEHICLE KV IF IT IS
+C-----        CLOSER TO THE CURRENT VEHICLE
+              CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                       .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+              POSVEH = POSVEH + DBLE( LENP(NP) )
+              IF ( POSVEH . LT . POSMJC )        THEN
+                KVMIN  = KV
+                LCHKCF = .TRUE.
+                LBVSTP = (VELVEH.EQ.0.0D0)
+                POSMJC = POSVEH
+              END IF
+            END IF
+            CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                     .FALSE.,.TRUE.,.FALSE.,.TRUE.   )
+            POSVEH = POSVEH + POSADD
+            IF ( POSVEH . GT .
+     *           DBLE( LGEOM(2,MOBL) ) )         THEN
+              LGEOME = LGEOM(4,MOBL)
+            ELSE
+              LGEOME = LGEOM(2,MOBL)
+            END IF
+C-----      FIND THE MAXIMUM VEHICLE LENGTH FOR THIS VEHICLE AND ALL
+C-----      VEHICLES BETWEEN THIS VEHICLE AND VEHICLE KV
+            MLENV = LENVAP
+            NOFKV = ILVP(NP)
+            DO WHILE ( NOFKV . GT . 0 )
+              MLENV = DMAX1( MLENV,LVAP(NOFKV) )
+              NOFKV = NOF(NOFKV)
+            END DO
+            NOFKV = ILVL(MOBL)
+            DO WHILE ( ( NOFKV . GT . 0 ) .AND. ( NOFKV . NE . KV ) )
+              MLENV = DMAX1( MLENV,LVAP(NOFKV) )
+              NOFKV = NOF(NOFKV)
+            END DO
+C-----      CHECK IF THERE IS ENOUGH DISTANCE BEHIND VEHICLE KV FOR THE
+C-----      MAXIMUM LENGTH VEHICLE TO POSSIBLY CHANGE LANES (A VEHICLE
+C-----      NORMALLY MUST TRAVEL 70 PERCENT OF THE LANE CHANGE DISTANCE
+C-----      TO MOVE THE VEHICLE OUT OF THE OLD LANE AND WE USE 20
+C-----      PERCENT OF THE SPEED LIMIT OF THE APPROACH FOR THE VEHICLE
+C-----      SPEED AND LENMAX FOR THE VEHICLE LENGTH BECAUSE WE DO NOT
+C-----      KNOW A SPECIFIC VEHICLE TO DETERMINE THE SPEED)
+            VELLCH = 0.2D0*DBLE( ISLIM(ISNA(MOBL)) )
+            VELLCH = DMAX1( VELLCH,VELOLD,VELNEW )
+            VEHLNG = DMIN1( 25.0D0,MLENV )
+            DISLCH = 0.5D0*(DBLE( LGEOME )-POSVEH)
+            DISLCH = DMIN1( DISLCH,TIMELC*VELLCH )
+            DISLCH = DMAX1( DISLCH,1.5D0*VEHLNG )
+            IF ( MAJRLC(IV) )                    THEN
+              DISLCH = 0.5D0*XRELMI
+            END IF
+            DISAVL = POSVEH - MLENV - XRELMI - 0.7D0*DISLCH
+            IF ( DISAVL . LE . 0.0D0 )           THEN
+C-----        A VEHICLE ON THE LINKING OUTBOUND LANE FOR INTERSECTION
+C-----        PATH NP HAS A MAJOR COLLISION AND THERE IS NOT ENOUGH
+C-----        DISTANCE BEHIND THAT VEHICLE FOR THE MAXIMUM LENGTH
+C-----        VEHICLE TO POSSIBLY CHANGE LANES THUS SET VEHICLE KV IF IT
+C-----        IS CLOSER TO THE CURRENT VEHICLE
+              CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                       .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+              POSVEH = POSVEH + DBLE( LENP(NP) )
+              IF ( POSVEH . LT . POSMJC )        THEN
+                KVMIN  = KV
+                LCHKCF = .TRUE.
+                LBVSTP = (VELVEH.EQ.0.0D0)
+                POSMJC = POSVEH
+              END IF
+            END IF
+          END IF
+C
+C-----    CHECK THE LAST VEHICLE ON ALL INTERSECTION PATH FROM THE
+C-----    LINKING OUTBOUND LANE FOR INTERSECTION PATH NP WHOSE REAR
+C-----    BUMPER IS STILL ON THE LINKING OUTBOUND LANE (THE LINKING
+C-----    OUTBOUND LANE MUST BE A DIAMOND INTERCHANGE INTERNAL LANE TO
+C-----    HAVE INTERSECTION PATHS)
+C
+          DO  I = 1 , NPINT(MOBL)
+            KP = LINTP(I,MOBL)
+            KV = ILVP(KP)
+            IF ( KV . GT . 0 )                   THEN
+              IF ( ( MAJCOL(KV)                       ) . OR .
+     *             ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+                CALL  SPVAS  ( KV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                         .FALSE.,.FALSE.,.FALSE.,.TRUE.  )
+                POSNRB = POSVEH - LVAP(KV)
+                IF ( POSNRB . LE . 0.0D0 )       THEN
+C-----            THE LAST VEHICLE ON AN INTERSECTION PATH FROM THE
+C-----            LINKING OUTBOUND LANE FOR INTERSECTION PATH NP HAS ITS
+C-----            REAR BUMPER STILL ON THE LINKING OUTBOUND LANE AND HAS
+C-----            A MAJOR COLLISION THUS CHECK IF THERE IS AVAILABLE
+C-----            DISTANCE FOR A LANE CHANGE
+                  LGEOME = LGEOM(2,MOBL)
+C-----            FIND THE MAXIMUM VEHICLE LENGTH FOR THIS VEHICLE AND
+C-----            ALL VEHICLES BETWEEN THIS VEHICLE AND VEHICLE KV
+                  MLENV = LENVAP
+                  NOFKV = ILVP(NP)
+                  DO WHILE ( NOFKV . GT . 0 )
+                    MLENV = DMAX1( MLENV,LVAP(NOFKV) )
+                    NOFKV = NOF(NOFKV)
+                  END DO
+                  NOFKV = ILVL(MOBL)
+                  DO WHILE ( ( NOFKV .GT. 0 ) .AND. ( NOFKV .NE. KV ) )
+                    MLENV = DMAX1( MLENV,LVAP(NOFKV) )
+                    NOFKV = NOF(NOFKV)
+                  END DO
+C-----            CHECK IF THERE IS ENOUGH DISTANCE BEHIND VEHICLE KV
+C-----            FOR THE MAXIMUM LENGTH VEHICLE TO POSSIBLY CHANGE
+C-----            LANES (A VEHICLE NORMALLY MUST TRAVEL 70 PERCENT OF
+C-----            THE LANE CHANGE DISTANCE TO MOVE THE VEHICLE OUT OF
+C-----            THE OLD LANE AND WE USE 20 PERCENT OF THE SPEED LIMIT
+C-----            OF THE APPROACH FOR THE VEHICLE SPEED AND LENMAX FOR
+C-----            THE VEHICLE LENGTH BECAUSE WE DO NOT KNOW A SPECIFIC
+C-----            VEHICLE TO DETERMINE THE SPEED)
+                  VELLCH = 0.2D0*DBLE( ISLIM(ISNA(MOBL)) )
+                  VELLCH = DMAX1( VELLCH,VELOLD,VELNEW )
+                  VEHLNG = DMIN1( 25.0D0,MLENV )
+                  DISLCH = 0.5D0*(DBLE( LGEOME )+POSNRB)
+                  DISLCH = DMIN1( DISLCH,TIMELC*VELLCH )
+                  DISLCH = DMAX1( DISLCH,1.5D0*VEHLNG )
+                  IF ( MAJRLC(IV) )              THEN
+                    DISLCH = 0.5D0*XRELMI
+                  END IF
+                  DISAVL = DBLE( LGEOME ) + POSNRB
+     *                   - MLENV - XRELMI - 0.7D0*DISLCH
+                  IF ( DISAVL . LE . 0.0D0 )     THEN
+C-----              THE LAST VEHICLE ON AN INTERSECTION PATH FROM THE
+C-----              LINKING OUTBOUND LANE FOR INTERSECTION PATH NP HAS
+C-----              ITS REAR BUMPER STILL ON THE LINKING OUTBOUND LANE
+C-----              AND HAS A MAJOR COLLISION THUS SET VEHICLE KV IF IT
+C-----              IS CLOSER TO THE CURRENT VEHICLE
+                    POSVEH = POSVEH + 
+     *                      DBLE( LENP(NP)+LGEOM(4,MOBL)-LGEOM(1,MOBL) )
+                    IF ( POSVEH . LT . POSMJC )  THEN
+                      KVMIN  = KV
+                      LCHKCF = .TRUE.
+                      LBVSTP = (VELVEH.EQ.0.0D0)
+                      POSMJC = POSVEH
+                    END IF
+                  END IF
+                END IF
+              END IF
+            END IF
+          END DO
+        END IF
+        KV = KVMIN
+        IF ( KV . GT . 0 )                       THEN
+C-----    IF THIS VEHICLE IS NOT AN EMERGENCY VEHICLE AND THE KV
+C-----    VEHICLE IS AN EMERGENCY VEHICLE THEN SET EVRESP TRUE ELSE
+C-----    FALSE
+          EVRESP = ( ( IAND( VEHTYP(IV),LAVTE ) . EQ . 0 ) . AND .
+     *               ( IAND( VEHTYP(KV),LAVTE ) . NE . 0 ) )
+          RESPEV = ( RESPEV . OR . EVRESP )
+        ELSE
+          POSMJC = PCHKCF
+        END IF
+      END IF
+      RETURN
+C-----PROCESS THE EXECUTION ERRORS AND STOP
+ 9330 CONTINUE
+      CALL  ABORTR  ( 'STOP 933 - INFINITE LOOP - CPMJCL' )
+      STOP  933
+ 9460 CONTINUE
+      CALL  ABORTR  ( 'STOP 946 - INVALID IPRC/NORC - CPMJCL' )
+      STOP  946
+      END                                                               CPMJCL
+C
+C
+C
+      SUBROUTINE CUBIC  ( A,B,C,D,NX,X1,X2,X3 )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'CONSTN'
+      DOUBLE PRECISION  ZERO
+      PARAMETER       ( ZERO   = 1.0D-14     )
+      INTEGER           NX
+      DOUBLE PRECISION  A,B,C,D,E,F,G,H,I,J,K,L,M,N,X1,X2,X3
+C
+C-----SUBROUTINE CUBIC SOLVES FOR X USING A, B, C, AND D WHERE
+C-----A*X**3 + B*X**2 + C*X + D = 0
+C
+C-----NX = NUMBER OF ROOTS OF THE CUBIC EQUATION
+C-----X1 = ROOT 1 WHEN NX GE 1
+C-----X2 = ROOT 2 WHEN NX GE 2
+C-----X3 = ROOT 3 WHEN NX GE 3
+C
+      NX = 0
+      X1 = 0.0D0
+      X2 = 0.0D0
+      X3 = 0.0D0
+      IF ( DABS( A ) . LE . ZERO )               THEN
+C-----  QUADRATIC EQUATION
+C-----  B*X**2 + C*X + D = 0
+        CALL  QUADEQ ( B,C,D,NX,X1,X2 )
+        RETURN
+      ELSE
+C-----  CUBIC EQUATION
+C-----  A*X**3 + B*X**2 + C*X + D = 0
+        E = ONED3*((3.0D0*C/A) - (B**2/A**2))
+        IF ( DABS( E ) . LE . ZERO )             E = 0.0D0
+        F = ((2.0D0*B**3/A**3) - (9.0D0*B*C/A**2) + (27.0D0*D/A))/27.0D0
+        IF ( DABS( F ) . LE . ZERO )             F = 0.0D0
+        G = (0.25D0*F**2) + (E**3/27.0D0)
+        IF ( DABS( G ) . LE . ZERO )             G = 0.0D0
+        IF ( ( E . EQ . 0.0D0 ) . AND .
+     *       ( F . EQ . 0.0D0 ) . AND .
+     *       ( G . EQ . 0.0D0 ) )                THEN
+C-----    3 REAL EQUAL ROOTS
+          NX = 1
+          X1 = -1.0D0*(D/A)**ONED3
+          RETURN
+        ELSE IF ( G . LE . 0.0D0 )               THEN
+C-----    3 REAL ROOTS
+          H = DSQRT( (0.25D0*F**2) - G )
+          IF ( H . LT . 0.0D0 )                  THEN
+            I = -1.0D0*(DABS( H )**ONED3)
+          ELSE
+            I = H**ONED3
+          END IF
+          J = DACOS( -1.0D0*(F / (2.0D0*H)) )
+          K = -1.0D0*I
+          L = DCOS( ONED3*J )
+          M = SQRT3 * DSIN( ONED3*J )
+          N = -1.0D0*(B/(3.0D0*A))
+          NX = 3
+          X1 = 2.0D0*I*DCOS( ONED3*J ) - (B/(3.0D0*A))
+          X2 = K*(L+M) + N
+          X3 = K*(L-M) + N
+          RETURN
+        ELSE
+C-----    ONLY 1 REAL ROOT
+          H = -1.0D0*(0.5D0*F) + DSQRT( G )
+          IF ( H . LT . 0.0D0 )                  THEN
+            I = -1.0D0*(DABS( H )**ONED3)
+          ELSE
+            I = H**ONED3
+          END IF
+          J = -1.0D0*(0.5D0*F) - DSQRT( G )
+          IF ( J . LT . 0.0D0 )                  THEN
+            K = -1.0D0*(DABS( J )**ONED3)
+          ELSE
+            K = J**ONED3
+          END IF
+          NX = 1
+          X1 = I + K - (B/(3.0D0*A))
+          RETURN
+        END IF
+      END IF
+      RETURN
+      END                                                               CUBIC
+C
+C
+C
+      SUBROUTINE DISPRE ( VEHV,VEHC,IPE,ILP,IPR,LAT,JVEHCL )
+C-----VEHV - POINTER TO VEHICLE DATA STRUCTURE FOR THIS VEHICLE
+C-----VEHC - POINTER TO CLASS DATA STRUCTURE FOR THIS VEHICLE
+C-----IPE - DISTANCE DOWN LANE OR PATH
+C-----ILP - LANE OR PATH
+C-----IPR - 2 - LOGIN
+C           3 - MOVING FROM INBOUND LANE TO INTERSECTION PATH
+C           4 - MOVING FROM PATH TO LANES
+C           5 - LOGOUT
+C           6 - CHANGING LANES
+C-----LAT - LATERAL POSITION DURING LANE CHANGE
+C-----JVEHCL - VEHICLE CLASS
+      IMPLICIT          NONE                                            CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'TYPES'
+      INCLUDE 'LNPATH'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      TYPE (VEH)   ::  VEHV
+      TYPE (VEHCL) ::  VEHC
+      INTEGER          ILP,ILPT,IPR,IVEHCT,JVEHCL,UNITS
+      DOUBLE PRECISION IPE,IPET,LAT,LATT
+      UNITS = VEHC%UNITS
+      IPET = IPE
+      ILPT = ILP
+      LATT = LAT
+      IVEHCT = JVEHCL
+      IF (IPR .EQ. 0)                            GO TO 500
+      IF (IPR .EQ. 2)                            THEN
+C-----NEW VEHICLE LOGGED IN
+        CALL IPR2(VEHV,IVEHCT,UNITS,ILPT,IPET)
+                                                 GO TO 500
+      END IF
+      IF (IPR .EQ. 3)                            THEN
+C-----VEHICLE MOVED FROM LANE TO PATH
+        CALL IPR3(VEHV,IPET,ILPT)
+                                                 GO TO 500
+      END IF
+      IF (IPR .EQ. 4)                            THEN
+C-----VEHICLE MOVED FROM PATH TO LANE
+        CALL IPR4(VEHV,IPET,ILPT)
+                                                 GO TO 500
+      END IF
+      IF (IPR .EQ. 5)                            THEN
+C-----VEHICLE LOGGED OUT
+        CALL IPR5 (VEHV,TIME)
+        RETURN
+      END IF
+      IF (IPR .EQ. 6)                            THEN
+C-----VEHICLE CHANGING LANES
+        CALL IPR6 (VEHV,IPET,ILPT,LATT)
+                                                 GO TO 500
+      END IF
+  500 CONTINUE
+      CALL IPR6C (VEHV)
+      CALL ONLNPA (VEHV,VEHC,ILPT,IPET)
+      RETURN
+      END                                                               DISPRE
+C
+C
+C
+      SUBROUTINE ERLANG ( MEAN,K,ERLVAL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      INTEGER           I,K
+      DOUBLE PRECISION  ALPHA,ERLVAL,MEAN,PRODRN,SRAN
+C
+C-----SUBROUTINE ERLANG GENERATES AN ERLANG RANDOM DEVIATE
+C
+C-----ERLANG PARAMETER - INTEGER OF MEAN**2/VARIANCE
+C-----THE PARAMETER FOR THE ERLANG HEADWAY DISTRIBUTION IS THE MEAN
+C-----HEADWAY SQUARED DIVIDED BY THE VARIANCE ROUNDED TO AN INTEGER
+C-----VALUE (ROUNDING MAY BE EITHER UP OR DOWN)
+      ALPHA = DBLE( K )/MEAN
+      PRODRN = 1.0D0
+      DO 1010  I = 1 , K
+      PRODRN = PRODRN*SRAN()
+ 1010 CONTINUE
+      ERLVAL = -DLOG( PRODRN )/ALPHA
+      RETURN
+      END                                                               ERLANG
+C
+C
+C
+      SUBROUTINE FFCVLP ( LANPTH,LP,FROMF,KV,POSADD )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           LANPTH,FROMF
+      INTEGER           I,KP,KV,LP
+      DOUBLE PRECISION  POSADD
+C
+C-----SUBROUTINE FFCVLP FINDS THE FIRST COLLISION VEHICLE (KV) IN LANE
+C-----(LANPTH=TRUE) OR PATH (LANPTH=FALSE) LP FROM THE FIRST VEHICLE TO
+C-----THE LAST VEHICLE (FROMF=TRUE) OR FROM THE LAST VEHICLE TO THE
+C-----FIRST VEHICLE (FROMF=FALSE) IN THE LANE OR PATH
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'FFCVLP'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+                    IF ( LP . EQ . 0 )           GO TO 9480
+      POSADD = 0.0D0
+      IF ( LANPTH )                              THEN
+C-----  INITIALIZE FOR LANE
+        IF ( FROMF )                             THEN
+C-----    PROCESS FROM THE FIRST VEHICLE TO THE LAST VEHICLE
+C-----    IF THE REAR BUMPER OF A VEHICLE ON A LINKING INTERSECTION PATH
+C-----    IS STILL ON THE LANE THEN CHECK IT
+          DO 1010  I = 1 , NPINT(LP)
+          KP = LINTP(I,LP)
+          KV = ILVP(KP)
+          IF ( KV . GT . 0 )                     THEN
+            IF ( IPOS(KV) .LE. LVAP(KV) )THEN
+              IF ( ( MAJCOL(KV)                       ) . OR .
+     *             ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+                POSADD = DBLE( LGEOM(4,LP) )
+                GO TO 3010
+              END IF
+            END IF
+          END IF
+ 1010     CONTINUE
+C-----    START CHECKING USING THE FIRST VEHICLE IN THE LANE
+          KV = IFVL(LP)
+        ELSE
+C-----    PROCESS FROM THE LAST VEHICLE TO THE FIRST VEHICLE
+C-----    START CHECKING USING THE LAST VEHICLE IN THE LANE
+          KV = ILVL(LP)
+        END IF
+      ELSE
+C-----  INITIALIZE FOR INTERSECTION PATH
+        IF ( FROMF )                             THEN
+C-----    PROCESS FROM THE FIRST VEHICLE TO THE LAST VEHICLE
+C-----    IF THE REAR BUMPER OF A VEHICLE ON A LINKING LANE IS STILL ON
+C-----    THE INTERSECTION PATH THEN CHECK IT
+          IF ( LOBL(LP) . GT . 0 )               THEN
+            KV = ILVL(LOBL(LP))
+            IF ( KV . GT . 0 )                   THEN
+              IF ( LPREV(KV) . EQ . LP )         THEN
+                IF ( (IPOS(KV)-DBLE( LGEOM(1,LOBL(LP)) )).LE.LVAP(KV) )
+     *                                           THEN
+                  IF ( ( MAJCOL(KV)                       ) . OR .
+     *                 ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+                    POSADD = DBLE( LENP(LP) - LGEOM(1,LOBL(LP)) )
+                    GO TO 3010
+                  END IF
+                END IF
+              END IF
+            END IF
+          END IF
+C-----    START CHECKING USING THE FIRST VEHICLE IN THE INTERSECTION
+C-----    PATH
+          KV = IFVP(LP)
+        ELSE
+C-----    PROCESS FROM THE LAST VEHICLE TO THE FIRST VEHICLE
+C-----    START CHECKING USING THE LAST VEHICLE IN THE INTERSECTION
+C-----    PATH
+          KV = ILVP(LP)
+        END IF
+      END IF
+ 2010 CONTINUE
+                    IF ( KV . EQ . 0 )           GO TO 2020
+      IF ( ( MAJCOL(KV)                       ) . OR .
+     *     ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )GO TO 3010
+      IF ( FROMF )                               THEN
+C-----  CHECK NEXT VEHICLE TO THE REAR
+        KV = NOR(KV)
+      ELSE
+C-----  CHECK NEXT VEHICLE TO THE FRONT
+        KV = NOF(KV)
+      END IF
+      GO TO 2010
+ 2020 CONTINUE
+      IF ( LANPTH )                              THEN
+C-----  PROCESS FOR LANE
+        IF ( (.NOT. FROMF) )                     THEN
+C-----    PROCESS FROM THE LAST VEHICLE TO THE FIRST VEHICLE
+C-----    IF THE REAR BUMPER OF A VEHICLE ON A LINKING INTERSECTION PATH
+C-----    IS STILL ON THE LANE THEN CHECK IT
+          DO 2030  I = 1 , NPINT(LP)
+          KP = LINTP(I,LP)
+          KV = ILVP(KP)
+          IF ( KV . GT . 0 )                     THEN
+            IF ( IPOS(KV) . LE . LVAP(KV) )      THEN
+              IF ( ( MAJCOL(KV)                       ) . OR .
+     *             ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+                POSADD = DBLE( LGEOM(4,LP) )
+                GO TO 3010
+              END IF
+            END IF
+          END IF
+ 2030     CONTINUE
+          KV = 0
+        END IF
+      ELSE
+C-----  PROCESS FOR INTERSECTION PATH
+        IF ( (.NOT. FROMF) )                     THEN
+C-----    PROCESS FROM THE LAST VEHICLE TO THE FIRST VEHICLE
+C-----    IF THE REAR BUMPER OF A VEHICLE ON A LINKING LANE IS STILL ON
+C-----    THE INTERSECTION PATH THEN CHECK IT
+          IF ( LOBL(LP) . GT . 0 )               THEN
+            KV = ILVL(LOBL(LP))
+            IF ( KV . GT . 0 )                   THEN
+              IF ( LPREV(KV) . EQ . LP )         THEN
+                IF ( (IPOS(KV)-DBLE( LGEOM(1,LOBL(LP)) )).LE.LVAP(KV) )
+     *                                           THEN
+                  IF ( ( MAJCOL(KV)                       ) . OR .
+     *                 ( MAJCLB(KV).AND.IVEL(KV).EQ.0.0D0 ) )
+     *                                           THEN
+                    POSADD = DBLE( LENP(LP) - LGEOM(1,LOBL(LP)) )
+                    GO TO 3010
+                  END IF
+                END IF
+              END IF
+            END IF
+          END IF
+          KV = 0
+        END IF
+      END IF
+ 3010 CONTINUE
+      RETURN
+C-----PROCESS THE EXECUTION ERROR AND STOP
+ 9480 CONTINUE
+      CALL  ABORTR  ( 'STOP 948 - LP EQ 0 - FFCVLP' )
+      STOP  948
+      END                                                               FFCVLP
+C
+C
+C
+      SUBROUTINE FLGNOR ( LTF,NEWNOF )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           LTF,NSFLG
+      INTEGER           NEWNOF,NORT
+      DOUBLE PRECISION  JACC
+C
+C-----SUBROUTINE FLGNOR SETS MFINL AND MOASF TO LTF, RESETS IACC TO
+C-----SLIGHTLY DECELERATING IF MSFLG EQ TRUE AND THE VEHICLE IS NOT
+C-----DECELERATING, SETS MSFLG TO FALSE, AND FINALLY STORES NEWNOF FOR
+C-----NOF FOR THE NORT VEHICLE
+C
+C[    JACC       = -2147483647.0D0
+C[    NORT       = -2147483647
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'FLGNOR'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      NORT = NOR(IV)
+C-----SET MFINL AND MOASF TO LTF FOR THE NORT VEHICLE
+      MFINL(NORT) = LTF
+      MOASF(NORT) = LTF
+C-----RESET IACC TO SLIGHTLY DECELERATING IF MSFLG EQ TRUE AND THE
+C-----VEHICLE IS NOT DECELERATING FOR THE NORT VEHICLE
+      NSFLG = MSFLG(NORT)
+      JACC = IACC(NORT)
+      IF ( NSFLG . AND . (JACC.GE.IACC00) )      JACC = -2.0D0*IACC00
+      IACC (NORT) = JACC
+C-----SET MSFLG TO FALSE FOR THE NORT VEHICLE
+      MSFLG(NORT) = .FALSE.
+C-----STORE NEWNOF FOR NOF FOR THE NORT VEHICLE
+      NOF  (NORT) = NEWNOF
+      RETURN
+      END                                                               FLGNOR
+C
+C
+C
+      SUBROUTINE FNDXYA ( JA,JLN,POS,POSLAT,XPOS,YPOS )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INTEGER           JA,JL,JLN
+      REAL*4            XPOS,YPOS
+      DOUBLE PRECISION  ANGLNG,ANGTRN,POS,POSBEG,POSLAT
+C
+C-----SUBROUTINE FNDXYA FINDS THE X AND Y COORDINATE OF A VEHICLE ON
+C-----APPROACH JA LANE JLN AT POS WITH LATERAL POSITION POSLAT
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'FNDXYA'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      JL = LLANES(JLN,JA)
+C-----FIND THE POSITION RELATIVE TO THE BEGINNING OF THE LANE
+      POSBEG = POS - DBLE( LGEOM(1,JL) )
+      IF ( ( POSBEG . LT .  0.0D0 ) . AND .
+     *     ( POSBEG . GT . -0.1D0 ) )            POSBEG = 0.0D0
+                    IF ( POSBEG . LT . 0.0D0 )   GO TO 9390
+C-----FIND THE LONGITUDINAL ANGLE OF THE LEG WITH EAST 0 AND CCW +
+      ANGLNG = 90.0D0 - IAAZIM(JA)
+                    IF ( ANGLNG . LT . 0.0D0 )   ANGLNG = ANGLNG+360.0D0
+C-----FIND THE TRANSVERSE   ANGLE OF THE LEG WITH EAST 0 AND CCW +
+      ANGTRN = ANGLNG - 90.0D0
+                    IF ( ANGTRN . LT . 0.0D0 )   ANGTRN = ANGTRN+360.0D0
+      ANGLNG = ANGLNG * DEG2RD
+      ANGTRN = ANGTRN * DEG2RD
+C-----FIND THE X AND Y COORDINATE OF THE VEHICLE
+C-----IDX IS THE DISTANCE FROM THE CENTERLINE TO THE CENTER OF THE LANE
+      XPOS = IAPX(JA)+POSBEG*DCOS(ANGLNG)+(IDX(JL)+POSLAT)*DCOS(ANGTRN)
+      YPOS = IAPY(JA)+POSBEG*DSIN(ANGLNG)+(IDX(JL)+POSLAT)*DSIN(ANGTRN)
+      RETURN
+C-----PROCESS THE EXECUTION ERROR AND STOP
+ 9390 CONTINUE
+      CALL  ABORTR  ( 'STOP 939 - '//
+     *                'VEHICLE POSITION IS NEGATIVE - '//
+     *                'FNDXYA'                            )
+      STOP  939
+      END                                                               FNDXYA
+C
+C
+C
+      SUBROUTINE FNDXYP ( JP,POS,XPOS,YPOS )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INTEGER           JP
+      REAL*4            XPOS,YPOS
+      DOUBLE PRECISION  ANGLE,PERLEN,POS,POSBEG
+C
+C-----SUBROUTINE FNDXYP FINDS THE X AND Y COORDINATE OF A VEHICLE ON
+C-----PATH JP AT POS
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'FNDXYP'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----FIND THE POSITION RELATIVE TO THE BEGINNING OF THE PATH
+      POSBEG = POS
+      IF ( ( POSBEG . LT .  0.0D0 ) . AND .
+     *     ( POSBEG . GT . -0.1D0 ) )            POSBEG = 0.0D0
+                    IF ( POSBEG . LT . 0.0D0 )   GO TO 9400
+      IF ( ( POSBEG . GT . DBLE( LENP(JP) )         ) . AND .
+     *     ( POSBEG . LT . DBLE( LENP(JP) ) + 0.1D0 ) )
+     *                                           POSBEG = LENP(JP)
+                    IF ( POSBEG . GT . LENP(JP) )GO TO 9410
+C-----CHECK IF VEHICLE IS ON THE 1ST SEGMENT - LINE 1
+      IF ( LL1(JP) . GT . 0 )                    THEN
+        IF ( POSBEG . LE . LL1(JP) )             THEN
+C-----    FIND THE PERCENT OF THE SEGMENT USED
+          PERLEN = POSBEG / LL1(JP)
+C-----    FIND THE X AND Y COORDINATE OF THE VEHICLE ON 1ST SEGMENT
+          XPOS = IXL1(JP) + (JXL1(JP)-IXL1(JP))*PERLEN
+          YPOS = IYL1(JP) + (JYL1(JP)-IYL1(JP))*PERLEN
+          RETURN
+        ELSE
+          POSBEG = POSBEG - LL1(JP)
+        END IF
+      END IF
+C-----CHECK IF VEHICLE IS ON THE 2ND SEGMENT - ARC 1
+      IF ( LA1(JP) . GT . 0 )                    THEN
+        IF ( POSBEG . LE . LA1(JP) )             THEN
+C-----    FIND THE PERCENT OF THE SEGMENT USED
+          PERLEN = POSBEG / LA1(JP)
+          ANGLE = IBA1(JP) + PERLEN*IDA1(JP)
+          ANGLE = 90.0D0 - ANGLE
+          DO WHILE ( ANGLE . LT . 0.0D0 )
+            ANGLE = ANGLE + 360.0D0
+          END DO
+          DO WHILE ( ANGLE . GE . 360.0D0 )
+            ANGLE = ANGLE - 360.0D0
+          END DO
+          ANGLE = ANGLE * DEG2RD
+C-----    FIND THE X AND Y COORDINATE OF THE VEHICLE ON 2ND SEGMENT
+          XPOS = IXA1(JP) + IRA1(JP)*DCOS(ANGLE)
+          YPOS = IYA1(JP) + IRA1(JP)*DSIN(ANGLE)
+          RETURN
+        ELSE
+          POSBEG = POSBEG - LA1(JP)
+        END IF
+      END IF
+C-----CHECK IF VEHICLE IS ON THE 3RD SEGMENT - ARC 2
+      IF ( LA2(JP) . GT . 0 )                    THEN
+        IF ( POSBEG . LE . LA2(JP) )             THEN
+C-----    FIND THE PERCENT OF THE SEGMENT USED
+          PERLEN = POSBEG / LA2(JP)
+          ANGLE = IBA2(JP) + PERLEN*IDA2(JP)
+          ANGLE = 90.0D0 - ANGLE
+          DO WHILE ( ANGLE . LT . 0.0D0 )
+            ANGLE = ANGLE + 360.0D0
+          END DO
+          DO WHILE ( ANGLE . GE . 360.0D0 )
+            ANGLE = ANGLE - 360.0D0
+          END DO
+          ANGLE = ANGLE * DEG2RD
+C-----    FIND THE X AND Y COORDINATE OF THE VEHICLE ON 2ND SEGMENT
+          XPOS = IXA2(JP) + IRA2(JP)*DCOS(ANGLE)
+          YPOS = IYA2(JP) + IRA2(JP)*DSIN(ANGLE)
+          RETURN
+        ELSE
+          POSBEG = POSBEG - LA2(JP)
+        END IF
+      END IF
+C-----CHECK IF VEHICLE IS ON THE 4TH SEGMENT - LINE 2
+      IF ( LL2(JP) . GT . 0 )                    THEN
+        IF ( POSBEG . LE . LL2(JP) )             THEN
+C-----    FIND THE PERCENT OF THE SEGMENT USED
+          PERLEN = POSBEG / LL2(JP)
+C-----    FIND THE X AND Y COORDINATE OF THE VEHICLE ON 1ST SEGMENT
+          XPOS = IXL2(JP) + (JXL2(JP)-IXL2(JP))*PERLEN
+          YPOS = IYL2(JP) + (JYL2(JP)-IYL2(JP))*PERLEN
+          RETURN
+        ELSE
+          GO TO 9420
+        END IF
+      END IF
+      GO TO 9420
+C-----PROCESS THE EXECUTION ERROR AND STOP
+ 9400 CONTINUE
+      CALL  ABORTR  ( 'STOP 940 - '//
+     *                'VEHICLE POSITION IS NEGATIVE - '//
+     *                'FNDXYP'                            )
+      STOP  940
+ 9410 CONTINUE
+      CALL  ABORTR  ( 'STOP 941 - '//
+     *                'VEHICLE POSITION IS BEYOND PATH END - '//
+     *                'FNDXYP'                                   )
+      STOP  941
+ 9420 CONTINUE
+      CALL  ABORTR  ( 'STOP 942 - '//
+     *                'VEHICLE POSITION IS BEYOND 4TH SEG - '//
+     *                'FNDXYP'                                  )
+      STOP  942
+      END                                                               FNDXYP
+C
+C
+C
+      SUBROUTINE GAMMA  ( MEAN,A,GAMVAL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      INTEGER           I,K,K1,K2
+      DOUBLE PRECISION  A,ALPHA,GAMVAL,MEAN,PRODRN,Q,SRAN
+C
+C-----SUBROUTINE GAMMA GENERATES A GAMMA RANDOM DEVIATE
+C
+C-----GAMMA PARAMETER - MEAN**2/VARIANCE
+C-----THE PARAMETER FOR THE GAMMA HEADWAY DISTRIBUTION IS THE MEAN
+C-----HEADWAY SQUARED DIVIDED BY THE VARIANCE.
+      ALPHA  = A/MEAN
+      K1     = INT( A         )
+      K2     = INT( A + 1.0D0 )
+      Q      = A - K1
+      PRODRN = 1.0D0
+      K      = K2
+                    IF ( SRAN() . GT . Q )       K = K1
+      DO 1010  I = 1 , K
+      PRODRN = PRODRN*SRAN()
+ 1010 CONTINUE
+      GAMVAL = -DLOG( PRODRN )/ALPHA
+      RETURN
+      END                                                               GAMMA
+C
+C
+C
+      FUNCTION   GETLCV ( JV,JL )
+      IMPLICIT          NONE                                            CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'VEHF'
+      INTEGER           JL,JV,GETLCV
+C
+C-----SET LANE CONTROL FOR VEHICLE JV AND LANE JL
+C
+C-----INTERSECTION CONTROLS
+C-----ICUNCT     1 INTERSECTION CONTROL - UNCONTROLLED
+C-----ICYELD     2 INTERSECTION CONTROL - YIELD SIGN
+C-----ICLTAS     3 INTERSECTION CONTROL - LESS-THAN-ALL-WAY STOP SIGN
+C-----ICAWST     4 INTERSECTION CONTROL - ALL-WAY STOP SIGN
+C-----ICPSIG     5 INTERSECTION CONTROL - PRE-TIMED SIGNAL
+C-----ICSACT     6 INTERSECTION CONTROL - SEMI-ACTUATED SIGNAL
+C-----ICFACT     7 INTERSECTION CONTROL - FULL-ACTUATED SIGNAL
+C-----ICTDF3     8 INTERSECTION CONTROL - TEXAS  DIAMOND FIG 3 SIGNAL
+C-----ICTDF4     9 INTERSECTION CONTROL - TEXAS  DIAMOND FIG 4 SIGNAL
+C-----ICTDF6    10 INTERSECTION CONTROL - TEXAS  DIAMOND FIG 6 SIGNAL
+C-----ICTDF7    11 INTERSECTION CONTROL - TEXAS  DIAMOND FIG 7 SIGNAL
+C-----ICDDF3    12 INTERSECTION CONTROL - DALLAS DIAMOND FIG 3 SIGNAL
+C-----ICDDF4    13 INTERSECTION CONTROL - DALLAS DIAMOND FIG 4 SIGNAL
+C-----ICDDF6    14 INTERSECTION CONTROL - DALLAS DIAMOND FIG 6 SIGNAL
+C-----ICDDF7    15 INTERSECTION CONTROL - DALLAS DIAMOND FIG 7 SIGNAL
+C-----ICNEMA    16 INTERSECTION CONTROL - NEMA SIGNAL
+C-----ICNEMV    17 INTERSECTION CONTROL - NEMA VOLUME DENSITY SIGNAL
+C-----ICHDWR    18 INTERSECTION CONTROL - HARDWARE-IN-THE-LOOP SIGNAL
+C
+C-----LANE CONTROLS
+C-----LCOUTB     1 LANE CONTROL - OUTBOUND (OR BLOCKED INBOUND) LANE
+C-----LCUNCT     2 LANE CONTROL - UNCONTROLLED
+C-----LCYELD     3 LANE CONTROL - YIELD SIGN
+C-----LCSTOP     4 LANE CONTROL - STOP SIGN
+C-----LCSIGX     5 LANE CONTROL - SIGNAL WITHOUT LEFT OR RIGHT TURN ON
+C-----                            RED
+C-----LCSLTR     6 LANE CONTROL - SIGNAL WITH LEFT  TURN ON RED
+C-----LCSRTR     7 LANE CONTROL - SIGNAL WITH RIGHT TURN ON RED
+C
+C-----SET LANE CONTROL FOR ALL VEHICLE TYPES
+      GETLCV = LCONTR(JL)
+C-----IF LANE CONTROL IS OUTBOUND (OR BLOCKED INBOUND) LANE THEN RETURN
+                    IF ( GETLCV . EQ . LCOUTB )  RETURN
+C-----IF EMERGENCY VEHICLE AND INTERSECTION CONTROL IS GT UNCONTROLLED
+C-----AND LANE CONTROL IS GT UNCONTROLLED THEN SET LANE CONTROL TO YIELD
+      IF ( ( IAND( VEHTYP(JV),LAVTE ) .NE. 0 ) . AND .
+     *     ( ICONTR . GT . ICUNCT            ) . AND .
+     *     ( GETLCV . GT . LCUNCT            ) ) THEN
+        GETLCV = LCYELD
+      END IF
+      RETURN
+      END                                                               GETLCV
+C
+C
+C
+      SUBROUTINE IN55
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CURAND'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      INTEGER           I,II,J,K
+C
+C-----THIS SUBROUTINE INITIALIZES THE ARRAY IASRAN(55) WHERE IASRAN
+C-----IS AN ARRAY OF RANDOM INTEGERS BETWEEN 0 AND 1,000,000,000.
+C-----THIS FUNCTION MUST BE CALLED BEFORE CALLING THE RANDOM NUMBER
+C-----GENERATOR IRN55, OR TO INTRODUCE A NEW "SEED'.
+C
+      IASRAN(55) = ISTART
+      J = ISTART
+      K = 1
+      DO 1010 I = 1 , 54
+      II = MOD(21*I,55)
+      IASRAN(II) = K
+      K = J - K
+      IF ( K . LT . 0 )                          K = K + 1000000000
+      J = IASRAN(II)
+ 1010 CONTINUE
+      CALL  IRN55
+      CALL  IRN55
+      CALL  IRN55
+      RETURN
+      END                                                               IN55
+C
+C
+C
+      SUBROUTINE INIVEH ( JV )
+C
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** *  COPYRIGHT (C) 1989 by The University of Texas at Austin   * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of The University of Texas at Austin shall not be used in  * ***
+C *** * advertising or publicity related to the distribution of    * ***
+C *** * the software without specific, written, prior permission.  * ***
+C *** * This software is provided as-delivered without expressed   * ***
+C *** * or implied warranty.  The University of Texas at Austin    * ***
+C *** * makes no representation about the suitability of this      * ***
+C *** * software for any purpose and accepts no responsibility for * ***
+C *** * its use.                                                   * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      INCLUDE 'VEHIL'
+      INTEGER           I,JV
+C
+C-----SUBROUTINE INIVEH INITIALIZES ALL VEHICLE JV ATTRIBUTES
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'INIVEH'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----COMMON / VEHDD  /
+C-----SET ALL THE VEHDD ATTRIBUTES TO ZERO
+      FGOATM(JV) = 0.0D0
+      FGOTIM(JV) = 0.0D0
+      FRRATM(JV) = 0.0D0
+      FRRTIM(JV) = 0.0D0
+      FSTDTM(JV) = 0.0D0
+      FSTPOS(JV) = 0.0D0
+      FSTTIM(JV) = 0.0D0
+      HEADNG(JV) = 0.0D0
+      IACC  (JV) = 0.0D0
+      IDTS  (JV) = 0.0D0
+      IDTSI (JV) = 0.0D0
+      IPOS  (JV) = 0.0D0
+      ISLP  (JV) = 0.0D0
+      ISPDS (JV) = 0.0D0
+      ISPDSI(JV) = 0.0D0
+      IVEL  (JV) = 0.0D0
+      LATPOS(JV) = 0.0D0
+      LVAP  (JV) = 0.0D0
+      POSCLB(JV) = 0.0D0
+      POSCLL(JV) = 0.0D0
+      POSCON(JV) = 0.0D0
+      STEERA(JV) = 0.0D0
+      VMSPST(JV) = 0.0D0
+C-----COMMON / VEHDI  /
+C-----SET ALL THE VEHDI ATTRIBUTES TO ZERO
+      ABTPTI(JV) = 0
+      ABTPTM(JV) = 0
+      FSTPIA(JV) = 0
+      GACTIM(JV) = 0
+      IDVS  (JV) = 0
+      IDVSI (JV) = 0
+      IPRC(1,JV) = 0
+      IPRC(2,JV) = 0
+      IPRTM (JV) = 0
+      IQDS  (JV) = 0
+      IQDSI (JV) = 0
+      ISDS  (JV) = 0
+      ISDSI (JV) = 0
+      ISET  (JV) = 0
+      ISPDP (JV) = 0
+      ISTCON(JV) = 0
+      ITIMV (JV) = 0
+      ITIMVI(JV) = 0
+      IVCNOF(JV) = 0
+      IVCNOR(JV) = 0
+      IVMAXA(JV) = 0
+      IVMAXD(JV) = 0
+      DO 1030  I = 1 , MVMCOL
+      IVMCOL(I,JV) = 0
+ 1030 CONTINUE
+      IVMXAI(JV) = 0
+      IVMXDI(JV) = 0
+      JVCNOF(JV) = 0
+      JVCNOR(JV) = 0
+      LALT  (JV) = 0
+      LALTPL(JV) = 0
+      LALTPR(JV) = 0
+      LCHGE (JV) = 0
+      LCONTV(JV) = 0
+      LEGAL (JV) = 0
+      LOGFLG(JV) = 0
+      NORC(1,JV) = 0
+      NORC(2,JV) = 0
+      NVMCOL(JV) = 0
+      SDWELL(JV) = 0
+      VMSACM(JV) = 0
+      VMSACN(JV) = 0
+      VMSACT(JV) = 0
+      VMSASM(JV) = 0
+      VMSASN(JV) = 0
+      VMSAST(JV) = 0
+C-----COMMON / VEHDL  /
+C-----INITIALIZE ACC/DEC LOGICAL DEPENDENT ATTRIBUTES TO FALSE
+      IACDS (JV) = .FALSE.
+      IACLDS(JV) = .FALSE.
+      ICDFS (JV) = .FALSE.
+      IFVA  (JV) = .FALSE.
+      IRSTOP(JV) = .FALSE.
+      ISDEC (JV) = .FALSE.
+      ISTMO (JV) = .FALSE.
+C-----INITIALIZE ACC/DEC LOGICAL INDEPENDENT ATTRIBUTES TO FALSE
+      MBLOCK(JV) = .FALSE.
+      MFGOF (JV) = .FALSE.
+      MFINL (JV) = .FALSE.
+      MFSTPF(JV) = .FALSE.
+      MLAG  (JV) = .FALSE.
+      MOASF (JV) = .FALSE.
+      MPOBS (JV) = .FALSE.
+      MPRO  (JV) = .FALSE.
+      MSAOR (JV) = .FALSE.
+      MSFLG (JV) = .FALSE.
+      MSTPF (JV) = .FALSE.
+      MTCARS(JV) = .FALSE.
+C-----INITIALIZE NON ACC/DEC LOGICAL VARIABLES TO FALSE
+      CKINTB(JV) = .FALSE.
+      FSTACT(JV) = .FALSE.
+      IDISPD(JV) = .FALSE.
+      IUPDAT(JV) = .FALSE.
+      MAJCLB(JV) = .FALSE.
+      MAJCLL(JV) = .FALSE.
+      MAJCOL(JV) = .FALSE.
+      MAJCON(JV) = .FALSE.
+      MAJRLC(JV) = .FALSE.
+      MAJSIG(JV) = .FALSE.
+      MININT(JV) = .FALSE.
+      SIGRGO(JV) = .FALSE.
+C-----COMMON / VEHFD  /
+C-----SET ALL THE VEHFD ATTRIBUTES TO ZERO
+      IEXTII(JV) = 0.0D0
+      IEXTIM(JV) = 0.0D0
+C-----COMMON / VEHFI  /
+C-----SET ALL THE VEHFI ATTRIBUTES TO ZERO
+      IBAPS (JV) = 0
+      IDRICL(JV) = 0
+      INT1T (JV) = 0
+      INT2P (JV) = 0
+      INT2S (JV) = 0
+      IPRTLO(JV) = 0
+      ISPD  (JV) = 0
+      ITURN (JV) = 0
+      IVEHCL(JV) = 0
+      LNEXT (JV) = 0
+      LPRES (JV) = 0
+      NOBAPD(JV) = 0
+      NOF   (JV) = 0
+      NOR   (JV) = 0
+      VEHTYP(JV) = 0
+C-----COMMON / VEHFL  /
+C-----SET ALL THE VEHFL ATTRIBUTES TO FALSE
+      DMSI  (JV) = .FALSE.
+      IVDMSI(JV) = .FALSE.
+      IVDMSO(JV) = .FALSE.
+C-----COMMON / VFSSAM /
+C-----SET ALL THE VFSSAM ATTRIBUTES TO ZERO
+      LPREV (JV) = 0
+C-----COMMON / VEHIL  /
+C-----INITIALIZE INTERSECTION CONTROL LOGICAL DEPENDENT ATTRIBUTES TO
+C-----FALSE
+      ICHKCF(JV) = .FALSE.
+      ICONTN(JV) = .FALSE.
+      IDEDIC(JV) = .FALSE.
+      IERROR(JV) = .FALSE.
+      ILSTOP(JV) = .FALSE.
+      ILUNC (JV) = .FALSE.
+      ILYELD(JV) = .FALSE.
+      INFLZ (JV) = .FALSE.
+C-----INITIALIZE INTERSECTION CONTROL LOGICAL INDEPENDENT ATTRIBUTES TO
+C-----FALSE
+      MATSTL(JV) = .FALSE.
+      MCHKCF(JV) = .FALSE.
+      MDEDIC(JV) = .FALSE.
+      MINFLZ(JV) = .FALSE.
+      MIUNC (JV) = .FALSE.
+      MLRTOR(JV) = .FALSE.
+      MLSTOP(JV) = .FALSE.
+      MLUNC (JV) = .FALSE.
+      MLYELD(JV) = .FALSE.
+      MSSGRN(JV) = .FALSE.
+      MSSRED(JV) = .FALSE.
+      RETURN
+      END                                                               INIVEH
+C
+C
+C
+C9    SUBROUTINE INTSTA
+C9    IMPLICIT NONE
+C9    INCLUDE 'PARAMS'
+C9    INCLUDE 'CLASS'
+C9    INCLUDE 'INDEX'
+C9    INCLUDE 'INTER'
+C9    INCLUDE 'QUE'
+C9    INCLUDE 'RUTINE'
+C9    INCLUDE 'SUMST2'
+C9    INCLUDE 'TITLE'
+C9    INCLUDE 'USER'
+C9    CHARACTER*4       IPTURN(3,3)
+C9    INTEGER           II,I1TO3,JJ,KK,MIBA,NUM
+C9    DOUBLE PRECISION  AVGQ,OASD,PDELAY,PTURN,SUMDEL,SUMVOL,TIMNOW,
+C9   *                  TMINT,TMSIM,TOTDEL,TOTVOL,VOLUME
+C9    DATA     IPTURN / 'U AN','D LE','FT  ',
+C9   *                  'STRA','IGHT','    ',
+C9   *                  'RIGH','T   ','    '/
+C9601 FORMAT(1X,A,//,
+C9   *       23H TIME INTO SIMULATION =,F8.1,8H SECONDS)
+C9602 FORMAT(/,40H SUMMARY STATISTICS FOR INBOUND APPROACHI3)
+C9603 FORMAT(5H NV =I3,10H  VOLUME =F6.1,8H  OASD =F6.1,9H  PTURN =F6.1,
+C9   *       10H  PDELAY =F6.1,2X,3A4)
+C9604 FORMAT(5H NV =I3,10H  VOLUME =F6.1,8H  OASD =F6.1,
+C9   *       14H  FOR APPROACH)
+C9605 FORMAT(/,5H NV =I3,10H  VOLUME =F6.1,8H  OASD =F6.1,
+C9   *       18H  FOR INTERSECTION)
+C9606 FORMAT(/,26H TMTIME SINCE LAST CALL = ,F7.2,14H TOTAL TMTIME ,
+C9   *       29HSINCE END OF START-UP TIME = ,F7.2,7H (SECS)/)
+C9608 FORMAT(5H LANEI2,13H  AVG Q LEN =F6.2,7H  MAX =I3)
+C
+C-----SUBROUTINE INTSTA PRINTS THE INTERMEDIATE STATISTICS
+C
+C9    NRNAME = 1
+C9    IRNAME(NRNAME) = 'INSTA'
+C9                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----FIND THE TIME INTO THE SIMULATION SINCE START-UP TIME
+C9    TIMNOW = TIME - STRTIM
+C-----IF THE TIME INTO THE SIMULATION SINCE START-UP TIME IS LE ONE DT
+C-----THEN RETURN
+C9                  IF ( TIMNOW . LE . DT )      RETURN
+C9                  IF ( TMTIME(5) . GT . 0.0D0 )GO TO 101
+C9    TMTIME(5) = TMTIME(3)
+C9101 CONTINUE
+C9    TMTIME(4) = TMTIME(5)
+C9    CALL  EXTIME  ( 5 )
+C9    CALL  PHEADR  ( 6 )
+C9    WRITE (6,601) STITLE,TIMNOW
+C9    SUMVOL = 0.0D0
+C9    SUMDEL = 0.0D0
+C-----PROCESS EACH INBOUND APPROACH
+C9    DO 105  II = 1 , NIBA
+C9    MIBA = LIBA(II)
+C-----FIND THE TOTAL VOLUME AND TOTAL STOPPED TIME DELAY FOR INBOUND
+C-----APPROACH MIBA
+C9    TOTVOL = NUMPRO(II,1) + NUMPRO(II,2) + NUMPRO(II,3)
+C9    TOTDEL = SD    (II,1) + SD    (II,2) + SD    (II,3)
+C-----IF THE TOTAL VOLUME FOR INBOUND APPROACH MIBA IS LE 0 THEN GO TO
+C-----105 AND SKIP TO THE NEXT INBOUND APPROACH
+C9                  IF ( TOTVOL . LE . 0.0D0 )   GO TO 105
+C9    WRITE (6,602) MIBA
+C-----PROCESS EACH TURN CODE FOR INBOUND APPROACH MIBA
+C9    DO 103  KK = 1 , 3
+C9    NUM = NUMPRO(II,KK)
+C-----IF THE NUMBER OF VEHICLES PROCESSED FOR TURN CODE KK AND INBOUND
+C-----APPROACH MIBA IS LE 0 THEN GO TO 103 AND SKIP TO THE NEXT TURN
+C-----CODE
+C9                  IF ( NUM . LE . 0 )          GO TO 103
+C-----FIND THE EQUIVALENT HOURLY VOLUME PROCESSED
+C9    VOLUME = NUM/(TIMNOW/3600.0D0)
+C-----FIND THE OVERALL AVERAGE STOPPED DELAY
+C9    OASD = SD(II,KK)/NUM
+C-----FIND THE PERCENT OF VEHICLES MAKING TURN CODE KK FOR INBOUND
+C-----APPROACH MIBA
+C9    PTURN = 100.0D0*NUM/TOTVOL
+C9    PDELAY = 0.0D0
+C9                  IF ( TOTDEL . LE . 0.0D0 )   GO TO 102
+C-----FIND THE PERCENT STOPPED DELAY FOR TURN CODE KK FOR INBOUND
+C-----APPROACH MIBA
+C9    PDELAY = 100.0D0*SD(II,KK)/TOTDEL
+C9102 CONTINUE
+C9    WRITE (6,603) NUM,VOLUME,OASD,PTURN,PDELAY,
+C9   *              (IPTURN(I1TO3,KK),I1TO3=1,3)
+C-----END OF TURN CODE LOOP
+C9103 CONTINUE
+C-----FIND THE OVERALL AVERAGE STOPPED DELAY FOR INBOUND APPROACH MIBA
+C9    OASD = TOTDEL/TOTVOL
+C9    SUMDEL = SUMDEL + TOTDEL
+C9    SUMVOL = SUMVOL + TOTVOL
+C-----FIND THE EQUIVALENT HOURLY VOLUME PROCESSED FOR INBOUND APPROACH
+C-----MIBA
+C9    DO 104  JJ = 1 , 6
+C9                  IF ( LQUEUE(II,JJ) . LE . 0 )GO TO 104
+C9    AVGQ = LQUEUE(II,JJ)*DT/TIMNOW
+C9    WRITE (6,608) JJ,AVGQ,MQUEUE(II,JJ)
+C9104 CONTINUE
+C9    NUM = TOTVOL
+C9    TOTVOL = TOTVOL/(TIMNOW/3600.0D0)
+C9    WRITE (6,604) NUM,TOTVOL,OASD
+C-----END OF INBOUND APPROACH LOOP
+C9105 CONTINUE
+C9    NUM = SUMVOL
+C9    OASD = SUMDEL/SUMVOL
+C9    TOTVOL = SUMVOL/(TIMNOW/3600.0D0)
+C9    WRITE (6,605) NUM,TOTVOL,OASD
+C9    TMINT = TMTIME(5) - TMTIME(4)
+C9    TMSIM = TMTIME(5) - TMTIME(3)
+C9    WRITE (6,606) TMINT,TMSIM
+C9    RETURN
+C9    END                                                               INTSTA
+C
+C
+C
+      SUBROUTINE IRN55
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CURAND'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      INTEGER           I,J
+C
+C-----SUBTRACTIVE METHOD RANDOM NUMBER GEN. AFTER KNUTH VOL2 P172
+C-----REGENERATES AN ARRAY IASRAN(55) OF RANDOM INTEGERS BETWEEN
+C-----0 AND 1,000,000,000
+C
+      DO 1010 I = 1 , 24
+      J = IASRAN(I) - IASRAN(I+31)
+      IF ( J . LT . 0 )                          J = J + 1000000000
+      IASRAN(I) = J
+ 1010 CONTINUE
+      DO 2010 I = 25 , 55
+      J = IASRAN(I) - IASRAN(I-24)
+      IF ( J . LT . 0 )                          J = J + 1000000000
+      IASRAN(I) = J
+ 2010 CONTINUE
+      RETURN
+      END                                                               IRN55
+C
+C
+C
+      SUBROUTINE IVMSG  ( JVMSMT,JVMSMG,RVMSMP,RVMSST,RVMSAT,JVMSAP,
+     *                    JVMSLB,JVMSLE,RVMSPB,RVMSPE,JVMSVN,SVMSDN,
+     *                    RVMSDM,RVMSDP                              )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      CHARACTER*7       SVMSDN
+      INTEGER           I,ILNB,J,JA,JAN,JL,JLN,JP,JVMSAP,JVMSLB,JVMSLE,
+     *                  JVMSMG,JVMSMT,JVMSVN,KV,KVMSVN
+      DOUBLE PRECISION  POSEND,RVMSAT,RVMSDM,RVMSDP,RVMSMP,RVMSPB,
+     *                  RVMSPE,RVMSST,SVMSMP
+  602 FORMAT(//,
+     *       15H A NEW TOTAL OF,I4,32H VEHICLE MESSAGE SYSTEM MESSAGES)
+  603 FORMAT(' MESSAGE NUMBER --------------------- = ',I6)
+  604 FORMAT(' MESSAGE TYPE ----------------------- = ',I6,3X,
+     *       ' DRIVER DMS')
+  605 FORMAT(' MESSAGE TYPE ----------------------- = ',I6,3X,
+     *       ' DRIVER IVDMS')
+  606 FORMAT(' MESSAGE TYPE ----------------------- = ',I6,3X,
+     *       ' VEHICLE IVDMS')
+  607 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' ACCEL/DECEL TO SPEED XX USING NORMAL ACCEL/DECEL' )
+  608 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' ACCEL/DECEL TO SPEED XX USING MAX VEHICLE ACCEL/DECEL' )
+  609 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' STOP AT THE INTERSECTION STOP LINE')
+  610 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' STOP AT LOCATION XX')
+  611 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' STOP IMMEDIATELY USING MAX VEHICLE DECEL')
+  612 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' STOP IMMEDIATELY USING COLLISION DECEL')
+  613 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' CHANGE LANES TO THE LEFT')
+  614 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' CHANGE LANES TO THE RIGHT')
+  615 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' FORCED GO')
+  616 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' FORCED RUN THE RED SIGNAL')
+  617 FORMAT(' MESSAGE ---------------------------- = ',I6,3X,
+     *       ' DISTRACTED DRIVER')
+  618 FORMAT(' MESSAGE PARAMETER - COLLISION DECEL  = ',F9.2,
+     *       ' FT/SEC/SEC')
+  619 FORMAT(' MESSAGE PARAMETER - SPEED ---------- = ',F9.2,
+     *       ' MPH')
+  620 FORMAT(' MESSAGE PARAMETER - POSITION ------- = ',F9.2,
+     *       ' FEET')
+  621 FORMAT(' MESSAGE START TIME ----------------- = ',F9.2,
+     *       ' SECONDS',/,
+     *       ' MESSAGE ACTIVE TIME ---------------- = ',F9.2,
+     *       ' SECONDS')
+  622 FORMAT(' MESSAGE APPROACH ------------------- = ',I6)
+  623 FORMAT(' MESSAGE INTERSECTION PATH ---------- = ',I6)
+  624 FORMAT(' MESSAGE LANE BEGIN ----------------- = ',I6,/,
+     *       ' MESSAGE LANE END ------------------- = ',I6)
+  625 FORMAT(' MESSAGE POSITION BEGIN ------------- = ',F9.2,' FEET',/,
+     *       ' MESSAGE POSITION END --------------- = ',F9.2,' FEET')
+  626 FORMAT(' MESSAGE VEHICLE NUMBER ------------- = ALL VEHICLES')
+  627 FORMAT(' MESSAGE VEHICLE NUMBER ------------- = ',I6)
+  628 FORMAT(' MESSAGE REACTION TIME DISTRIBUTION - = ',A,/,
+     *       ' MESSAGE REACTION TIME MEAN --------- = ',F9.2,
+     *       ' SECONDS')
+  629 FORMAT(' MESSAGE REACTION TIME PARAMETER ---- = ',F9.2)
+  770 FORMAT(45H NUMBER OF VEHICLE MESSAGE SYSTEM MESSAGES = ,I4,
+     *       7H IS GE ,I4)
+  768 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT - TYPE = ',I4,
+     *       ' IS NOT ',I1,', ',I1,', OR ',I1)
+  767 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT - MESSAGE = ',I4,
+     *       ' IS NOT ',I1,', ',I1,', ',I1,', ',I1,', ',I1,', ',I1,', ',
+     *       I1,', ',I1,', ',I1,', ',I2,', OR ',I2)
+  766 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT - MESSAGE = ',I4,
+     *       ' IS ',I1,', ',I1,', ',I1,', ',I2,', OR ',I2,
+     *       ' - INVALID FOR VEHICLE IVDMS MESSAGE')
+  765 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT - MESSAGE = ',I4,
+     *       ' MESSAGE COLLISION DECELERATION = ',F7.2,
+     *       ' FT/SEC/SEC IS LT ',F7.2,' OR GE 0.00 FT/SEC/SEC')
+  764 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT - MESSAGE = ',I4,
+     *       ' MESSAGE SPEED = ',F7.2' MPH IS LT 0.00 OR GT ',F7.2,
+     *       ' MPH')
+  763 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT - MESSAGE = ',I4,
+     *       ' MESSAGE POSITION = ',F8.2' FEET IS LT 0.00 OR GT ',F8.2,
+     *       ' FEET')
+  762 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE START TIME = ',F7.2,' IS LT CURRENT TIME = ',
+     *         F7.2,' OR GT ',F7.2,' SECONDS')
+  761 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE START TIME = ',F7.2,
+     *       ' IS LT PREVIOUS MESSAGE START TIME = ',F7.2,' SECONDS')
+  760 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE ACTIVE TIME = ',F7.2,' IS LT 0.00 SECONDS')
+  759 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE APPROACH NUMBER = ',I4,' IS INVALID')
+  758 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE CHANGE LANES LEFT/RIGHT',
+     *       ' NOT ALLOWED FOR MESSAGE INTERSCTION PATH NUMBER = ',I4)
+  757 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE INTERSCTION PATH NUMBER = ',I4,' IS INVALID')
+  756 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE APPROACH NUMBER = ',I4,
+     *       ' LANE BEGIN = ',I2,' IS LT 1 OR GT ',I2)
+  755 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE APPROACH NUMBER = ',I4,
+     *       ' LANE END = ',I2,' IS LT 1 OR GT ',I2)
+  754 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE APPROACH NUMBER = ',I4,
+     *       ' LANE END = ',I2,' IS LT LANE BEGIN = ',I2)
+  753 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' MESSAGE APPROACH NUMBER = ',I4,
+     *       ' NUMBER OF LANES = ',I2,' IS LT 2 FOR CHANGE LEFT/RIGHT')
+  752 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' POSITION BEGIN = ',F8.2,' IS LT 0.00 OR GT ',F8.2,
+     *       ' FEET')
+  751 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' POSITION END = ',F8.2,' IS LT POSITION BEGIN = ',F8.2,
+     *       ' OR GT ',F8.2,' FEET')
+  750 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' VEHICLE NUMBER = ',I6,' IS LT 0')
+  749 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' REACTION TIME DISTRIBUTION NAME = (',A,')',
+     *       ' IS NOT (CONSTAN), (ERLANG), (GAMMA), (LOGNRML),',
+     *       ' (NEGEXP), (SNEGEXP), OR (UNIFORM)')
+  748 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' REACTION TIME DISTRIBUTION MEAN = ',F6.2,
+     *       ' IS LT 0.00 SECONDS')
+  740 FORMAT(' VEHICLE MESSAGE SYSTEM MESSAGE INSERT -',
+     *       ' REACTION TIME DISTRIBUTION PARAMETER = ',F6.2,
+     *       ' IS LT 0.00')
+C
+C-----SUBROUTINE IVMSG INSERTS VEHICLE MESSAGE SYSTEM MESSAGES
+C
+C-----JVMSMT INTEGER     VMS MESSAGE TYPE
+C-----JVMSMG INTEGER     VMS MESSAGE
+C-----RVMSMP DOUBLE      VMS MESSAGE PARAMETER (MPH FOR SPEED)
+C-----RVMSST DOUBLE      VMS MESSAGE STARTING TIME
+C-----RVMSAT DOUBLE      VMS MESSAGE ACTIVE TIME
+C-----JVMSAP INTEGER     VMS MESSAGE APPROACH (+) OR INTERSECTION PATH (-)
+C-----JVMSLB INTEGER     VMS MESSAGE LANE BEGIN
+C-----JVMSLE INTEGER     VMS MESSAGE LANE END
+C-----RVMSPB DOUBLE      VMS MESSAGE POSITION BEGIN
+C-----RVMSPE DOUBLE      VMS MESSAGE POSITION END
+C-----JVMSVN INTEGER     VMS MESSAGE VEHICLE NUMBER (O=ALL)
+C-----SVMSDN CHARACTER*7 VMS MESSAGE REACTION TIME DISTRIBUTION NAME
+C-----RVMSDM DOUBLE      VMS MESSAGE REACTION TIME DISTRIBUTION MEAN
+C-----RVMSDP DOUBLE      VMS MESSAGE REACTION TIME DISTRIBUTION PARAMETER
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'IVMSG'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+                    IF ( NVMSM . GE . NVMSMM )   GO TO 7700
+      KVMSVN = JVMSVN
+      SVMSMP = RVMSMP
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE TYPE FOR ERRORS
+C-----VMSTDD DRIVER  DMS
+C-----VMSTDI DRIVER  IVDMS
+C-----VMSTVI VEHICLE IVDMS
+      IF ( ( JVMSMT . NE . VMSTDD ) . AND .
+     *     ( JVMSMT . NE . VMSTDI ) . AND .
+     *     ( JVMSMT . NE . VMSTVI ) )            GO TO 7680
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE FOR ERRORS
+C-----VMSMAN ACCELERATE OR DECELERATE TO SPEED XX USING NORMAL
+C-----       ACCELERATION OR DECELERATION
+C-----VMSMAM ACCELERATE OR DECELERATE TO SPEED XX USING MAXIMUM
+C-----       VEHICLE ACCELERATION OR DECELERATION
+C-----VMSMSI STOP AT THE INTERSECTION STOP LINE
+C-----VMSMSL STOP AT LOCATION XX
+C-----VMSMSM STOP IMMEDIATELY USING MAXIMUM VEHICLE DECELERATION
+C-----VMSMSC STOP IMMEDIATELY USING COLLISION DECELERATION
+C-----VMSMCL CHANGE LANES TO THE LEFT
+C-----VMSMCR CHANGE LANES TO THE RGHT
+C-----VMSMGO FORCED GO
+C-----VMSMRR FORCED RUN THE RED SIGNAL
+C-----VMSMDD DISTRACTED DRIVER
+      IF ( ( JVMSMG . NE . VMSMAN ) . AND .
+     *     ( JVMSMG . NE . VMSMAM ) . AND .
+     *     ( JVMSMG . NE . VMSMSI ) . AND .
+     *     ( JVMSMG . NE . VMSMSL ) . AND .
+     *     ( JVMSMG . NE . VMSMSM ) . AND .
+     *     ( JVMSMG . NE . VMSMSC ) . AND .
+     *     ( JVMSMG . NE . VMSMCL ) . AND .
+     *     ( JVMSMG . NE . VMSMCR ) . AND .
+     *     ( JVMSMG . NE . VMSMGO ) . AND .
+     *     ( JVMSMG . NE . VMSMRR ) . AND .
+     *     ( JVMSMG . NE . VMSMDD ) )            GO TO 7670
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE TYPE AND MESSAGE COMBINATIONS
+      IF ( JVMSMT . EQ . VMSTVI )                THEN
+C-----  VEHICLE MESSAGE SYSTEM MESSAGE TYPE VEHICLE IVDMS IS NOT ALLOWED
+C-----  FOR:
+C-----  VMSMCL CHANGE LANES TO THE LEFT
+C-----  VMSMCR CHANGE LANES TO THE RGHT
+C-----  VMSMGO FORCED GO
+C-----  VMSMRR FORCED RUN THE RED SIGNAL
+C-----  VMSMDD DISTRACTED DRIVER
+        IF ( ( JVMSMG . EQ . VMSMCL ) . OR .
+     *       ( JVMSMG . EQ . VMSMCR ) . OR .
+     *       ( JVMSMG . EQ . VMSMGO ) . OR .
+     *       ( JVMSMG . EQ . VMSMRR ) . OR .
+     *       ( JVMSMG . EQ . VMSMDD ) )          GO TO 7660
+      END IF
+C-----CHECK VEHICLE MESSAGE SYSTEM PARAMETER DECELERATION FOR ERRORS
+C-----FOR:
+C-----VMSMSC STOP IMMEDIATELY USING COLLISION DECELERATION
+      IF ( JVMSMG . EQ . VMSMSC )                THEN
+        IF ( ( SVMSMP . LT . -DECCOL ) . OR .
+     *       ( SVMSMP . GE . 0.0D0   ) )         GO TO 7650
+      END IF
+C-----CHECK VEHICLE MESSAGE SYSTEM PARAMETER SPEED FOR ERRORS FOR:
+C-----VMSMAN ACCELERATE OR DECELERATE TO SPEED XX USING NORMAL
+C-----       ACCELERATION OR DECELERATION
+C-----VMSMAM ACCELERATE OR DECELERATE TO SPEED XX USING MAXIMUM
+C-----       VEHICLE ACCELERATION OR DECELERATION
+      IF ( ( JVMSMG . EQ . VMSMAN ) . OR .
+     *     ( JVMSMG . EQ . VMSMAM ) )            THEN
+        IF ( ( SVMSMP . LT . 0.0D0  ) . OR .
+     *       ( SVMSMP . GT . VELMAX ) )          GO TO 7640
+      END IF
+C-----CHECK VEHICLE MESSAGE SYSTEM PARAMETER POSITION FOR ERRORS FOR:
+C-----VMSMSL STOP AT LOCATION XX
+      IF ( JVMSMG . EQ . VMSMSL )                THEN
+        IF ( ( SVMSMP . LT . 0.0D0  ) . OR .
+     *       ( SVMSMP . GT . POSMAX ) )          GO TO 7630
+      END IF
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE START TIME FOR ERRORS
+      IF ( ( RVMSST . LT . TIME   ) . OR .
+     *     ( RVMSST . GT . SIMTIM ) )            GO TO 7620
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE ACTIVE TIME FOR ERRORS
+      IF ( RVMSAT . LT . 0.0D0  )                GO TO 7600
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE APPROACH/PATH FOR ERRORS
+      POSEND = -1.0D0
+      IF ( JVMSAP . GE . 0 )                     THEN
+C-----  CHECK APPROACH NUMBER
+        DO 1010  JAN = 1 , NIBA
+        JA = LIBA(JAN)
+        IF ( JVMSAP . EQ . JA )                  GO TO 1040
+ 1010   CONTINUE
+        DO 1020  JAN = 1 , NOBA
+        JA = LOBA(JAN)
+        IF ( JVMSAP . EQ . JA )                  GO TO 1040
+ 1020   CONTINUE
+        GO TO 7590
+      ELSE
+        JVMSLB = 0
+        JVMSLE = 0
+C-----  CHECK INTERSECTION PATH NUMBER
+C-----  INTERSECTION PATH IS NOT ALLOWED FOR:
+C-----  VMSMCL CHANGE LANES TO THE LEFT
+C-----  VMSMCR CHANGE LANES TO THE RGHT
+        IF ( ( JVMSMG . EQ . VMSMCL ) . OR .
+     *       ( JVMSMG . EQ . VMSMCR ) )          GO TO 7580
+        DO 1030  JP = 1 , NPATHS
+        IF ( -JVMSAP . EQ . JP )                 THEN
+          POSEND = LENP(JP)
+          GO TO 1060
+        END IF
+ 1030   CONTINUE
+        GO TO 7570
+      END IF
+ 1040 CONTINUE
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE LANES FOR ERRORS
+      IF ( (JVMSLB . LT . 1         ) . OR .
+     *     (JVMSLB . GT . NLANES(JA)) )          GO TO 7560
+      IF ( (JVMSLE . LT . 1         ) . OR .
+     *     (JVMSLE . GT . NLANES(JA)) )          GO TO 7550
+      IF (  JVMSLE . LT . JVMSLB   )             GO TO 7540
+      IF ( ( JVMSMG . EQ . VMSMCL     ) . OR .
+     *     ( JVMSMG . EQ . VMSMCR     ) )        THEN
+        IF ( NLANES(JA) . LT . 2 )               GO TO 7530
+      END IF
+      DO 1050  JLN = JVMSLB , JVMSLE
+      JL = LLANES(JLN,JA)
+      IF ( LGEOM(3,JL) . EQ . LGEOM(4,JL) )      THEN
+        POSEND = DMAX1( POSEND,DBLE( LGEOM(2,JL) ) )
+      ELSE
+        POSEND = DMAX1( POSEND,DBLE( LGEOM(4,JL) ) )
+      END IF
+ 1050 CONTINUE
+ 1060 CONTINUE
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE POSITIONS FOR ERRORS
+      IF ( (RVMSPB . LT . 0.0D0    ) . OR .
+     *     (RVMSPB . GT . POSEND   ) )           GO TO 7520
+      IF ( (RVMSPE . LT . RVMSPB) . OR .
+     *     (RVMSPE . GT . POSEND   ) )           GO TO 7510
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE VEHICLE NUMBER FOR ERRORS
+      IF ( (JVMSMT . NE . VMSTDI) . AND .
+     *     (JVMSMT . NE . VMSTVI) )              KVMSVN = 0
+      IF ( KVMSVN . LT . 0         )             GO TO 7500
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE DISTRIBUTION NAME FOR ERRORS
+      IF ( SVMSDN . EQ . 'CONSTAN' )             GO TO 1065
+      IF ( SVMSDN . EQ . 'ERLANG'  )             GO TO 1065
+      IF ( SVMSDN . EQ . 'GAMMA'   )             GO TO 1065
+      IF ( SVMSDN . EQ . 'LOGNRML' )             GO TO 1065
+      IF ( SVMSDN . EQ . 'NEGEXP'  )             GO TO 1065
+      IF ( SVMSDN . EQ . 'SNEGEXP' )             GO TO 1065
+      IF ( SVMSDN . EQ . 'UNIFORM' )             GO TO 1065
+      GO TO 7490
+ 1065 CONTINUE
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE DISTRIBUTION MEAN FOR ERRORS
+      IF ( RVMSDM . LT . 0.0D0     )             GO TO 7480
+      IF ( RVMSDP . LT . 0.0D0     )             GO TO 7400
+C-----CONVERT SPEED FROM MPH TO FPS
+      IF ( (JVMSMG . EQ . VMSMAN) . OR .
+     *     (JVMSMG . EQ . VMSMAM) )              THEN
+        SVMSMP = SVMSMP*MPH2FS
+      END IF
+C-----INSERT VEHICLE MESSAGE SYSTEM MESSAGE
+      I = 1
+                    IF ( NVMSM . EQ . 0 )        GO TO 4010
+C-----FIND WHERE TO INSERT THE NEW VEHICLE MESSAGE SYSTEM MESSAGE
+      DO 2010  I = IVMSMB , NVMSM
+C-----IF THE VEHICLE MESSAGE SYSTEM MESSAGE START TIME IS GREATER THAN
+C-----THE NEW VEHICLE MESSAGE SYSTEM MESSAGE START TIME THEN GO TO 3010
+C-----AND MOVE THE VEHICLE MESSAGE SYSTEM MESSAGES DOWN ONE
+      IF ( DVMSST(I) . GT . RVMSST )             GO TO 3010
+ 2010 CONTINUE
+C-----INSERT VEHICLE MESSAGE SYSTEM MESSAGE AT THE END
+      I = NVMSM + 1
+      GO TO 4010
+ 3010 CONTINUE
+C-----MOVE THE VEHICLE MESSAGE SYSTEM MESSAGES DOWN ONE
+      DO 3020  J = NVMSM , I , -1
+      IVMSMT(J+1) = IVMSMT(J)
+      IVMSMG(J+1) = IVMSMG(J)
+      DVMSMP(J+1) = DVMSMP(J)
+      DVMSST(J+1) = DVMSST(J)
+      DVMSAT(J+1) = DVMSAT(J)
+      IVMSAP(J+1) = IVMSAP(J)
+      IVMSLB(J+1) = IVMSLB(J)
+      IVMSLE(J+1) = IVMSLE(J)
+      DVMSPB(J+1) = DVMSPB(J)
+      DVMSPE(J+1) = DVMSPE(J)
+      IVMSVN(J+1) = IVMSVN(J)
+      CVMSDN(J+1) = CVMSDN(J)
+      DVMSDM(J+1) = DVMSDM(J)
+      DVMSDP(J+1) = DVMSDP(J)
+ 3020 CONTINUE
+C-----CHANGE VEHICLE MESSAGE SYSTEM MESSAGE POINTERS
+      DO 3030  KV = 1 , NVE
+                    IF ( IQ(IV) . EQ . 0 )       GO TO 3030
+      IF ( VMSACM(KV) . GE . I )                 THEN
+        VMSACM(KV) = VMSACM(KV) + 1
+      END IF
+      IF ( VMSACN(KV) . GE . I )                 THEN
+        VMSACN(KV) = VMSACN(KV) + 1
+      END IF
+      IF ( VMSASM(KV) . GE . I )                 THEN
+        VMSASM(KV) = VMSASM(KV) + 1
+      END IF
+      IF ( VMSASN(KV) . GE . I )                 THEN
+        VMSASN(KV) = VMSASN(KV) + 1
+      END IF
+ 3030 CONTINUE
+ 4010 CONTINUE
+      IVMSMT(I) = JVMSMT
+      IVMSMG(I) = JVMSMG
+      DVMSMP(I) = SVMSMP
+      DVMSST(I) = RVMSST
+      DVMSAT(I) = RVMSAT
+      IVMSAP(I) = JVMSAP
+      IVMSLB(I) = JVMSLB
+      IVMSLE(I) = JVMSLE
+      DVMSPB(I) = RVMSPB
+      DVMSPE(I) = RVMSPE
+      IVMSVN(I) = KVMSVN
+      CVMSDN(I) = SVMSDN
+      DVMSDM(I) = RVMSDM
+      DVMSDP(I) = RVMSDP
+      NVMSM = NVMSM + 1
+C-----CHECK VEHICLE MESSAGE SYSTEM MESSAGE START TIME FOR ERRORS
+      IF ( ( I      . GT . 1           ) . AND .
+     *     ( RVMSST . LT . DVMSST(I-1) ) )       GO TO 7610
+      WRITE (6,602) NVMSM
+C-----PRINT VEHICLE MESSAGE SYSTEM MESSAGE NUMBER
+      WRITE (6,603) I
+C-----PRINT VEHICLE MESSAGE SYSTEM MESSAGE TYPE
+      IF ( JVMSMT . EQ . VMSTDD )                WRITE (6,604) JVMSMT
+      IF ( JVMSMT . EQ . VMSTDI )                WRITE (6,605) JVMSMT
+      IF ( JVMSMT . EQ . VMSTVI )                WRITE (6,606) JVMSMT
+C-----PRINT VEHICLE MESSAGE SYSTEM MESSAGE
+      IF ( JVMSMG . EQ . VMSMAN )                WRITE (6,607) JVMSMG
+      IF ( JVMSMG . EQ . VMSMAM )                WRITE (6,608) JVMSMG
+      IF ( JVMSMG . EQ . VMSMSI )                WRITE (6,609) JVMSMG
+      IF ( JVMSMG . EQ . VMSMSL )                WRITE (6,610) JVMSMG
+      IF ( JVMSMG . EQ . VMSMSM )                WRITE (6,611) JVMSMG
+      IF ( JVMSMG . EQ . VMSMSC )                WRITE (6,612) JVMSMG
+      IF ( JVMSMG . EQ . VMSMCL )                WRITE (6,613) JVMSMG
+      IF ( JVMSMG . EQ . VMSMCR )                WRITE (6,614) JVMSMG
+      IF ( JVMSMG . EQ . VMSMGO )                WRITE (6,615) JVMSMG
+      IF ( JVMSMG . EQ . VMSMRR )                WRITE (6,616) JVMSMG
+      IF ( JVMSMG . EQ . VMSMDD )                WRITE (6,617) JVMSMG
+C-----PRINT VEHICLE MESSAGE SYSTEM PARAMETER
+      IF ( JVMSMG . EQ . VMSMSC )                WRITE (6,618) SVMSMP
+C-----PRINT VEHICLE MESSAGE SYSTEM PARAMETER
+      IF ( ( JVMSMG . EQ . VMSMAN ) . OR .
+     *     ( JVMSMG . EQ . VMSMAM ) )            WRITE (6,619) SVMSMP
+C-----PRINT VEHICLE MESSAGE SYSTEM PARAMETER
+      IF ( JVMSMG . EQ . VMSMSL )                WRITE (6,620) SVMSMP
+C-----PRINT VEHICLE MESSAGE SYSTEM MESSAGE START TIME, ACTIVE TIME, AND
+C-----APPROACH/INTERSECTION
+      WRITE (6,621) RVMSST,RVMSAT
+      IF ( JVMSAP . GE . 0 )                     THEN
+        WRITE (6,622) JVMSAP
+      ELSE
+        WRITE (6,623) -JVMSAP
+      END IF
+C-----PRINT VEHICLE MESSAGE SYSTEM BEGIN AND END LANE
+      WRITE (6,624) JVMSLB,JVMSLE
+C-----PRINT VEHICLE MESSAGE SYSTEM POSITION
+      WRITE (6,625) RVMSPB,RVMSPE
+C-----PRINT VEHICLE MESSAGE SYSTEM VEHICLE NUMBER
+      IF ( (JVMSMT . EQ . VMSTDI) . OR .
+     *     (JVMSMT . EQ . VMSTVI) )              THEN
+        IF ( KVMSVN . EQ . 0 )                   THEN
+          WRITE (6,626)
+        ELSE
+          WRITE (6,627)  KVMSVN
+        END IF
+      END IF
+C-----PRINT VEHICLE MESSAGE SYSTEM MESSAGE DISTRIBUTION NAME AND MEAN
+      WRITE (6,628)  SVMSDN,RVMSDM
+      IF ( CVMSDN(I) . EQ . 'CONSTAN' )          GO TO 4020
+C-----PRINT VEHICLE MESSAGE SYSTEM MESSAGE DISTRIBUTION PARAMETER
+      WRITE (6,629)  RVMSDP
+ 4020 CONTINUE
+      RETURN
+C-----PROCESS THE INPUT ERRORS AND STOP
+ 7700 CONTINUE
+      WRITE (ERRMSG,770) NVMSM,NVMSMM
+      CALL  ABORTR  ( 'STOP 770 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  770
+ 7680 CONTINUE
+      WRITE (ERRMSG,768) JVMSMT,VMSTDD,VMSTDI,VMSTVI
+      CALL  ABORTR  ( 'STOP 768 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  768
+ 7670 CONTINUE
+      WRITE (ERRMSG,767) JVMSMG,VMSMAN,VMSMAM,VMSMSI,VMSMSL,VMSMSM,
+     *                   VMSMSC,VMSMCL,VMSMCR,VMSMGO,VMSMRR,VMSMDD
+      CALL  ABORTR  ( 'STOP 767 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  767
+ 7660 CONTINUE
+      WRITE (ERRMSG,766) JVMSMG,VMSMCL,VMSMCR,VMSMGO,VMSMRR,VMSMDD
+      CALL  ABORTR  ( 'STOP 766 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  766
+ 7650 CONTINUE
+      WRITE (ERRMSG,765) JVMSMG,SVMSMP,-DECCOL
+      CALL  ABORTR  ( 'STOP 765 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  765
+ 7640 CONTINUE
+      WRITE (ERRMSG,764) JVMSMG,SVMSMP,VELMAX
+      CALL  ABORTR  ( 'STOP 764 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  764
+ 7630 CONTINUE
+      WRITE (ERRMSG,763) JVMSMG,SVMSMP,POSMAX
+      CALL  ABORTR  ( 'STOP 763 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  763
+ 7620 CONTINUE
+      WRITE (ERRMSG,762) RVMSST,TIME,SIMTIM
+      CALL  ABORTR  ( 'STOP 762 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  762
+ 7610 CONTINUE
+      WRITE (ERRMSG,761) RVMSST,DVMSST(I-1)
+      CALL  ABORTR  ( 'STOP 761 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  761
+ 7600 CONTINUE
+      WRITE (ERRMSG,760) RVMSAT
+      CALL  ABORTR  ( 'STOP 760 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  760
+ 7590 CONTINUE
+      WRITE (ERRMSG,759) JVMSAP
+      CALL  ABORTR  ( 'STOP 759 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  759
+ 7580 CONTINUE
+      WRITE (ERRMSG,758) -JVMSAP
+      CALL  ABORTR  ( 'STOP 758 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  758
+ 7570 CONTINUE
+      WRITE (ERRMSG,757) -JVMSAP
+      CALL  ABORTR  ( 'STOP 757 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  757
+ 7560 CONTINUE
+      WRITE (ERRMSG,756) JVMSAP,JVMSLB,NLANES(JA)
+      CALL  ABORTR  ( 'STOP 756 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  756
+ 7550 CONTINUE
+      WRITE (ERRMSG,755) JVMSAP,JVMSLE,NLANES(JA)
+      CALL  ABORTR  ( 'STOP 755 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  755
+ 7540 CONTINUE
+      WRITE (ERRMSG,754) JVMSAP,JVMSLE,JVMSLB
+      CALL  ABORTR  ( 'STOP 754 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  754
+ 7530 CONTINUE
+      WRITE (ERRMSG,753) JVMSAP,NLANES(JA)
+      CALL  ABORTR  ( 'STOP 753 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  753
+ 7520 CONTINUE
+      WRITE (ERRMSG,752) RVMSPB,POSEND
+      CALL  ABORTR  ( 'STOP 752 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  752
+ 7510 CONTINUE
+      WRITE (ERRMSG,751) RVMSPE,RVMSPB,POSEND
+      CALL  ABORTR  ( 'STOP 751 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  751
+ 7500 CONTINUE
+      WRITE (ERRMSG,750) KVMSVN
+      CALL  ABORTR  ( 'STOP 750 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  750
+ 7490 CONTINUE
+      WRITE (ERRMSG,749) SVMSDN
+      CALL  ABORTR  ( 'STOP 749 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  749
+ 7480 CONTINUE
+      WRITE (ERRMSG,748) RVMSDM
+      CALL  ABORTR  ( 'STOP 748 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  748
+ 7400 CONTINUE
+      WRITE (ERRMSG,740) RVMSDP
+      CALL  ABORTR  ( 'STOP 740 - ' //
+     *                ERRMSG(1:ILNB( ERRMSG )) // ' - ' //
+     *                'IVMSG'                              )
+      STOP  740
+      END                                                               IVMSG
+C
+C
+C
+      SUBROUTINE LGNRML ( MEAN,STDDEV,LGNVAL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      INTEGER           I
+      DOUBLE PRECISION  LGNVAL,MEAN,MEANY,SRAN,STDDEV,STDY,SUMRAN,VARY
+C
+C-----SUBROUTINE LGNRML GENERATES A LOGNORMAL RANDOM DEVIATE
+C
+C-----LOGNRML PARAMETER - STANDARD DEVIATION
+C-----THE PARAMETER FOR THE LOGNRML HEADWAY DISTRIBUTION IS THE STANDARD
+C-----DEVIATION.
+      VARY   = DLOG( (STDDEV**2/(MEAN**2)) + 1.0D0 )
+      STDY   = DSQRT( VARY ) 
+      MEANY  = DLOG( MEAN ) - 0.5D0*VARY
+      SUMRAN = 0.0D0
+      DO 1010  I = 1 , 12
+      SUMRAN = SUMRAN + SRAN()
+ 1010 CONTINUE
+      LGNVAL = DEXP( MEANY + STDY*(SUMRAN-6.0D0) )
+      RETURN
+      END                                                               LGNRML
+C
+C
+C
+      SUBROUTINE LOKFMR ( LANE1,LANE1O,LANE2,LANE2O,MPROS,JP,
+     *                    IVPVM,LENLM,LGM1M,NBLKM,DIRPTH      )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'CLASS'
+      INCLUDE 'DIAMON'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'SIGCAM'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           DIRPTH,LANE1O,LANE2O,LANESO(2),MPROS,NBLKM,
+     *                  NBLKS(2)
+      INTEGER           I,IVPVM,JP,K,KL,KP,KVPV,LANE1,LANE2,LANES(2),
+     *                  LENLM,LENLS(2),LENPTM,LGEOMB,LGEOME,LGM1M,LP1,
+     *                  LP2
+      DOUBLE PRECISION  AKVPV,DISEND,DISLCH,DSPLCH,PADD,PKVPV,POSLCH,
+     *                  POSLT,POSRB,POSRM,SKVPV,VELLCH,VEHLNG,VKVPV
+C
+C-----SUBROUTINE LOKFMR LOOKS AHEAD INTO THE LANE1 AND LANE2 LANES AND
+C-----INTO ALL INTERSECTION PATHS FROM LANE1 AND LANE2 AND FINDS THE
+C-----VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR BUMPER THAT
+C-----HAS NOT CROSSED THE END OF THE LANE
+C
+C-----LANE1  = LANE FOR LINKING OUTBOUND LANE OR LINKING INTERNAL
+C-----         INBOUND LANE FOR THE 1ST INTERSECTION PATH
+C-----LANE1O = WHETHER LANE1 IS A LINKING OUTBOUND LANE FOR THE 1ST
+C-----         INTERSECTION PATH
+C-----LANE2  = LANE FOR LINKING INBOUND LANE FOR THE 2ND INTERSECTION
+C-----         PATH (MAY BE 0) (IF NON-ZERO THEN THIS IS A DIAMOND
+C-----         INTERNAL INBOUND LANE) (IF LANE1 EQ LANE2 THEN LOKFMR
+C-----         DOES NOT PROCESS LANE2)
+C-----LANE2O = WHETHER LANE2 IS A LINKING OUTBOUND LANE FOR THE 2ND
+C-----         INTERSECTION PATH (ALWAYS FALSE)
+C-----MPROS    WHETHER THE VEHICLE MAY PROCEED AT THE 2ND INTERSECTION
+C-----         (TRUE IF NO 2ND INTERSECTION PATH)
+C-----JP       2ND INTERSECTION PATH (0 IF NO 2ND INTERSECTION PATH)
+C-----IVPVM    VEHICLE NUMBER FOR THE THE VEHICLE AHEAD WITH THE MINIMUM
+C-----         POSITION OF THE REAR BUMPER THAT HAS NOT CROSSED THE END
+C-----         OF THE LANE
+C-----LENLM    LENGTH    FOR THE LANE WHERE THE IVPVM VEHICLE IS LOCATED
+C-----LGM1M    LGEOM(1,) FOR THE LANE WHERE THE IVPVM VEHICLE IS LOCATED
+C-----NBLKM    WHETHER       THE LANE WHERE THE IVPVM VEHICLE IS LOCATED
+C-----         IS BLOCKED (ALWAYS FALSE IF LANE2)
+C
+C[    LANES(1)   = -2147483647
+C[    LANES(2)   = -2147483647
+C[    LENLS(1)   = -2147483647
+C[    LENLS(2)   = -2147483647
+C[    I          = -2147483647
+C[    K          = -2147483647
+C[    KP         = -2147483647
+C[    KVPV       = -2147483647
+C[    LENPTM     = -2147483647
+C[    DISEND     = -2147483647.0
+C[    DISLCH     = -2147483647.0
+C[    POSLT      = -2147483647.0
+C[    PKVPV      = -2147483647.0
+C[    POSRM      = -2147483647.0
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'LOKFMR'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      DIRPTH = .FALSE.
+      LP1 = LNEXT(IV)
+      LP2 = INT2P(IV)
+      LANES (1) = LANE1
+      LANESO(1) = LANE1O
+      IF ( LANE2 . EQ . 0 )                      THEN
+        LANES (2) = LANE1
+        LANESO(2) = LANE1O
+      ELSE
+        LANES (2) = LANE2
+        LANESO(2) = LANE2O
+      END IF
+C-----IF LANE1 IS BLOCKED IN THE MIDDLE OR ONLY BLOCKED AT THE BEG THEN
+C-----SET LANE1 BLOCKED ELSE SET LANE1 UNBLOCKED AND SET LANE2 UNBLOCKED
+C[    IF ( LANES(1)           .EQ.-2147483647   )STOP 'LOKFMR LANES  01'
+      IF ( (LGEOM(1,LANES(1)).NE.LGEOM(2,LANES(1))) .AND.
+     *     (LGEOM(2,LANES(1)).NE.LGEOM(4,LANES(1))) )
+     *                                           THEN
+        NBLKS(1) = .TRUE.
+      ELSE
+        NBLKS(1) = .FALSE.
+      END IF
+      NBLKS(2) = .FALSE.
+C-----IF LANE1 IS BLOCKED THEN (1) SET THE DISTANCE FOR A LANE CHANGE,
+C-----(2) SET THE DISTANCE FROM THE END OF THE BLOCKED LANE EQUAL TO
+C-----ONE-HALF THE LENGTH OF THE BLOCKED LANE WITH A MINIMUM OF DISLCH,
+C-----AND (3) SET THE END OF THE LANE EQUAL TO THE END OF THE LANE MINUS
+C-----THE DISTANCE FROM THE END OF THE BLOCKED LANE
+      IF ( NBLKS(1) )                            THEN
+C[      IF ( LANES(1)         .EQ.-2147483647   )STOP 'LOKFMR LANES  02'
+        LENLS(1) = LGEOM(2,LANES(1)) - LGEOM(1,LANES(1))
+        DSPLCH = DBLE( ISPD(IV) )
+        IF ( IDISPD(IV) )                        THEN
+          DSPLCH = 0.5D0*DSPLCH
+        END IF
+        IF ( ISPDP (IV) . EQ . 1 )               THEN
+          IF ( MININT(IV) )                      THEN
+            IF ( LOBL(IP) . GT . 0 )             THEN
+              DSPLCH = DSPLCH*DBLE( ISLIM(ISNA (LOBL(IP))) )
+     *               /        DBLE( LIMP (           IP  ) )
+            END IF
+          ELSE
+            DSPLCH   = DSPLCH*DBLE( ISLIM(           IA  ) )
+     *               /        DBLE( LIMP (LNEXT(     IV )) )
+          END IF
+        END IF
+        VELLCH = 0.2D0*DSPLCH
+        VELLCH = DMAX1( VELLCH,VELOLD,VELNEW )
+        VEHLNG = DMIN1( 25.0D0,LENVAP )
+        DISLCH = 0.5D0*DBLE( LENLS(1) )
+        DISLCH = DMIN1( DISLCH,TIMELC*VELLCH )
+        DISLCH = DMAX1( DISLCH,1.5D0*VEHLNG )
+        IF ( MAJRLC(IV) )                        THEN
+          DISLCH = 0.5D0*XRELMI
+        END IF
+        DISEND = DMAX1( DISLCH,0.5D0*DBLE( LENLS(1) ) )
+        LENLS(1) = LENLS(1) - DISEND
+      ELSE
+C[      IF ( LANES(1)         .EQ.-2147483647   )STOP 'LOKFMR LANES  03'
+        LENLS(1) = LGEOM(4,LANES(1)) - LGEOM(1,LANES(1))
+      END IF
+C[    IF ( LANES(2)           .EQ.-2147483647   )STOP 'LOKFMR LANES  04'
+      LENLS(2) = LGEOM(4,LANES(2)) - LGEOM(1,LANES(2))
+C-----LOOK AHEAD INTO THE LANE1 AND LANE2 LANES AND INTO ALL
+C-----INTERSECTION PATHS FROM LANE1 AND LANE2 AND FIND THE VEHICLE AHEAD
+C-----WITH THE MINIMUM POSITION OF THE REAR BUMPER THAT HAS NOT CROSSED
+C-----THE END OF THE LANE
+      IVPVM = 0
+      LENLM = 0
+      POSRM = 1.0D+20
+      DO 1020  I = 1 , 2
+C[    IF ( LANES(1)           .EQ.-2147483647   )STOP 'LOKFMR LANES  05'
+C[    IF ( LANES(2)           .EQ.-2147483647   )STOP 'LOKFMR LANES  06'
+      IF ( (I.EQ.2).AND.(LANES(1).EQ.LANES(2)) ) GO TO 1020
+      KVPV = ILVL(LANES(I))
+                    IF ( KVPV . EQ . IV )        GO TO 1020
+      IF ( KVPV . EQ .  0 )                      THEN
+                    IF ( LANESO(I) )             GO TO 1020
+                    IF ( NBLKS(I) )              GO TO 1020
+C[      IF ( LANES(I)         .EQ.-2147483647   )STOP 'LOKFMR LANES  07'
+                    IF ( NPINT(LANES(I)).EQ.0 )  GO TO 1020
+        DO 1010  K = 1 , NPINT(LANES(I))
+        KP = LINTP(K,LANES(I))
+        KVPV = ILVP(KP)
+                    IF ( KVPV . EQ . IV )        GO TO 1010
+        IF ( KVPV . EQ . 0 )                     THEN
+          KL = LOBL(KP)
+                    IF ( KL . EQ . 0 )           GO TO 1010
+          KVPV = ILVL(KL)
+                    IF (       KVPV  .EQ. 0  )   GO TO 1010
+                    IF ( LPREV(KVPV) .NE. KP )   GO TO 1010
+          CALL  SPVAS  ( KVPV,PKVPV,VKVPV,AKVPV,SKVPV,
+     *                   .FALSE.,.FALSE.,.FALSE.,.TRUE. )
+          POSRB = PKVPV - LVAP(KVPV) - XRELMI
+     *                  - DBLE( LGEOM(1,KL)-LENP(KP) )
+          IF ( MPROS )                           THEN
+            LENPTM = LENPT(KP)
+            IF ( JP . GT . 0 )                   THEN
+              IF ( LENPT(JP) . LT . LENPTM )     LENPTM = LENPT(JP)
+            END IF
+            IF ( POSRB . GT . LENPTM )           GO TO 1010
+          ELSE
+            IF ( POSRB . GT . 0.0D0 )            GO TO 1010
+          END IF
+C[        IF ( LENLS(I)       .EQ.-2147483647 )  STOP 'LOKFMR LENLS  01'
+          PADD  = DBLE( LGEOM(1,LANES(I))+LENLS(I)-LGEOM(1,KL)+LENP(KP))
+          PKVPV = PKVPV + PADD
+          POSRB = POSRB + PADD
+        ELSE
+          CALL  SPVAS  ( KVPV,PKVPV,VKVPV,AKVPV,SKVPV,
+     *                   .FALSE.,.FALSE.,.FALSE.,.TRUE. )
+          POSRB = PKVPV - LVAP(KVPV) - XRELMI
+          IF ( MPROS )                           THEN
+            LENPTM = LENPT(KP)
+            IF ( JP . GT . 0 )                   THEN
+              IF ( LENPT(JP) . LT . LENPTM )     LENPTM = LENPT(JP)
+            END IF
+            IF ( POSRB . GT . LENPTM )           GO TO 1010
+          ELSE
+            IF ( POSRB . GT . 0.0D0 )            GO TO 1010
+          END IF
+C[        IF ( LENLS(I)         .EQ.-2147483647 )STOP 'LOKFMR LENLS  01'
+          PADD  = DBLE( LGEOM(1,LANES(I)) + LENLS(I) )
+          PKVPV = PKVPV + PADD
+          POSRB = POSRB + PADD
+        END IF
+                    IF ( KVPV . EQ . 0 )         GO TO 1010
+C[      IF ( POSRM            .EQ.-2147483647   )STOP 'LOKFMR POSRM  01'
+                    IF ( POSRB . GE . POSRM )    GO TO 1010
+        IF ( MAJCOL(KVPV) )                      THEN
+          DSPLCH = DBLE( ISPD(IV) )
+          IF ( IDISPD(IV) )                      THEN
+            DSPLCH = 0.5D0*DSPLCH
+          END IF
+          IF ( ISPDP (IV) . EQ . 1 )             THEN
+            IF ( MININT(IV) )                    THEN
+              IF ( LOBL(LPRES(IV)) . GT . 0 )    THEN
+                DSPLCH = DSPLCH*DBLE( ISLIM(ISNA(LOBL(LPRES(IV)))) )
+     *                 /        DBLE( LIMP (          LPRES(IV)  ) )
+              END IF
+            ELSE
+              DSPLCH   = DSPLCH*DBLE( ISLIM(ISNA(     LPRES(IV) )) )
+     *                 /        DBLE( LIMP (          LNEXT(IV)  ) )
+            END IF
+          END IF
+          IF ( PKVPV . GT .
+     *         DBLE( LGEOM(2,LANES(I)) ) )       THEN
+            LGEOMB = LGEOM(3,LANES(I))
+            LGEOME = LGEOM(4,LANES(I))
+          ELSE
+            LGEOMB = LGEOM(1,LANES(I))
+            LGEOME = LGEOM(2,LANES(I))
+          END IF
+          DISLCH = 0.5D0*(DBLE( LGEOME )-PKVPV)
+          VELLCH = 0.2D0*DSPLCH
+          VELLCH = DMAX1( VELLCH,VELOLD,VELNEW )
+          VEHLNG = DMIN1( 25.0D0,LENVAP )
+          DISLCH = DMIN1( DISLCH,TIMELC*VELLCH )
+          DISLCH = DMAX1( DISLCH,1.5D0*VEHLNG )
+          IF ( MAJRLC(IV) )                      THEN
+            DISLCH = 0.5D0*XRELMI
+          END IF
+          IF ( I . EQ . 1 )                      THEN
+C-----      FOR THE LANE1 CASE, IF THERE IS 70 PERCENT OF THE LANE
+C-----      CHANGE DISTANCE PLUS OUR VEHICLE LENGTH BEHIND THE REAR
+C-----      BUMPER OF THE COLLISION VEHICLE THEN IGNORE IT
+            POSLCH = LENVAP + DBLE( LGEOMB ) + 0.7D0*DISLCH
+            IF ( POSRB . GE . POSLCH )           THEN
+              GO TO 1010
+            END IF
+          ELSE
+C-----      FOR THE LANE2 CASE, IF THERE IS LANE CHANGE DISTANCE IN
+C-----      FRONT OF THE FRONT BUMPER OF THE COLLISION VEHICLE THEN
+C-----      IGNORE IT
+            POSLCH = DBLE( LGEOME ) - DISLCH
+            IF ( PKVPV . LT . POSLCH )           THEN
+              GO TO 1010
+            END IF
+          END IF
+        END IF
+C[      IF ( KVPV             .EQ.-2147483647   )STOP 'LOKFMR KVPV   01'
+        IVPVM = KVPV
+        LENLM = LGEOM(1,LANES(I)) + LENLS(I)
+        LGM1M = LGEOM(1,LANES(I))
+        NBLKM = NBLKS(I)
+        POSRM = POSRB
+        DIRPTH = ( (KP.EQ.LP1) . OR . (KP.EQ.LP2) )
+ 1010   CONTINUE
+      ELSE
+C[      IF ( LANES(I)         .EQ.-2147483647   )STOP 'LOKFMR LANES  08'
+C[      IF ( LENLS(I)         .EQ.-2147483647   )STOP 'LOKFMR LENLS  02'
+        POSLT = DBLE( LGEOM(1,LANES(I)) + LENLS(I) ) + 1.5D0
+C[      IF ( KVPV             .EQ.-2147483647   )STOP 'LOKFMR KVPV   02'
+        CALL  SPVAS  ( KVPV,PKVPV,VKVPV,AKVPV,SKVPV,
+     *                 .FALSE.,.FALSE.,.FALSE.,.TRUE. )
+        POSRB = PKVPV - LVAP(KVPV) - XRELMI
+        IF ( NBLKS(I) .AND. (POSRB .GT. POSLT) ) GO TO 1020
+C[      IF ( POSRM            .EQ.-2147483647   )STOP 'LOKFMR POSRM  02'
+                    IF ( POSRB . GE . POSRM )    GO TO 1020
+        IF ( MAJCOL(KVPV) )                      THEN
+          DSPLCH = DBLE( ISPD(IV) )
+          IF ( IDISPD(IV) )                      THEN
+            DSPLCH = 0.5D0*DSPLCH
+          END IF
+          IF ( ISPDP (IV) . EQ . 1 )             THEN
+            IF ( MININT(IV) )                    THEN
+              IF ( LOBL(LPRES(IV)) . GT . 0 )    THEN
+                DSPLCH = DSPLCH*DBLE( ISLIM(ISNA(LOBL(LPRES(IV)))) )
+     *                 /        DBLE( LIMP (          LPRES(IV)  ) )
+              END IF
+            ELSE
+              DSPLCH   = DSPLCH*DBLE( ISLIM(ISNA(     LPRES(IV) )) )
+     *                 /        DBLE( LIMP (          LNEXT(IV)  ) )
+            END IF
+          END IF
+          IF ( PKVPV . GT .
+     *         DBLE( LGEOM(2,LANES(I)) ) )       THEN
+            LGEOMB = LGEOM(3,LANES(I))
+            LGEOME = LGEOM(4,LANES(I))
+          ELSE
+            LGEOMB = LGEOM(1,LANES(I))
+            LGEOME = LGEOM(2,LANES(I))
+          END IF
+          DISLCH = 0.5D0*(DBLE( LGEOME )-PKVPV)
+          VELLCH = 0.2D0*DSPLCH
+          VELLCH = DMAX1( VELLCH,VELOLD,VELNEW )
+          VEHLNG = DMIN1( 25.0D0,LENVAP )
+          DISLCH = DMIN1( DISLCH,TIMELC*VELLCH )
+          DISLCH = DMAX1( DISLCH,1.5D0*VEHLNG )
+          IF ( MAJRLC(IV) )                      THEN
+            DISLCH = 0.5D0*XRELMI
+          END IF
+          IF ( I . EQ . 1 )                      THEN
+C-----      FOR THE LANE1 CASE, IF THERE IS 70 PERCENT OF THE LANE
+C-----      CHANGE DISTANCE PLUS OUR VEHICLE LENGTH BEHIND THE REAR
+C-----      BUMPER OF THE COLLISION VEHICLE THEN IGNORE IT
+            POSLCH = LENVAP + DBLE( LGEOMB ) + 0.7D0*DISLCH
+            IF ( POSRB . GE . POSLCH )           THEN
+              GO TO 1020
+            END IF
+          ELSE
+C-----      FOR THE LANE2 CASE, IF THERE IS LANE CHANGE DISTANCE IN
+C-----      FRONT OF THE FRONT BUMPER OF THE COLLISION VEHICLE THEN
+C-----      IGNORE IT
+            POSLCH = DBLE( LGEOME ) - DISLCH
+            IF ( PKVPV . LT . POSLCH )           THEN
+              GO TO 1020
+            END IF
+          END IF
+        END IF
+        IVPVM = KVPV
+        LENLM = 0
+        LGM1M = LGEOM(1,LANES(I))
+        NBLKM = NBLKS(I)
+        POSRM = PKVPV
+        DIRPTH = .TRUE.
+      END IF
+ 1020 CONTINUE
+C-----IF THERE IS NOT A VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE
+C-----REAR BUMPER THEN SET PARAMETERS FOR THE MINIMUM OF LANE1 AND LANE2
+      IF ( IVPVM . EQ . 0 )                      THEN
+C[      IF ( LENLS(1)         .EQ.-2147483647   )STOP 'LOKFMR LENLS  03'
+C[      IF ( LENLS(2)         .EQ.-2147483647   )STOP 'LOKFMR LENLS  04'
+        IF ( LENLS(1) . LE . LENLS(2) )          THEN
+          LENLM = LENLS(1)
+C[        IF ( LANES(1)       .EQ.-2147483647   )STOP 'LOKFMR LANES  09'
+          LGM1M = LGEOM(1,LANES(1))
+          NBLKM = NBLKS(1)
+        ELSE
+          LENLM = LENLS(2)
+C[        IF ( LANES(2)       .EQ.-2147483647   )STOP 'LOKFMR LANES  10'
+          LGM1M = LGEOM(1,LANES(2))
+          NBLKM = NBLKS(2)
+        END IF
+      END IF
+C$    WRITE (6,'(7H IVPVM=,I3,7H LOKFMR)') IVPVM
+      RETURN
+      END                                                               LOKFMR
+C
+C
+C
+      SUBROUTINE LOKIBI ( DIRPTH,POSADD )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'CLASS'
+      INCLUDE 'DIAMON'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'SIGCAM'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           DIRPTH,MPRO2,NBLKM
+      INTEGER           INTL2,IVPVM,JA,JP,K,KL,KP,GETLCV,LENL1,LENL2,
+     *                  LENLM,LENP1,LENP2,LENPTM,LGM1M,MOBL
+      DOUBLE PRECISION  POSADD,POSRB
+C
+C-----SUBROUTINE LOKIBI LOOKS AHEAD AS FAR AS POSSIBLE FROM THE INBOUND
+C-----LANE INTO THE LINKING INTERSECTION PATH FOR THIS VEHICLE AND INTO
+C-----THE LINKING OUTBOUND LANE FOR THE LINKING INTERSECTION PATH (MAY
+C-----BE AN INTERNAL INBOUND LANE FOR A DIAMOND INTERSECTION) AND IF A
+C-----DIAMOND INTERSECTION THEN POSSIBLY INTO THE LINKING INTERSECTION 2
+C-----PATH AND THE LINKING OUTBOUND LANE FOR THE LINKING INTERSECTION 2
+C-----PATH FOR THIS VEHICLE AND IF THERE IS A VEHICLE AHEAD THEN RESETS
+C-----THE PREVIOUS VEHICLE PARAMETERS TO THE VEHICLE AHEAD ELSE RESETS
+C-----THE PREVIOUS VEHICLE PARAMETERS TO THE END OF THE LINK
+C
+C[    INTL2      = -2147483647
+C[    IVPVM      = -2147483647
+C[    JP         = -2147483647
+C[    K          = -2147483647
+C[    KP         = -2147483647
+C[    LENL1      = -2147483647
+C[    LENL2      = -2147483647
+C[    LENLM      = -2147483647
+C[    LENP1      = -2147483647
+C[    LENP2      = -2147483647
+C[    LENPTM     = -2147483647
+C[    LGM1M      = -2147483647
+C[    MOBL       = -2147483647
+C[    POSRB      = -2147483647.0
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'LOKIBI'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----LENP1 = LENGTH OF LINKING INTERSECTION PATH
+C-----LENL1 = LENGTH OF LINKING OUTBOUND LANE FOR THE LINKING
+C-----        INTERSECTION PATH (MAY BE AN INTERNAL INBOUND LANE FOR A
+C-----        DIAMOND INTERSECTION)
+C-----LENP2 = LENGTH OF LINKING INTERSECTION 2 PATH
+C-----LENL2 = LENGTH OF LINKING OUTBOUND LANE FOR THE LINKING
+C-----        INTERSECTION 2 PATH
+      LENP1 = 0
+      LENL1 = 0
+      LENP2 = 0
+      LENL2 = 0
+      DIRPTH = .FALSE.
+      POSADD = 0.0D0
+C-----IF THERE IS A VEHICLE AHEAD ON THE SAME LANE THEN USE THAT VEHICLE
+C-----AS THE PREVIOUS VEHICLE
+      IF ( NOF(IV) . GT . 0 )                    THEN
+        IVPV = NOF(IV)
+        DIRPTH = .TRUE.
+        CALL  SPVAS  ( IVPV,PVPOS,PVVEL,PVACC,PVSLP,
+     *                 .TRUE.,.TRUE.,.FALSE.,.TRUE.  )
+C$      WRITE (6,'(6H IVPV=,I3,14H LOKIBI-RB NOF)') IVPV
+        GO TO 7020
+      END IF
+      JP = LNEXT(IV)
+C-----IF THE REAR BUMPER OF THE LAST VEHICLE ON ANY LINKING INTERSECTION
+C-----PATH FOR THE LANE HAS NOT CROSSED THE MINIMUM TANGENT PORTION OF
+C-----BOTH INTERSECTION PATHS THEN USE THAT VEHICLE AS THE PREVIOUS VEHICLE
+      DO 1010  K = 1 , NPINT(IL)
+      KP = LINTP(K,IL)
+      IVPV = ILVP(KP)
+      IF ( IVPV . EQ . 0 )                       THEN
+        KL = LOBL(KP)
+                    IF ( KL . EQ . 0 )           GO TO 1010
+        IVPV = ILVL(KL)
+                    IF (       IVPV  .EQ. 0  )   GO TO 1010
+                    IF ( LPREV(IVPV) .NE. KP )   GO TO 1010
+        LENP1 = LENP(KP) - LGEOM(1,KL)
+        POSRB = IPOS(IVPV) - LVAP(IVPV) - XRELMI + LENP1
+      ELSE
+        POSRB = IPOS(IVPV) - LVAP(IVPV) - XRELMI
+      END IF
+C[    IF ( JP                 .EQ.-2147483647 )  STOP 'LOKIBI JP     01'
+      LENPTM = MIN0( LENPT(JP),LENPT(KP) )
+      IF ( POSRB . GT . LENPTM )                 THEN
+        LENP1 = 0
+        GO TO 1010
+      END IF
+C$    WRITE (6,'(6H IVPV=,I3,13H LOKIBI-RB IP)') IVPV
+      DIRPTH = (KP.EQ.JP)
+      GO TO 7010
+ 1010 CONTINUE
+C-----IF THERE IS A LAST VEHICLE ON THE LINKING INTERSECTION PATH FOR
+C-----THIS VEHICLE THEN USE THAT VEHICLE AS THE PREVIOUS VEHICLE
+C[    IF ( JP                 .EQ.-2147483647   )STOP 'LOKIBI JP     02'
+      IVPV = ILVP(JP)
+                    IF ( IVPV . EQ . 0 )         GO TO 1020
+C$    WRITE (6,'(6H IVPV=,I3,15H LOKIBI-ILVP IP)') IVPV
+      DIRPTH = .TRUE.
+      GO TO 7010
+ 1020 CONTINUE
+C[    IF ( JP                 .EQ.-2147483647   )STOP 'LOKIBI JP     03'
+                    IF ( LOBL(JP) . EQ . 0 )     GO TO 7010
+      LENP1 = LENP(JP)
+      MOBL  = LOBL(JP)
+C-----IA IS THE APPROACH NUMBER FOR THE LIBL FOR THE INTERSECTION PATH
+C-----JA IS THE APPROACH NUMBER FOR THE LOBL FOR THE INTERSECTION PATH
+      JA = ISNA(LOBL(JP))
+      IF (  DIAMON                . AND .
+     *     (IAFLAG(IA).NE.ILETTI) . AND .
+     *     (IAFLAG(JA).EQ.ILETTI) )              GO TO 2010
+C-----PROCESS THE NON-DIAMOND INTERSECTION CASE WHERE THE VEHICLE IS ON
+C-----THE INBOUND LANE OR THE DIAMOND INTERSECTION CASE WHERE THE
+C-----VEHICLE IS ON THE INTERNAL INBOUND LANE
+C
+C-----LOOK AHEAD INTO THE LINKING OUTBOUND LANE FOR THE LINKING
+C-----INTERSECTION PATH FOR THIS VEHICLE AND INTO ALL INTERSECTION PATHS
+C-----FROM THAT LINKING OUTBOUND LANE AND FIND THE VEHICLE AHEAD WITH
+C-----THE MINIMUM POSITION OF THE REAR BUMPER THAT HAS NOT CROSSED THE
+C-----END OF THE LANE
+      CALL  LOKFMR ( MOBL,.TRUE.,0,.FALSE.,.TRUE.,0,
+     *               IVPVM,LENLM,LGM1M,NBLKM,DIRPTH  )
+C-----IF THERE IS A VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR
+C-----BUMPER THAT HAS NOT CROSSED THE END OF THE LANE THEN USE THAT
+C-----VEHICLE AS THE PREVIOUS VEHICLE
+C[    IF ( IVPVM              .EQ.-2147483647   )STOP 'LOKIBI IVPVM  01'
+      IF ( IVPVM . EQ . 0 )                      THEN
+C[      IF ( LENLM            .EQ.-2147483647   )STOP 'LOKIBI LENLM  01'
+        LENL1 = LENLM
+        IF ( NBLKM )                             THEN
+          GO TO 6010
+        ELSE
+          GO TO 5010
+        END IF
+      ELSE
+        IVPV  = IVPVM
+C[      IF ( LENLM            .EQ.-2147483647   )STOP 'LOKIBI LENLM  02'
+C[      IF ( LGM1M            .EQ.-2147483647   )STOP 'LOKIBI LGM1M  01'
+        LENL1 = LENLM - LGM1M
+C$      WRITE (6,'(6H IVPV=,I3,21H LOKIBI-IVPVM LOBL IP)') IVPV
+        GO TO 7010
+      END IF
+ 2010 CONTINUE
+C-----PROCESS THE DIAMOND INTERSECTION CASE WHERE THE VEHICLE IS ON THE
+C-----EXTERNAL INBOUND LANE
+C
+C-----DETERMINE THE LINKING INBOUND LANE FOR THE LINKING INTERSECTION 2
+C-----PATH AND IF THE VEHICLE MAY PROCEED INTO INTERSECTION 2
+      INTL2 = 0
+      MPRO2 = .FALSE.
+                    IF ( INT2P(IV) . EQ . 0 )    GO TO 2060
+      INTL2 = LIBL(INT2P(IV))
+C-----        OUTB  UC  YSC  SSC  SIG SLTOR SRTOR
+      GO TO ( 9250,2050,2060,2060,2020,2020,2020 ) , GETLCV ( IV,INTL2 )
+ 2020 CONTINUE
+ 2030 CONTINUE
+      CALL  SIGARP  ( ISISET(ICAMPC,IBLN(INTL2)),
+     *                RITURN(IPT(INT2P(IV))),INT2S(IV) )
+ 2040 CONTINUE
+C-----          G    A    R   PG
+      GO TO ( 2050,2060,2060,2050 ) , INT2S(IV)
+ 2050 CONTINUE
+      MPRO2 = .TRUE.
+ 2060 CONTINUE
+C-----LOOK AHEAD INTO THE INTERNAL INBOUND LANE FOR THE LINKING
+C-----INTERSECTION PATH FOR THIS VEHICLE AND INTO ALL INTERSECTION PATHS
+C-----FROM THAT INTERNAL INBOUND LANE AND LOOK AHEAD INTO THE INTERNAL
+C-----INBOUND LANE FOR THE LINKING INTERSECTION 2 PATH FOR THIS VEHICLE
+C-----AND INTO ALL INTERSECTION PATHS FROM THAT INTERNAL INBOUND LANE
+C-----AND FIND THE VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR
+C-----BUMPER THAT HAS NOT CROSSED THE END OF THE LANE
+C[    IF ( INTL2              .EQ.-2147483647   )STOP 'LOKIBI INTL2  03'
+C[    IF ( MOBL               .EQ.-2147483647   )STOP 'LOKIBI MOBL   01'
+      CALL  LOKFMR ( MOBL,.FALSE.,INTL2,.FALSE.,MPRO2,INT2P(IV),
+     *               IVPVM,LENLM,LGM1M,NBLKM,DIRPTH              )
+C-----IF THERE IS A VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR
+C-----BUMPER THAT HAS NOT CROSSED THE END OF THE LANE THEN USE THAT
+C-----VEHICLE AS THE PREVIOUS VEHICLE
+C[    IF ( IVPVM              .EQ.-2147483647   )STOP 'LOKIBI IVPVM  02'
+                    IF ( IVPVM . EQ . 0 )        GO TO 3010
+      IVPV  = IVPVM
+C[    IF ( LENLM              .EQ.-2147483647   )STOP 'LOKIBI LENLM  03'
+C[    IF ( LGM1M              .EQ.-2147483647   )STOP 'LOKIBI LGM1M  02'
+      LENL1 = LENLM - LGM1M
+C$    WRITE (6,'(6H IVPV=,I3,26H LOKIBI-IVPVM LOBL/LIBL IP)') IVPV
+      GO TO 7010
+ 3010 CONTINUE
+C[    IF ( LENLM              .EQ.-2147483647   )STOP 'LOKIBI LENLM  04'
+      LENL1 = LENLM
+C-----IF THE INTERNAL INBOUND LANE IS BLOCKED OR THE VEHICLE MAY NOT
+C-----PROCEED INTO INTERSECTION 2 THEN DO NOT LOOK AHEAD ANYMORE
+            IF ( NBLKM .OR. (.NOT. MPRO2) )      GO TO 6010
+C-----IF THERE IS A LAST VEHICLE ON THE LINKING INTERSECTION 2 PATH FOR
+C-----THIS VEHICLE THEN USE THAT VEHICLE AS THE PREVIOUS VEHICLE
+                    IF ( INT2P(IV) . EQ . 0 )    GO TO 5010
+      IVPV = ILVP(INT2P(IV))
+                    IF ( IVPV . EQ . 0 )         GO TO 4010
+C$    WRITE (6,'(6H IVPV=,I3,16H LOKIBI-ILVP IP2)') IVPV
+      DIRPTH = .TRUE.
+      GO TO 7010
+ 4010 CONTINUE
+            IF (      INT2P(IV)  . EQ . 0 )      GO TO 5010
+            IF ( LOBL(INT2P(IV)) . EQ . 0 )      GO TO 5010
+      LENP2 = LENP(INT2P(IV))
+      MOBL  = LOBL(INT2P(IV))
+C-----LOOK AHEAD INTO THE LINKING OUTBOUND LANE FOR THE LINKING
+C-----INTERSECTION 2 PATH FOR THIS VEHICLE AND FIND THE VEHICLE AHEAD
+C-----WITH THE MINIMUM POSITION OF THE REAR BUMPER THAT HAS NOT CROSSED
+C-----THE END OF THE LANE
+      CALL  LOKFMR ( MOBL,.TRUE.,0,.FALSE.,.TRUE.,0,
+     *               IVPVM,LENLM,LGM1M,NBLKM,DIRPTH  )
+C-----IF THERE IS A VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR
+C-----BUMPER THAT HAS NOT CROSSED THE END OF THE LANE THEN USE THAT
+C-----VEHICLE AS THE PREVIOUS VEHICLE
+C[    IF ( IVPVM              .EQ.-2147483647   )STOP 'LOKIBI IVPVM  03'
+      IF ( IVPVM . EQ . 0 )                      THEN
+C[      IF ( LENLM            .EQ.-2147483647   )STOP 'LOKIBI LENLM  05'
+        LENL2 = LENLM
+        IF ( NBLKM )                             THEN
+          GO TO 6010
+        ELSE
+          GO TO 5010
+        END IF
+      ELSE
+        IVPV  = IVPVM
+C[      IF ( LENLM            .EQ.-2147483647   )STOP 'LOKIBI LENLM  06'
+C[      IF ( LGM1M            .EQ.-2147483647   )STOP 'LOKIBI LGM1M  03'
+        LENL2 = LENLM - LGM1M
+C$      WRITE (6,'(6H IVPV=,I3,22H LOKIBI-IVPVM LOBL IP2)') IVPV
+        GO TO 7010
+      END IF
+ 5010 CONTINUE
+C-----SET PREVIOUS VEHICLE PARAMETERS TO PROCEED AT THE END OF THE LINK
+      IVPV  = 0
+      DIRPTH = .FALSE.
+      POSADD = 0.0D0
+C[    IF ( LENL1              .EQ.-2147483647   )STOP 'LOKIBI LENL1  01'
+C[    IF ( LENL2              .EQ.-2147483647   )STOP 'LOKIBI LENL2  01'
+C[    IF ( LENP1              .EQ.-2147483647   )STOP 'LOKIBI LENP1  01'
+C[    IF ( LENP2              .EQ.-2147483647   )STOP 'LOKIBI LENP2  01'
+      MPRO(IV) = .TRUE.
+      IF ( ((LENP1+LENL1+LENP2+LENL2) .EQ. 0         ) . AND .
+     *     (ENDLN . GT . (DBLE( LGEOM(4,IL) )+1.5D0) ) )
+     *                                           THEN
+        PVPOS = ENDLN
+      ELSE
+        PVPOS =
+     *       DBLE( LGEOM(4,IL) + LENP1 + LENL1 + LENP2 + LENL2 ) + 1.5D0
+      END IF
+      IF ( MFSTPF(IV) )                          THEN
+        IF ( FSTACT(IV) )                        THEN
+          IF ( FSTPOS(IV) . LT . PVPOS )         THEN
+            PVPOS = FSTPOS(IV)
+            MPRO(IV) = .FALSE.
+          END IF
+        END IF
+        IF ( VMSASM(IV) . GT . 0 )               THEN
+          IF ( ( IVMSMG(VMSASM(IV)).EQ.VMSMSI ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSL ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSM ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSC ) )THEN
+            IF ( VMSPST(IV) . LT . PVPOS )       THEN
+              PVPOS = VMSPST(IV)
+              MPRO(IV) = .FALSE.
+            END IF
+          END IF
+        END IF
+      ELSE
+        CALL  SETDSP  ( IV,POSNEW,DBLE( ISPD(IV) ),.FALSE.,PVVEL )
+      END IF
+      PVACC = 0.0D0
+      PVSLP = 0.0D0
+C$    WRITE (6,'(7H PVPOS=,F9.0,16H LOKIBI-PROC END)') PVPOS
+      RETURN
+ 6010 CONTINUE
+C-----SET PREVIOUS VEHICLE PARAMETERS TO STOP AT THE END OF THE LINK
+      IVPV  = 0
+      DIRPTH = .FALSE.
+      POSADD = 0.0D0
+C[    IF ( LENL1              .EQ.-2147483647   )STOP 'LOKIBI LENL1  02'
+C[    IF ( LENL2              .EQ.-2147483647   )STOP 'LOKIBI LENL2  02'
+C[    IF ( LENP1              .EQ.-2147483647   )STOP 'LOKIBI LENP1  02'
+C[    IF ( LENP2              .EQ.-2147483647   )STOP 'LOKIBI LENP2  02'
+      IF ( ((LENP1+LENL1+LENP2+LENL2) . EQ . 0      ) . AND .
+     *     (ENDLN . GT . (DBLE( LGEOM(4,IL) )+1.5D0)) )
+     *                                           THEN
+        PVPOS = ENDLN
+      ELSE
+        PVPOS =
+     *       DBLE( LGEOM(4,IL) + LENP1 + LENL1 + LENP2 + LENL2 ) + 1.5D0
+      END IF
+      IF ( MFSTPF(IV) )                          THEN
+        IF ( FSTACT(IV) )                        THEN
+          IF ( FSTPOS(IV) . LT . PVPOS )         PVPOS = FSTPOS(IV)
+        END IF
+        IF ( VMSASM(IV) . GT . 0 )               THEN
+          IF ( ( IVMSMG(VMSASM(IV)).EQ.VMSMSI ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSL ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSM ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSC ) )THEN
+            IF ( VMSPST(IV) . LT . PVPOS )       PVPOS = VMSPST(IV)
+          END IF
+        END IF
+      END IF
+      PVVEL = 0.0D0
+      PVACC = 0.0D0
+      PVSLP = 0.0D0
+      MPRO(IV) = .FALSE.
+C$    WRITE (6,'(7H PVPOS=,F9.0,16H LOKIBI-STOP END)') PVPOS
+      RETURN
+ 7010 CONTINUE
+C-----RESET THE PREVIOUS VEHICLE PARAMETERS TO THE VEHICLE AHEAD
+      CALL  SPVAS   ( IVPV,PVPOS,PVVEL,PVACC,PVSLP,
+     *                .TRUE.,.TRUE.,.FALSE.,.TRUE.  )
+C[    IF ( LENL1              .EQ.-2147483647   )STOP 'LOKIBI LENL1  03'
+C[    IF ( LENL2              .EQ.-2147483647   )STOP 'LOKIBI LENL2  03'
+C[    IF ( LENP1              .EQ.-2147483647   )STOP 'LOKIBI LENP1  03'
+C[    IF ( LENP2              .EQ.-2147483647   )STOP 'LOKIBI LENP2  03'
+      POSADD = DBLE( LGEOM(4,IL) + LENP1 + LENL1 + LENP2 + LENL2 )
+      PVPOS = PVPOS + POSADD
+ 7020 CONTINUE
+      IF ( MFSTPF(IV) )                          THEN
+        IF ( FSTACT(IV) )                        THEN
+          IF ( FSTPOS(IV) . LT . PVPOS )         PVPOS = FSTPOS(IV)
+        END IF
+        IF ( VMSASM(IV) . GT . 0 )               THEN
+          IF ( ( IVMSMG(VMSASM(IV)).EQ.VMSMSI ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSL ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSM ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSC ) )THEN
+            IF ( VMSPST(IV) . LT . PVPOS )       PVPOS = VMSPST(IV)
+          END IF
+        END IF
+      ELSE
+                    IF ( MPRO(IV) )              MFINL(IV) = .FALSE.
+      END IF
+C$    WRITE (6,'(6H IVPV=,I3,7H PVPOS=,F9.0)') IVPV,PVPOS
+      RETURN
+C-----PROCESS THE EXECUTION ERROR AND STOP
+ 9250 CONTINUE
+      CALL  ABORTR  ( 'STOP 925 - '                             //
+     *                'INBOUND LANE HAS LCONTR FOR OUTBOUND - ' //
+     *                'LOKIBI'                                     )
+      STOP  925
+      END                                                               LOKIBI
+C
+C
+C
+      SUBROUTINE LOKIOB ( DIRPTH,POSADD )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'CLASS'
+      INCLUDE 'DIAMON'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'SIGCAM'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           DIRPTH,MPRO2,NBLKM
+      INTEGER           INTL2,IVPVM,JA,GETLCV,LENL1,LENL2,LENLM,LENP2,
+     *                  LGM1M,MOBL
+      DOUBLE PRECISION  POSADD
+C
+C-----SUBROUTINE LOKIOB LOOKS AHEAD AS FAR AS POSSIBLE FROM THE
+C-----INTERSECTION PATH INTO THE LINKING OUTBOUND LANE FOR THIS VEHICLE
+C-----(MAY BE AN INTERNAL INBOUND LANE FOR A DIAMOND INTERSECTION) AND
+C-----IF A DIAMOND INTERSECTION THEN POSSIBLY INTO THE LINKING
+C-----INTERSECTION 2 PATH AND THE LINKING OUTBOUND LANE FOR THE LINKING
+C-----INTERSECTION 2 PATH FOR THIS VEHICLE AND IF THERE IS A VEHICLE
+C-----AHEAD THEN RESETS THE PREVIOUS VEHICLE PARAMETERS TO THE VEHICLE
+C-----AHEAD ELSE RESETS THE PREVIOUS VEHICLE PARAMETERS TO THE END OF
+C-----THE LINK
+C
+C[    INTL2      = -2147483647
+C[    IVPVM      = -2147483647
+C[    LENL1      = -2147483647
+C[    LENL2      = -2147483647
+C[    LENLM      = -2147483647
+C[    LENP2      = -2147483647
+C[    LGM1M      = -2147483647
+C[    MOBL       = -2147483647
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'LOKIOB'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----LENL1 = LENGTH OF LINKING OUTBOUND LANE FOR THE INTERSECTION PATH
+C-----        (MAY BE AN INTERNAL INBOUND LANE FOR A DIAMOND
+C-----        INTERSECTION)
+C-----LENP2 = LENGTH OF LINKING INTERSECTION 2 PATH
+C-----LENL2 = LENGTH OF LINKING OUTBOUND LANE FOR THE LINKING
+C-----        INTERSECTION 2 PATH
+      LENL1 = 0
+      LENP2 = 0
+      LENL2 = 0
+      DIRPTH = .FALSE.
+      POSADD = 0.0D0
+                    IF (      IP  . EQ . 0 )     RETURN
+                    IF ( LIBL(IP) . EQ . 0 )     RETURN
+                    IF ( LOBL(IP) . EQ . 0 )     RETURN
+      MOBL = LOBL(IP)
+      IA   = ISNA(LIBL(IP))
+      JA   = ISNA(LOBL(IP))
+C-----IA IS THE APPROACH NUMBER FOR THE LIBL FOR THE INTERSECTION PATH
+C-----JA IS THE APPROACH NUMBER FOR THE LOBL FOR THE INTERSECTION PATH
+      IF (  DIAMON                . AND .
+     *     (IAFLAG(IA).NE.ILETTI) . AND .
+     *     (IAFLAG(JA).EQ.ILETTI) )              GO TO 2010
+C-----PROCESS THE NON-DIAMOND INTERSECTION CASE WHERE THE VEHICLE IS ON
+C-----THE INTERSECTION PATH OR THE DIAMOND INTERSECTION CASE WHERE THE
+C-----VEHICLE IS ON THE INTERSECTION 2 PATH
+C
+C-----LOOK AHEAD INTO THE LINKING OUTBOUND LANE FOR THE INTERSECTION
+C-----PATH FOR THIS VEHICLE AND INTO ALL INTERSECTION PATHS FROM THAT
+C-----LINKING OUTBOUND LANE AND FIND THE VEHICLE AHEAD WITH THE MINIMUM
+C-----POSITION OF THE REAR BUMPER THAT HAS NOT CROSSED THE END OF THE
+C-----LANE
+      CALL  LOKFMR ( MOBL,.TRUE.,0,.FALSE.,.TRUE.,0,
+     *               IVPVM,LENLM,LGM1M,NBLKM,DIRPTH  )
+C-----IF THERE IS A VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR
+C-----BUMPER THAT HAS NOT CROSSED THE END OF THE LANE THEN USE THAT
+C-----VEHICLE AS THE PREVIOUS VEHICLE
+C[    IF ( IVPVM              .EQ.-2147483647   )STOP 'LOKIOB IVPVM  01'
+      IF ( IVPVM . EQ . 0 )                      THEN
+C[      IF ( LENLM            .EQ.-2147483647   )STOP 'LOKIOB LENLM  01'
+        LENL1 = LENLM
+        IF ( NBLKM )                             THEN
+          GO TO 6010
+        ELSE
+          GO TO 5010
+        END IF
+      ELSE
+        IVPV  = IVPVM
+C[      IF ( LENLM            .EQ.-2147483647   )STOP 'LOKIOB LENLM  02'
+C[      IF ( LGM1M            .EQ.-2147483647   )STOP 'LOKIOB LGM1M  01'
+        LENL1 = LENLM - LGM1M
+C$      WRITE (6,'(6H IVPV=,I3,21H LOKIOB-IVPVM LOBL IP)') IVPV
+        GO TO 7010
+      END IF
+ 2010 CONTINUE
+C-----PROCESS THE DIAMOND INTERSECTION CASE WHERE THE VEHICLE IS ON THE
+C-----INTERSECTION 1 PATH
+C
+C-----DETERMINE THE LINKING INBOUND LANE FOR THE LINKING INTERSECTION 2
+C-----PATH AND IF THE VEHICLE MAY PROCEED INTO INTERSECTION 2
+      INTL2 = 0
+      MPRO2 = .FALSE.
+                    IF ( INT2P(IV) . EQ . 0 )    GO TO 2060
+      INTL2 = LIBL(INT2P(IV))
+C[    IF ( INTL2              .EQ.-2147483647   )STOP 'LOKIOB INTL2  01'
+C-----        OUTB  UC  YSC  SSC  SIG SLTOR SRTOR
+      GO TO ( 9250,2050,2060,2060,2020,2020,2020 ) , GETLCV( IV,INTL2 )
+ 2020 CONTINUE
+ 2030 CONTINUE
+      CALL  SIGARP  ( ISISET(ICAMPC,IBLN(INTL2)),
+     *                RITURN(IPT(INT2P(IV))),INT2S(IV) )
+ 2040 CONTINUE
+C-----          G    A    R   PG
+      GO TO ( 2050,2060,2060,2050 ) , INT2S(IV)
+ 2050 CONTINUE
+      MPRO2 = .TRUE.
+ 2060 CONTINUE
+C-----LOOK AHEAD INTO THE INTERNAL INBOUND LANE FOR THE INTERSECTION
+C-----PATH FOR THIS VEHICLE AND INTO ALL INTERSECTION PATHS FROM THAT
+C-----INTERNAL INBOUND LANE AND LOOK AHEAD INTO THE INTERNAL INBOUND
+C-----LANE FOR THE LINKING INTERSECTION 2 PATH FOR THIS VEHICLE AND INTO
+C-----ALL INTERSECTION PATHS FROM THAT INTERNAL INBOUND LANE AND FIND
+C-----THE VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR BUMPER
+C-----THAT HAS NOT CROSSED THE END OF THE LANE
+C[    IF ( INTL2              .EQ.-2147483647   )STOP 'LOKIOB INTL2  04'
+C[    IF ( MOBL               .EQ.-2147483647   )STOP 'LOKIOB MOBL   01'
+      CALL  LOKFMR ( MOBL,.FALSE.,INTL2,.FALSE.,MPRO2,INT2P(IV),
+     *               IVPVM,LENLM,LGM1M,NBLKM,DIRPTH              )
+C-----IF THERE IS A VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR
+C-----BUMPER THAT HAS NOT CROSSED THE END OF THE LANE THEN USE THAT
+C-----VEHICLE AS THE PREVIOUS VEHICLE
+C[    IF ( IVPVM              .EQ.-2147483647   )STOP 'LOKIOB IVPVM  02'
+                    IF ( IVPVM . EQ . 0 )        GO TO 3010
+      IVPV  = IVPVM
+C[    IF ( LENLM              .EQ.-2147483647   )STOP 'LOKIOB LENLM  03'
+C[    IF ( LGM1M              .EQ.-2147483647   )STOP 'LOKIOB LGM1M  02'
+      LENL1 = LENLM - LGM1M
+C$    WRITE (6,'(6H IVPV=,I3,26H LOKIOB-IVPVM LOBL/LIBL IP)') IVPV
+      GO TO 7010
+ 3010 CONTINUE
+C[    IF ( LENLM              .EQ.-2147483647   )STOP 'LOKIOB LENLM  04'
+      LENL1 = LENLM
+C-----IF THE INTERNAL INBOUND LANE IS BLOCKED OR THE VEHICLE MAY NOT
+C-----PROCEED INTO INTERSECTION 2 THEN DO NOT LOOK AHEAD ANYMORE
+            IF ( NBLKM .OR. (.NOT. MPRO2) )      GO TO 6010
+C-----IF THERE IS A LAST VEHICLE ON THE LINKING INTERSECTION 2 PATH FOR
+C-----THIS VEHICLE THEN USE THAT VEHICLE AS THE PREVIOUS VEHICLE
+                    IF ( INT2P(IV) . EQ . 0 )    GO TO 5010
+      IVPV = ILVP(INT2P(IV))
+                    IF ( IVPV . EQ . 0 )         GO TO 4010
+C$    WRITE (6,'(6H IVPV=,I3,16H LOKIOB-ILVP IP2)') IVPV
+      DIRPTH = .TRUE.
+      GO TO 7010
+ 4010 CONTINUE
+            IF (      INT2P(IV)  . EQ . 0 )      GO TO 5010
+            IF ( LOBL(INT2P(IV)) . EQ . 0 )      GO TO 5010
+      LENP2 = LENP(INT2P(IV))
+      MOBL  = LOBL(INT2P(IV))
+C-----LOOK AHEAD INTO THE LINKING OUTBOUND LANE FOR THE LINKING
+C-----INTERSECTION 2 PATH FOR THIS VEHICLE AND FIND THE VEHICLE AHEAD
+C-----WITH THE MINIMUM POSITION OF THE REAR BUMPER THAT HAS NOT CROSSED
+C-----THE END OF THE LANE
+      CALL  LOKFMR ( MOBL,.TRUE.,0,.FALSE.,.TRUE.,0,
+     *               IVPVM,LENLM,LGM1M,NBLKM,DIRPTH  )
+C-----IF THERE IS A VEHICLE AHEAD WITH THE MINIMUM POSITION OF THE REAR
+C-----BUMPER THAT HAS NOT CROSSED THE END OF THE LANE THEN USE THAT
+C-----VEHICLE AS THE PREVIOUS VEHICLE
+C[    IF ( IVPVM              .EQ.-2147483647   )STOP 'LOKIOB IVPVM  03'
+      IF ( IVPVM . EQ . 0 )                      THEN
+C[      IF ( LENLM            .EQ.-2147483647   )STOP 'LOKIOB LENLM  05'
+        LENL2 = LENLM
+        IF ( NBLKM )                             THEN
+          GO TO 6010
+        ELSE
+          GO TO 5010
+        END IF
+      ELSE
+        IVPV  = IVPVM
+C[      IF ( LENLM            .EQ.-2147483647   )STOP 'LOKIOB LENLM  06'
+C[      IF ( LGM1M            .EQ.-2147483647   )STOP 'LOKIOB LGM1M  03'
+        LENL2 = LENLM - LGM1M
+C$      WRITE (6,'(6H IVPV=,I3,22H LOKIOB-IVPVM LOBL IP2)') IVPV
+        GO TO 7010
+      END IF
+ 5010 CONTINUE
+C-----SET PREVIOUS VEHICLE PARAMETERS TO PROCEED AT THE END OF THE LINK
+      IVPV  = 0
+      DIRPTH = .FALSE.
+      POSADD = 0.0D0
+C[    IF ( LENL1              .EQ.-2147483647   )STOP 'LOKIOB LENL1  01'
+C[    IF ( LENL2              .EQ.-2147483647   )STOP 'LOKIOB LENL2  01'
+C[    IF ( LENP2              .EQ.-2147483647   )STOP 'LOKIOB LENP2  01'
+      MPRO(IV) = .TRUE.
+      PVPOS = POSBIG
+      IF ( MFSTPF(IV) )                          THEN
+        IF ( FSTACT(IV) )                        THEN
+          IF ( FSTPOS(IV) . LT . PVPOS )         THEN
+            PVPOS = FSTPOS(IV)
+            MPRO(IV) = .FALSE.
+          END IF
+        END IF
+        IF ( VMSASM(IV) . GT . 0 )               THEN
+          IF ( ( IVMSMG(VMSASM(IV)).EQ.VMSMSI ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSL ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSM ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSC ) )THEN
+            IF ( VMSPST(IV) . LT . PVPOS )       THEN
+              PVPOS = VMSPST(IV)
+              MPRO(IV) = .FALSE.
+            END IF
+          END IF
+        END IF
+      ELSE
+        CALL  SETDSP  ( IV,POSNEW,DBLE( ISPD(IV) ),.FALSE.,PVVEL )
+      END IF
+      PVACC = 0.0D0
+      PVSLP = 0.0D0
+C$    WRITE (6,'(7H PVPOS=,F9.0,16H LOKIOB-PROC END)') PVPOS
+      RETURN
+ 6010 CONTINUE
+C-----SET PREVIOUS VEHICLE PARAMETERS TO STOP AT THE END OF THE LINK
+      IVPV  = 0
+      DIRPTH = .FALSE.
+      POSADD = 0.0D0
+C[    IF ( LENL1              .EQ.-2147483647   )STOP 'LOKIOB LENL1  02'
+C[    IF ( LENL2              .EQ.-2147483647   )STOP 'LOKIOB LENL2  02'
+C[    IF ( LENP2              .EQ.-2147483647   )STOP 'LOKIOB LENP2  02'
+      PVPOS = LENP(IP) + LENL1 + LENP2 + LENL2 + 1.5D0
+      IF ( MFSTPF(IV) )                          THEN
+        IF ( FSTACT(IV) )                        THEN
+          IF ( FSTPOS(IV) . LT . PVPOS )         PVPOS = FSTPOS(IV)
+        END IF
+        IF ( VMSASM(IV) . GT . 0 )               THEN
+          IF ( ( IVMSMG(VMSASM(IV)).EQ.VMSMSI ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSL ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSM ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSC ) )THEN
+            IF ( VMSPST(IV) . LT . PVPOS )       PVPOS = VMSPST(IV)
+          END IF
+        END IF
+      END IF
+      PVVEL = 0.0D0
+      PVACC = 0.0D0
+      PVSLP = 0.0D0
+      MPRO(IV) = .FALSE.
+C$    WRITE (6,'(7H PVPOS=,F9.0,16H LOKIOB-STOP END)') PVPOS
+      RETURN
+ 7010 CONTINUE
+C-----RESET THE PREVIOUS VEHICLE PARAMETERS TO THE VEHICLE AHEAD
+      MFINL(IV) = .FALSE.
+      CALL  SPVAS   ( IVPV,PVPOS,PVVEL,PVACC,PVSLP,
+     *                .TRUE.,.TRUE.,.FALSE.,.TRUE.  )
+C[    IF ( LENL1              .EQ.-2147483647   )STOP 'LOKIOB LENL1  03'
+C[    IF ( LENL2              .EQ.-2147483647   )STOP 'LOKIOB LENL2  03'
+C[    IF ( LENP2              .EQ.-2147483647   )STOP 'LOKIOB LENP2  03'
+      POSADD = LENP(IP) + LENL1 + LENP2 + LENL2
+      PVPOS = PVPOS + POSADD
+      IF ( MFSTPF(IV) )                          THEN
+        IF ( FSTACT(IV) )                        THEN
+          IF ( FSTPOS(IV) . LT . PVPOS )         THEN
+            PVPOS = FSTPOS(IV)
+            PVVEL = 0.0D0
+            PVACC = 0.0D0
+            PVSLP = 0.0D0
+          END IF
+        END IF
+        IF ( VMSASM(IV) . GT . 0 )               THEN
+          IF ( ( IVMSMG(VMSASM(IV)).EQ.VMSMSI ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSL ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSM ) . OR .
+     *         ( IVMSMG(VMSASM(IV)).EQ.VMSMSC ) )THEN
+            IF ( VMSPST(IV) . LT . PVPOS )       THEN
+              PVPOS = VMSPST(IV)
+              PVVEL = 0.0D0
+              PVACC = 0.0D0
+              PVSLP = 0.0D0
+            END IF
+          END IF
+        END IF
+      END IF
+C$    WRITE (6,'(6H IVPV=,I3,7H PVPOS=,F9.0)') IVPV,PVPOS
+      RETURN
+C-----PROCESS THE EXECUTION ERROR AND STOP
+ 9250 CONTINUE
+      CALL  ABORTR  ( 'STOP 925 - '                             //
+     *                'INBOUND LANE HAS LCONTR FOR OUTBOUND - ' //
+     *                'LOKIOB'                                     )
+      STOP  925
+      END                                                               LOKIOB
+C
+C
+C
+      SUBROUTINE NEGEXP ( MEAN,NEXVAL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      DOUBLE PRECISION  MEAN,NEXVAL,SRAN
+C
+C-----SUBROUTINE NEGEXP GENERATES A NEGATIVE EXPONENTIAL RANDOM DEVIATE
+C
+C-----NEGEXP PARAMETER - NONE
+      NEXVAL = -DLOG( SRAN() )*MEAN
+      RETURN
+      END                                                               NEGEXP
+C
+C
+C
+      SUBROUTINE NORMAL ( MEAN,STDDEV,NORVAL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      INTEGER           I
+      DOUBLE PRECISION  NORVAL,MEAN,SRAN,STDDEV,SUMRAN
+C
+C-----SUBROUTINE NORMAL GENERATES A NORMALLY DISTRIBUTED RANDOM DEVIATE
+C
+C-----NORMAL PARAMETER - STANDARD DEVIATION
+C-----THE PARAMETER FOR THE NORMAL HEADWAY DISTRIBUTION IS THE STANDARD
+C-----DEVIATION.
+      SUMRAN = 0.0D0
+      DO 1010  I = 1 , 12
+      SUMRAN = SUMRAN + SRAN()
+ 1010 CONTINUE
+      NORVAL = MEAN + STDDEV*(SUMRAN-6.0D0)
+      RETURN
+      END                                                               NORMAL
+C
+C
+C
+      SUBROUTINE PEDVAL ( IPHASE )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'PHASES'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      INTEGER           IPHASE
+      DOUBLE PRECISION  TIMVAL
+C
+C-----SUBROUTINE PEDVAL PROCESSES PEDESTRIANS PRESSING THE WALK BUTTON
+C
+      IF ( PEDVOL(IPHASE) . LE . 0 )             RETURN
+      DO WHILE ( PEDTIM(IPHASE) . LT . (TIME+DT-0.005D0) )
+        PDTRIP(IPHASE) = .TRUE.
+        IF ( ( ICONTR .GE. ICNEMA ) . AND . ( ICONTR .LE. ICHDWR ) )
+     *                                           THEN
+          IF (PEDINT(IPHASE) .NE. INTERG)        THEN
+C-----      DON'T LOCK CALL DURING PEDESTRIAN GREEN
+            PDCALL(IPHASE) = .TRUE.
+          END IF
+        END IF
+        IF      ( PEDDIS(IPHASE) .EQ. "CONSTAN" )THEN
+C-----    PROCESS CONSTANT RANDOM DEVIATES
+          CALL  CONST   ( PEDTMN(IPHASE)               ,TIMVAL )
+        ELSE IF ( PEDDIS(IPHASE) .EQ. "ERLANG"  )THEN
+C-----    PROCESS ERLANG RANDOM DEVIATES
+          CALL  ERLANG  ( PEDTMN(IPHASE),IDNINT( PEDPAR(IPHASE) )
+     *                                                 ,TIMVAL )
+        ELSE IF ( PEDDIS(IPHASE) .EQ. "GAMMA"   )THEN
+C-----    PROCESS GAMMA RANDOM DEVIATES
+          CALL  GAMMA   ( PEDTMN(IPHASE),PEDPAR(IPHASE),TIMVAL )
+        ELSE IF ( PEDDIS(IPHASE) .EQ. "LOGNRML" )THEN
+C-----    PROCESS LOGNORMAL RANDOM DEVIATES
+          CALL  LGNRML  ( PEDTMN(IPHASE),PEDPAR(IPHASE),TIMVAL )
+        ELSE IF ( PEDDIS(IPHASE) .EQ. "NEGEXP"  )THEN
+C-----    PROCESS NEGATIVE EXPONENTIAL RANDOM DEVIATES
+          CALL  NEGEXP  ( PEDTMN(IPHASE)               ,TIMVAL )
+        ELSE IF ( PEDDIS(IPHASE) .EQ. "SNEGEXP" )THEN
+C-----    PROCESS SHIFTED NEGATIVE EXPONENTIAL RANDOM DEVIATES
+          CALL  SNEGEX  ( PEDTMN(IPHASE),PEDPAR(IPHASE),TIMVAL )
+        ELSE IF ( PEDDIS(IPHASE) .EQ. "UNIFORM" )THEN
+C-----    PROCESS UNIFORM RANDOM DEVIATES
+          CALL  UNIFRM  ( PEDTMN(IPHASE),PEDPAR(IPHASE),TIMVAL )
+        END IF
+        PEDTIM(IPHASE) = PEDTIM(IPHASE) + DMAX1( TIMVAL,0.0D0 )
+      END DO
+      RETURN
+      END                                                               PEDVAL
+C
+C
+C
+      SUBROUTINE PREDTV ( T,PN,VN,AN,SN )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONCHK'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      DOUBLE PRECISION  A,ACCM,ACCN,ACCV,AN,ANNOF,B,C,CRISLP,DV,DVNOF,
+     *                  PIJRI2,PIJRIS,PIJRIV,PIJRJ2,PIJRJS,PIJRJV,PN,
+     *                  PNNOF,RELDIS,SLOPE,SLPTMP,SN,SNNOF,SP,SPD,T,
+     *                  TMAX,TS,TT,VN,VNNOF,VTT,XCRIT,XT,XTIM
+C
+C-----SUBROUTINE PREDTV PREDICTS THE TIME AND VELOCITY TO AN
+C-----INTERSECTION CONFLICT
+C
+C[    A          = -2147483647.0
+C[    ACCM       = -2147483647.0
+C[    ACCN       = -2147483647.0
+C[    ACCV       = -2147483647.0
+C[    B          = -2147483647.0
+C[    C          = -2147483647.0
+C[    CRISLP     = -2147483647.0
+C[    DV         = -2147483647.0
+C[    RELDIS     = -2147483647.0
+C[    SLOPE      = -2147483647.0
+C[    SPD        = -2147483647.0
+C[    TT         = -2147483647.0
+C[    VTT        = -2147483647.0
+C[    XCRIT      = -2147483647.0
+C[    XTIM       = -2147483647.0
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'PREDTV'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----VARIABLES FROM CONCHK - DOUBLE PRECISION
+C-----AO     OLD ACCELERATION/DECELERATION
+C-----AONOF  OLD ACCELERATION/DECELERATION FOR NOF VEHICLE
+C-----P      POSITION TO PREDICT TIME AND VELOCITY
+C-----PO     OLD POSITION
+C-----PONOF  OLD POSITION FOR NOF VEHICLE
+C-----SO     OLD SLOPE
+C-----SONOF  OLD SLOPE FOR NOF VEHICLE
+C-----VO     OLD VELOCITY
+C-----VONOF  OLD VELOCITY FOR NOF VEHICLE
+C
+C-----VARIABLES FROM CONCHK - INTEGER
+C-----IVPRTV VEHICLE NUMBER
+C-----JDCONF DRIVER CLASS
+C-----JDNOF  DRIVER CLASS FOR NOF VEHICLE
+C-----JSLIM  APPROACH SPEED LIMIT
+C-----JSPD   CURRENT DESIRED SPEED
+C-----JSPDP  DESIRED SPEED SET FOR INTERSECTION PATH (0=NO,1=YES)
+C-----JVCONF VEHICLE CLASS
+C-----JVNOF  VEHICLE CLASS FOR NOF VEHICLE
+C-----JVPRTV VEHICLE NUMBER FOR NOF VEHICLE
+C-----LGEOM4 LGEOM(4,IL) FOR LANE
+C-----MIMP   INTERSECTION PATH SPEED LIMIT
+C-----NOFSPD DESIRED SPEED FOR NOF VEHICLE
+C
+      T  = 0.0D0
+      TS = 0.0D0
+      PN = PO
+      VN = VO
+      AN = AO
+      SN = SO
+C-----IF THE VEHICLE IS AT THE INTERSECTION CONFLICT THEN RETURN
+      IF ( PO . EQ . P )                         RETURN
+      XT = DT
+C-----IF THE VEHICLE HAS ALREADY PASSED THE INTERSECTION CONFLICT THEN
+C-----CALCULATE A NEGATIVE TIME AND RETURN
+      IF ( PO . GE . P )                         THEN
+        IF ( VO . EQ . 0.0D0 )                   THEN
+          T = -1.0D0
+        ELSE
+          T = (P-PO)/VO
+        END IF
+        RETURN
+      END IF
+C-----INITIALIZE SOME PARAMETERS FOR PREDTV
+      DV     = DBLE( JSPD   )
+      DVNOF  = DBLE( NOFSPD )
+                    IF ( VONOF . EQ . 0.0D0 )    DVNOF = 0.0D0
+      SPD    = DBLE( JSPD*MIMP )/DBLE( JSLIM )
+      CRISLP = SLPMAX*DCHAR(JDCONF)
+      PIJRIV =        PIJR (JDCONF)
+      IF ( JDNOF . EQ . 0 )                      THEN
+        PIJRJV = 0.0D0
+      ELSE
+        PIJRJV = PIJR(JDNOF)
+      END IF
+      PIJRI2 = 2.0D0*PIJRIV
+      PIJRJ2 = 2.0D0*PIJRJV
+      PIJRIS = PIJRI2**2
+      PIJRJS = PIJRJ2**2
+ 1001 CONTINUE
+C-----IF THE VEHICLE HAS ALREADY SET THE DESIRED SPEED FOR HIS
+C-----INTERSECTION PATH THEN GO TO 1003 AND CONTINUE
+                    IF ( JSPDP . NE . 0 )        GO TO 1003
+C
+C-----THE CODE FROM HERE TO 1003 MIMICS SUBROUTINE CHKDSP
+C
+      RELDIS = LGEOM4 - PO
+C-----IF THE DISTANCE TO THE END OF THE LANE IS LE 25 FEET THEN GO TO
+C-----1002 AND SET THE DESIRED SPEED FOR THE INTERSECTION PATH
+                    IF ( RELDIS . LE . 25.0D0 )  GO TO 1002
+C-----FIND THE DISTANCE REQUIRED TO REDUCE THE PRESENT VELOCITY OF THE
+C-----VEHICLE TO THE DESIRED SPEED OF THE INTERSECTION PATH USING SLOPE
+      SLOPE = -0.375D0*SLPMAX*DCHAR(JDCONF)
+C-----FIND THE TIME REQUIRED TO REDUCE THE PRESENT VELOCITY OF THE
+C-----VEHICLE TO THE DESIRED SPEED OF THE INTERSECTION PATH USING SLOPE
+C-----SPD = VO + AO*T + 0.5*SLOPE*T**2
+C-----(0.5*SLOPE)*T**2 + (AO)*T + (VO-SPD) = 0
+      A     = 0.5D0*SLOPE
+      B     = AO
+      C     = VO - SPD
+      TMAX  = 30.0D0
+      CALL  TMQUAD  ( A,B,C,TMAX,TT )
+      IF ( TT . EQ . TIMERR )                    THEN
+        IF ( DABS( C ) . LE . VSMALL )           THEN
+          TT = 0.0D0
+        ELSE
+          GO TO 1003
+        END IF
+      END IF
+      TT = DMAX1( TT,0.001D0 )
+      XCRIT = VO*TT + 0.5D0*AO*TT**2 + ONED6*SLOPE*TT**3
+C-----IF THE DISTANCE TO THE END OF THE LANE IS GT THE DISTANCE REQUIRED
+C-----TO REDUCE THE PRESENT VELOCITY OF THE VEHICLE TO THE DESIRED SPEED
+C-----OF THE INTERSECTION PATH THEN GO TO 1003 AND CONTINUE
+                    IF ( RELDIS . GT . XCRIT )   GO TO 1003
+ 1002 CONTINUE
+C-----SET THE VEHICLES DESIRED SPEED TO THE DESIRED SPEED FOR THE
+C-----INTERSECTION PATH AND SET THE FLAG TO INDICATE THAT THE VEHICLES
+C-----DESIRED SPEED HAS BEEN RESET
+      JSPD = IDNINT( SPD )
+      CALL  SETDSP  ( IVPRTV,IPOS(IVPRTV),DBLE( JSPD ),.FALSE.,DV )
+      JSPDP = 1
+ 1003 CONTINUE
+C
+C-----THE CODE FROM HERE TO 5010 MIMICS SUBROUTINE ACCEL
+C
+                    IF ( DV . LT . 0.5D0 )       DV = 0.0D0
+C-----IF THE VEHICLES OLD VELOCITY IS LT HIS DESIRED SPEED THEN GO TO
+C-----1010 AND CHECK FOR ACCELERATION TO THE VEHICLES DESIRED SPEED
+                    IF ( VO . LE . DV-0.5D0 )    GO TO 1010
+C-----IF THE VEHICLES OLD VELOCITY IS GT HIS DESIRED SPEED THEN GO TO
+C-----2010 AND CHECK FOR DECELERATION TO THE VEHICLES DESIRED SPEED
+                    IF ( VO . GT . DV+1.0D0 )    GO TO 2010
+C-----THE VEHICLES VELOCITY IS VERY NEAR THE VEHICLES DESIRED SPEED THUS
+C-----IF THE VEHICLES ACC/DEC IS GT A VALUE THAT COULD BE REDUCED TO
+C-----ZERO IN ONE HALF SECOND THEN GO TO 4010 AND REDUCE THE VEHICLES
+C-----ACC/DEC TO ZERO
+            IF ( DABS(AO) . GT . CRISLP*0.5D0 )  GO TO 4010
+ 1005 CONTINUE
+      IF ( DABS( DV-VO ) . LE . 0.1D0 )          THEN
+C-----  SET THIS VEHICLE AT HIS DESIRED SPEED WITH ACC/DEC AND ACC/DEC
+C-----  SLOPE OF ZERO
+        SN = 0.0D0
+        AO = 0.0D0
+        VO = DV
+      ELSE
+C-----  FIND THE ACC/DEC SLOPE REQUIRED TO BRING THE VEHICLES VELOCITY
+C-----  TO HIS DESIRED SPEED IN ONE DT
+        SN = (DV-VO-AO*XT)/(0.5D0*XT**2)
+        SN = DMIN1( DMAX1( SN,-CRISLP ),CRISLP )
+      END IF
+      GO TO 5010
+ 1010 CONTINUE
+C-----ACCELERATE THE VEHICLE TO HIS DESIRED SPEED
+C-----CALCULATE THE MAXIMUM ACCELERATION THE DRIVER WOULD USE TO GET TO
+C-----HIS DESIRED SPEED IN THE LINEAR ACCELERATION MODEL
+      ACCM = AUTOL*(3.2D0+0.08D0*DV)*DCHAR(JDCONF)
+C-----CALCULATE THE MAXIMUM ACCELERATION OF THE VEHICLE AT THE CURRENT
+C-----VELOCITY USING THE NON-UNIFORM THEORY OF ACCELERATION
+      ACCV = AMAX(JVCONF)*(1.0D0-(VO/VMAX(JVCONF)))
+C-----CALCULATE THE PORTION OF THE MAXIMUM ACCELERATION THAT THE DRIVER
+C-----WOULD USE TO GET TO HIS DESIRED SPEED FROM HIS CURRENT VELOCITY
+      ACCN = DMIN1( ACCM,ACCV )*(1.0D0-(VO/(1.15D0*DV)))
+C-----PROCESS VEHICLE MESSAGE SYSTEM SPEED MESSAGE
+      IF ( VMSASM(IVPRTV) . GT . 0 )             THEN
+        IF ( IVMSMG(VMSASM(IVPRTV)) .EQ. VMSMAM )THEN
+C-----    VEHICLE MESSAGE SYSTEM MESSAGE IS ACTIVE
+C-----    ACCELERATE OR DECELERATE TO SPEED XX USING MAXIMUM VEHICLE
+C-----    ACCELERATION OR DECELERATION
+          ACCN = ACCV
+        END IF
+      END IF
+C-----IF THIS VEHICLE MAY PROCEED INTO THE INTERSECTION AND IS THE FIRST
+C-----VEHICLE IN HIS LANE THEN GO TO 1020 AND ACCELERATE TO ACCN
+C N/A        IF ( MPRO(IV) . AND . MFINL(IV) )    GO TO 1020
+C-----FIND THE NEW RELATIVE POSITION OF THE VEHICLE AFTER DT SECONDS IF
+C-----THE ACCELERATION WAS INITIATED TO ACCN
+C N/A RELPN = RELPOS + PVVEL *XT + 0.5D0*PVACC*XT**2
+C N/A*               - VELOLD*XT - 0.5D0*ACCN *XT**2
+C-----IF THE NEW RELATIVE POSITION IS GT 80 PERCENT OF THE OLD RELATIVE
+C-----POSITION THEN GO TO 1020 AND INITIATE THE ACCELERATION TO ACCN
+C N/A               IF ( RELPN.GT.0.80D0*RELPOS )GO TO 1020
+C-----CALCULATE THE ACC/DEC THAT WOULD MOVE THE VEHICLE NOT MORE THAN 20
+C-----PERCENT OF HIS OLD RELATIVE POSITION IN ONE SECOND
+C N/A ACCN = DMAX1( 2.0D0*(0.2D0*RELPOS-VELOLD),0.0D0 )
+ 1020 CONTINUE
+C-----IF THE VEHICLES ACC/DEC IS LT THE DESIRED ACC/DEC THEN GO TO 3010
+C-----AND MOVE THE VEHICLES ACC/DEC TO ACCN IN PIJR TIME
+                    IF ( AO . LT . ACCN )        GO TO 3010
+C-----CALCULATE THE ACC/DEC SLOPE REQUIRED TO BRING THE VEHICLES ACC/DEC
+C-----TO ACCN IN ONE SECOND
+      SN = ACCN - AO
+C-----BOUND THE VEHICLES ACC/DEC SLOPE AND CHECK THE NEW VELOCITY
+      SN = DMIN1( DMAX1( SN,-CRISLP ),1.3D0*CRISLP )
+      GO TO 3020
+ 2010 CONTINUE
+C-----FIND THE ACC/DEC SLOPE REQUIRED TO REDUCE THE VEHICLES VELOCITY TO
+C-----HIS DESIRED SPEED BEFORE HE REACHES THE END OF HIS LANE AND BOUND
+C-----THE ACC/DEC SLOPE
+ 2015 CONTINUE
+ 2020 CONTINUE
+ 2025 CONTINUE
+ 2027 CONTINUE
+      IF ( DABS( DV-VO ) . LE . 0.1D0 )          GO TO 1005
+      IF ( AO . EQ . 0.0D0 )                     THEN
+C-----  SET SLOPE TO REACH DESIRED SPEED IN 2*PIJR SECONDS
+        SLOPE = 2.0D0*(DV-VO)/PIJRIS
+      ELSE
+C-----  SET SLOPE TO REACH DESIRED SPEED AND FINAL ACCELERATION IS ZERO
+        SLOPE = -0.5D0*AO**2/(DV-VO)
+        SLOPE = DMIN1( DMAX1( SLOPE,-CRISLP ),CRISLP )
+        IF ( SLOPE . NE . 0.0D0 )                THEN
+          TT = -AO/SLOPE
+          IF ( ( TT . LT . 0.0D0        ) . OR .
+     *         ( TT . GT . 4.0D0*PIJRIV ) )      THEN
+C-----      SET SLOPE TO REACH DESIRED SPEED IN PIJR SECONDS
+            SLOPE = 2.0D0*(DV-VO-AO*PIJRI2)/PIJRIS
+          END IF
+        END IF
+      END IF
+C-----SET THE ACC/DEC SLOPE TO BRING THE ACC/DEC TO ZERO BY THE TIME THE
+C-----VEHICLES VELOCITY REACHES HIS DESIRED SPEED
+      SN = SLOPE
+ 2030 CONTINUE
+C-----BOUND THE ACC/DEC SLOPE TO DECELERATE TO HIS DESIRED SPEED
+C[    IF ( SN                 .EQ.-2147483647.0 )STOP 'PREDTV SN     01'
+      SN = DMIN1( DMAX1( SN,-CRISLP ),CRISLP )
+      GO TO 5010
+ 3010 CONTINUE
+C-----THE VEHICLES OLD ACC/DEC IS LT THE NEW ACC/DEC THUS IF THE
+C-----VEHICLES RELATIVE POSITION IS LE ZERO THEN GO TO 4010 AND REDUCE
+C-----THE VEHICLES ACC/DEC TO ZERO
+C N/A               IF ( RELPOS . LE . 0.0D0 )   GO TO 4010
+C-----CALCULATE THE ACC/DEC SLOPE REQUIRED TO BRING THE VEHICLES ACC/DEC
+C-----TO THE NEW ACCN IN 2*PIJR
+C[    IF ( ACCN               .EQ.-2147483647.0 )STOP 'PREDTV ACCN   01'
+      SN = 1.01D0*(ACCN-AO)/PIJRI2
+C-----BOUND THE ACC/DEC SLOPE FOR ACCELERATION TO ACCN IN PIJR
+      SN = DMIN1( DMAX1( SN,SO ),1.3D0*CRISLP )
+      AN = AO + SN*XT
+C-----IF THE VEHICLES ACC/DEC AFTER DT SECONDS WILL STILL BE LT ACCN
+C-----THEN GO TO 3020 AND CHECK THE VELOCITY AFTER TT SECONDS ELSE
+C-----CALCULATE THE ACC/DEC SLOPE REQUIRED TO BRING THE VEHICLES ACC/DEC
+C-----TO ACCN IN ONE SECOND AND CHECK VELOCITY AFTER TT SECONDS
+                    IF ( AN . LT . ACCN )        GO TO 3020
+      SN = ACCN - AO
+ 3020 CONTINUE
+C-----CHECK TO SEE THAT THE VEHICLES VELOCITY WOULD NOT BE ABOVE THE
+C-----DESIRED SPEED AFTER THE ACC/DEC FOR THE VEHICLE WAS REDUCED TO
+C-----ZERO AT HALF THE CRITICAL SLOPE
+      SLOPE = -0.5D0*CRISLP
+      TT = DMAX1( -AO/SLOPE,0.001D0 )
+                    IF ( TT . LT . XT )          GO TO 2025
+      VTT = VO + AO*TT + 0.5D0*SLOPE*TT**2
+                    IF ( VTT . LT . DV )         GO TO 5010
+C-----CALCULATE THE ACC/DEC SLOPE REQUIRED SO THAT VTT WOULD NOT EXCEED
+C-----THE DESIRED SPEED BEFORE THE ACC/DEC COULD BE REDUCED TO ZERO AND
+C-----BOUND THE ACC/DEC SLOPE
+      SN = DMIN1( DMAX1( (VTT/DV)*(-AO/TT),-CRISLP ),1.3D0*CRISLP )
+      GO TO 5010
+ 4010 CONTINUE
+C-----CALCULATE THE ACC/DEC SLOPE REQUIRED TO REDUCE THE VEHICLES
+C-----ACC/DEC TO ZERO IN ONE SECOND AND BOUND THE ACC/DEC SLOPE
+      SN = DMIN1( DMAX1( -AO,-CRISLP ),CRISLP )
+ 5010 CONTINUE
+C-----IF THERE IS A VEHICLE AHEAD THEN CALCULATE THE SLOPE REQUIRED TO
+C-----CAR FOLLOW THE VEHICLE AHEAD AND SET SN IF IT IS CRITICAL
+      IF ( JVPRTV . GT . 0 )                     THEN
+        CALL  SLPCFS  ( SLPTMP,IVPRTV,PO   ,VO   ,AO   ,SO   ,
+     *                                PONOF,VONOF,AONOF,SONOF  )
+        IF ( SLPTMP . NE . 0.0D0 )               THEN
+          SN = DMIN1( SN,SLPTMP )
+        END IF
+C-----  PREDICT NEW POS/VEV/ACC FOR NOF VEHICLE
+C
+C-----  THE CODE FROM HERE TO 5140 MIMICS SUBROUTINE ACCEL
+C
+                    IF ( DVNOF . LT . 0.5D0 )    DVNOF = 0.0D0
+C-----  IF THE VEHICLES OLD VELOCITY IS LT HIS DESIRED SPEED THEN GO TO
+C-----  5030 AND CHECK FOR ACCELERATION TO THE VEHICLES DESIRED SPEED
+                    IF ( VONOF.LE.DVNOF-0.5D0 )  GO TO 5030
+C-----  IF THE VEHICLES OLD VELOCITY IS GT HIS DESIRED SPEED THEN GO TO
+C-----  5050 AND CHECK FOR DECELERATION TO THE VEHICLES DESIRED SPEED
+                    IF ( VONOF.GT.DVNOF+1.0D0 )  GO TO 5050
+C-----  THE VEHICLES VELOCITY IS VERY NEAR THE VEHICLES DESIRED SPEED
+C-----  THUS IF THE VEHICLES ACC/DEC IS GT A VALUE THAT COULD BE REDUCED
+C-----  TO ZERO IN ONE HALF SECOND THEN GO TO 5130 AND REDUCE THE
+C-----  VEHICLES ACC/DEC TO ZERO
+            IF ( DABS(AONOF).GT.CRISLP*0.5D0 )   GO TO 5130
+ 5020   CONTINUE
+        IF ( DABS( DVNOF-VONOF ) . LE . 0.1D0 )  THEN
+C-----    SET THIS VEHICLE AT HIS DESIRED SPEED WITH ACC/DEC AND ACC/DEC
+C-----    SLOPE OF ZERO
+          SNNOF = 0.0D0
+          AONOF = 0.0D0
+          VONOF = DVNOF
+        ELSE
+C-----    FIND THE ACC/DEC SLOPE REQUIRED TO BRING THE VEHICLES VELOCITY
+C-----    TO HIS DESIRED SPEED IN ONE DT
+          SNNOF = (DVNOF-VONOF-AONOF*XT)/(0.5D0*XT**2)
+          SNNOF = DMIN1( DMAX1( SNNOF,-CRISLP ),CRISLP )
+        END IF
+        GO TO 5140
+ 5030   CONTINUE
+C-----  ACCELERATE THE VEHICLE TO HIS DESIRED SPEED
+C-----  CALCULATE THE MAXIMUM ACCELERATION THE DRIVER WOULD USE TO GET
+C-----  TO HIS DESIRED SPEED IN THE LINEAR ACCELERATION MODEL
+        ACCM = AUTOL*(3.2D0+0.08D0*DVNOF)*DCHAR(JDNOF)
+C-----  CALCULATE THE MAXIMUM ACCELERATION OF THE VEHICLE AT THE CURRENT
+C-----  VELOCITY USING THE NON-UNIFORM THEORY OF ACCELERATION
+        ACCV = AMAX(JVNOF)*(1.0D0-(VONOF/VMAX(JVNOF)))
+C-----  CALCULATE THE PORTION OF THE MAXIMUM ACCELERATION THAT THE
+C-----  DRIVER WOULD USE TO GET TO HIS DESIRED SPEED FROM HIS CURRENT
+C-----  VELOCITY
+        ACCN = DMIN1( ACCM,ACCV )*(1.0D0-(VONOF/(1.15D0*DVNOF)))
+C-----  PROCESS VEHICLE MESSAGE SYSTEM SPEED MESSAGE
+        IF ( VMSASM(JVPRTV) . GT . 0 )           THEN
+          IF ( IVMSMG(VMSASM(JVPRTV)).EQ.VMSMAM )THEN
+C-----      VEHICLE MESSAGE SYSTEM MESSAGE IS ACTIVE
+C-----      ACCELERATE OR DECELERATE TO SPEED XX USING MAXIMUM VEHICLE
+C-----      ACCELERATION OR DECELERATION
+            ACCN = ACCV
+          END IF
+        END IF
+C-----  IF THIS VEHICLE MAY PROCEED INTO THE INTERSECTION AND IS THE
+C-----  FIRST VEHICLE IN HIS LANE THEN GO TO 5040 AND ACCELERATE TO ACCN
+C N/A       IF ( MPRO(JVPRTV).AND.MFINL(JVPRTV) )GO TO 5040
+C-----  FIND THE NEW RELATIVE POSITION OF THE VEHICLE AFTER DT SECONDS
+C-----  IF THE ACCELERATION WAS INITIATED TO ACCN
+C N/A   RELPN = RELPOS + PVVEL *XT + 0.5D0*PVACC*XT**2
+C N/A*                 - VELOLD*XT - 0.5D0*ACCN *XT**2
+C-----  IF THE NEW RELATIVE POSITION IS GT 80 PERCENT OF THE OLD
+C-----  RELATIVE POSITION THEN GO TO 5040 AND INITIATE THE ACCELERATION
+C-----  TO ACCN
+C N/A               IF ( RELPN.GT.0.80D0*RELPOS )GO TO 5040
+C-----  CALCULATE THE ACC/DEC THAT WOULD MOVE THE VEHICLE NOT MORE THAN
+C-----  20 PERCENT OF HIS OLD RELATIVE POSITION IN ONE SECOND
+C N/A   ACCN = DMAX1( 2.0D0*(0.2D0*RELPOS-VELOLD),0.0D0 )
+ 5040   CONTINUE
+C-----  IF THE VEHICLES ACC/DEC IS LT THE DESIRED ACC/DEC THEN GO TO
+C-----  5110 AND MOVE THE VEHICLES ACC/DEC TO ACCN IN PIJR TIME
+                    IF ( AONOF . LT . ACCN )     GO TO 5110
+C-----  CALCULATE THE ACC/DEC SLOPE REQUIRED TO BRING THE VEHICLES
+C-----  ACC/DEC TO ACCN IN ONE SECOND
+        SNNOF = ACCN - AONOF
+C-----  BOUND THE VEHICLES ACC/DEC SLOPE AND CHECK THE NEW VELOCITY
+        SNNOF = DMIN1( DMAX1( SNNOF,-CRISLP ),1.3D0*CRISLP )
+        GO TO 5120
+ 5050   CONTINUE
+C-----  FIND THE ACC/DEC SLOPE REQUIRED TO REDUCE THE VEHICLES VELOCITY
+C-----  TO HIS DESIRED SPEED BEFORE HE REACHES THE END OF HIS LANE AND
+C-----  BOUND THE ACC/DEC SLOPE
+ 5060   CONTINUE
+ 5070   CONTINUE
+ 5080   CONTINUE
+ 5090   CONTINUE
+        IF ( DABS( DVNOF-VONOF ) . LE . 0.1D0 )  GO TO 5020
+        IF ( AONOF . EQ . 0.0D0 )                THEN
+C-----    SET SLOPE TO REACH DESIRED SPEED IN 2*PIJR SECONDS
+          SLOPE = 2.0D0*(DVNOF-VONOF)/PIJRJS
+        ELSE
+C-----    SET SLOPE TO REACH DESIRED SPEED AND FINAL ACCELERATION IS
+C-----    ZERO
+          SLOPE = -0.5D0*AONOF**2/(DVNOF-VONOF)
+          SLOPE = DMIN1( DMAX1( SLOPE,-CRISLP ),CRISLP )
+          IF ( SLOPE . NE . 0.0D0 )              THEN
+            TT = -AONOF/SLOPE
+            IF ( ( TT . LT . 0.0D0        ) . OR .
+     *           ( TT . GT . 4.0D0*PIJRJV ) )    THEN
+C-----        SET SLOPE TO REACH DESIRED SPEED IN 2*PIJR SECONDS
+              SLOPE = 2.0D0*(DVNOF-VONOF-AONOF*PIJRJ2)/PIJRJS
+            END IF
+          END IF
+        END IF
+C-----  SET THE ACC/DEC SLOPE TO BRING THE ACC/DEC TO ZERO BY THE TIME
+C-----  THE VEHICLES VELOCITY REACHES HIS DESIRED SPEED
+        SNNOF = SLOPE
+ 5100   CONTINUE
+C-----  BOUND THE ACC/DEC SLOPE TO DECELERATE TO HIS DESIRED SPEED
+C[      IF ( SNNOF            .EQ.-2147483647.0 )STOP 'PREDTV SNNOF  01'
+        SNNOF = DMIN1( DMAX1( SNNOF,-CRISLP ),CRISLP )
+        GO TO 5140
+ 5110   CONTINUE
+C-----  THE VEHICLES OLD ACC/DEC IS LT THE NEW ACC/DEC THUS IF THE
+C-----  VEHICLES RELATIVE POSITION IS LE ZERO THEN GO TO 5130 AND REDUCE
+C-----  THE VEHICLES ACC/DEC TO ZERO
+C N/A               IF ( RELPOS . LE . 0.0D0 )   GO TO 5130
+C-----  CALCULATE THE ACC/DEC SLOPE REQUIRED TO BRING THE VEHICLES
+C-----  ACC/DEC TO THE NEW ACCN IN 2*PIJR
+C[      IF ( ACCN             .EQ.-2147483647.0 )STOP 'PREDTV ACCN   01'
+        SNNOF = 1.01D0*(ACCN-AONOF)/PIJRJ2
+C-----  BOUND THE ACC/DEC SLOPE FOR ACCELERATION TO ACCN IN PIJR
+        SNNOF = DMIN1( DMAX1( SNNOF,SONOF ),1.3D0*CRISLP )
+        ANNOF = AONOF + SNNOF*XT
+C-----  IF THE VEHICLES ACC/DEC AFTER DT SECONDS WILL STILL BE LT ACCN
+C-----  THEN GO TO 5120 AND CHECK THE VELOCITY AFTER TT SECONDS ELSE
+C-----  CALCULATE THE ACC/DEC SLOPE REQUIRED TO BRING THE VEHICLES
+C-----  ACC/DEC TO ACCN IN ONE SECOND AND CHECK VELOCITY AFTER TT
+C-----  SECONDS
+                    IF ( ANNOF . LT . ACCN )     GO TO 5120
+        SNNOF = ACCN - AONOF
+ 5120   CONTINUE
+C-----  CHECK TO SEE THAT THE VEHICLES VELOCITY WOULD NOT BE ABOVE THE
+C-----  DESIRED SPEED AFTER THE ACC/DEC FOR THE VEHICLE WAS REDUCED TO
+C-----  ZERO AT HALF THE CRITICAL SLOPE
+        SLOPE = -0.5D0*CRISLP
+        TT = DMAX1( -AONOF/SLOPE,0.001D0 )
+                    IF ( TT . LT . XT )          GO TO 5080
+        VTT = VONOF + AONOF*TT + 0.5D0*SLOPE*TT**2
+                    IF ( VTT . LT . DVNOF )      GO TO 5140
+C-----  CALCULATE THE ACC/DEC SLOPE REQUIRED SONOF THAT VTT WOULD NOT
+C-----  EXCEED THE DESIRED SPEED BEFORE THE ACC/DEC COULD BE REDUCED TO
+C-----  ZERO AND BOUND THE ACC/DEC SLOPE
+        SNNOF = DMIN1( DMAX1( (VTT/DVNOF)*(-AONOF/TT),-CRISLP ),
+     *                 1.3D0*CRISLP                              )
+        GO TO 5140
+ 5130   CONTINUE
+C-----  CALCULATE THE ACC/DEC SLOPE REQUIRED TO REDUCE THE VEHICLES
+C-----  ACC/DEC TO ZERO IN ONE SECOND AND BOUND THE ACC/DEC SLOPE
+        SNNOF = DMIN1( DMAX1( -AONOF,-CRISLP ),CRISLP )
+ 5140   CONTINUE
+        ANNOF = AONOF + SNNOF*XT
+        VNNOF = VONOF + AONOF*XT + 0.5D0*SNNOF*XT**2
+        PNNOF = PONOF + VONOF*XT + 0.5D0*AONOF*XT**2 + ONED6*SNNOF*XT**3
+        IF ( VNNOF . LE . VELSTP )               THEN
+          VONOF = DMAX1( VONOF,0.0D0 )
+          CALL  TIMSTP  ( VONOF,AONOF,SNNOF,1.05D0*XT,XTIM )
+          IF ( XTIM . EQ . TIMERR )              THEN
+            IF ( VONOF . LE . VSMALL )           THEN
+              XTIM = 0.0D0
+            ELSE
+              XTIM = XT
+            END IF
+          END IF
+          PNNOF = PONOF
+     *          + VONOF*XTIM + 0.5D0*AONOF*XTIM**2 + ONED6*SNNOF*XTIM**3
+          SNNOF = 0.0D0
+          ANNOF = 0.0D0
+          VNNOF = 0.0D0
+        END IF
+        SONOF = SNNOF
+        AONOF = ANNOF
+        VONOF = VNNOF
+        PONOF = PNNOF
+      END IF
+C
+C-----THE CODE FROM HERE TO 7012 MIMICS SUBROUTINE ACDCP
+C
+ 6010 CONTINUE
+C-----CALCULATE THE POS/VEL/ACC FOR THE VEHICLE AFTER DT SECONDS
+C N/A CALL  NEWVEL  ( XT,XT**2,XT**3 )
+C[    IF ( SN                 .EQ.-2147483647.0 )STOP 'PREDTV SN     02'
+      AN = AO + SN*XT
+      VN = VO + AO*XT + 0.5D0*SN*XT**2
+      PN = PO + VO*XT + 0.5D0*AO*XT**2 + ONED6*SN*XT**3
+      SP = SN
+C-----IF THIS VEHICLE WAS PREVIOUSLY STOPPED AND THE NEW VELOCITY IS EQ
+C-----ZERO THEN GO TO 8010 AND REMAIN STOPPED
+      IF ( (VO.EQ.0.0D0) . AND . (VN.EQ.0.0D0) ) GO TO 8010
+ 7010 CONTINUE
+C N/A MSTPF(IV) = .FALSE.
+C-----IF THIS VEHICLES VELOCITY IS GT 0 THEN GO TO 8010
+                    IF (  VN .GT. VELSTP )       GO TO 8010
+                    IF ( (VN .GT. 0.0D0  ) . AND .
+     *                   (AN .GT. 0.0D0  ) . AND .
+     *                   (SN .GT. 0.0D0  ) )     GO TO 8010
+ 7012 CONTINUE
+C
+C-----THE CODE FROM HERE TO 8010 MIMICS SUBROUTINE UNBIAS
+C
+C-----THE VEHICLE STOPPED THIS DT THUS CALCULATE THE TIME REQUIRED TO
+C-----BRING THE VEHICLE TO A STOP WITHIN THIS DT
+C[    IF ( SN                 .EQ.-2147483647.0 )STOP 'PREDTV SN     02'
+C[    IF ( AO                 .EQ.-2147483647.0 )STOP 'PREDTV AO     03'
+C[    IF ( VO                 .EQ.-2147483647.0 )STOP 'PREDTV VO     03'
+      VO = DMAX1( VO,0.0D0 )
+      CALL  TIMSTP  ( VO,AO,SN,1.05D0*XT,XTIM )
+      IF ( XTIM . EQ . TIMERR )                  THEN
+        IF ( VO . LE . VSMALL )                  THEN
+          XT = 0.0D0
+        ELSE
+          XT = DT
+        END IF
+      ELSE
+        XT = XTIM
+      END IF
+C[    IF ( SN                 .EQ.-2147483647.0 )STOP 'PREDTV SN     04'
+C[    IF ( AO                 .EQ.-2147483647.0 )STOP 'PREDTV AO     03'
+C[    IF ( VO                 .EQ.-2147483647.0 )STOP 'PREDTV VO     03'
+C[    IF ( PO                 .EQ.-2147483647.0 )STOP 'PREDTV PO     03'
+      PN = PO + VO*XT + 0.5D0*AO*XT**2 + ONED6*SN*XT**3
+      SP = SN
+      SN = 0.0D0
+      AN = 0.0D0
+      VN = 0.0D0
+ 8010 CONTINUE
+C-----IF THE VEHICLE PASSED THE CONFLICT THEN GO TO 8020 AND FINISH
+      IF ( DABS( PN-P ) . LE . PSMALL )          GO TO 8025
+                    IF ( PN . GE . P )           GO TO 8020
+C-----IF THIS VEHICLE WAS PREVIOUSLY STOPPED AND THE NEW VELOCITY IS EQ
+C-----ZERO THEN GO TO 8030, REMAIN STOPPED, AND RETURN
+      IF ( (VO.EQ.0.0D0) . AND . (VN.EQ.0.0D0) ) GO TO 8030
+ 8015 CONTINUE
+C-----INCREMENT TIME AND SET THE OLD POS/VEL/ACC TO THE NEW POS/VEL/ACC
+      T = T + XT
+C[    IF ( SN                 .EQ.-2147483647.0 )STOP 'PREDTV SN     03'
+      SO = SN
+      AO = AN
+      VO = VN
+      PO = PN
+      XT = DT
+C-----GO TO 1001 AND PROCESS ANOTHER DT
+      GO TO 1001
+ 8020 CONTINUE
+C-----THE VEHICLE PASSED THE CONFLICT THIS DT THUS CALCULATE THE TIME
+C-----REQUIRED TO BRING THE VEHICLES POSITION TO THE CONFLICT WITHIN
+C-----THIS DT
+C[    IF ( SN                 .EQ.-2147483647.0 )STOP 'PREDTV SN     04'
+C[    IF ( AO                 .EQ.-2147483647.0 )STOP 'PREDTV AO     03'
+C[    IF ( VO                 .EQ.-2147483647.0 )STOP 'PREDTV VO     03'
+C[    IF ( PO                 .EQ.-2147483647.0 )STOP 'PREDTV PO     03'
+      CALL  TIMPOS  ( P,PO,VO,AO,SP,XT,1.05D0*XT,XTIM )
+                    IF ( XTIM . NE . TIMERR )    XT = XTIM
+ 8025 CONTINUE
+C-----FIND THE TIME TO THE CONFLICT, THE ACCELERATION AT THE CONFLICT,
+C-----THE VELOCITY AT THE CONFLICT, AND THE POSITION AT THE CONFLICT
+      T = T + XT
+      SN = SP
+      AN = AO + SP*XT
+      VN = VO + AO*XT + 0.5D0*SP*XT**2
+      PN = PO + VO*XT + 0.5D0*AO*XT**2 + ONED6*SP*XT**3
+      RETURN
+ 8030 CONTINUE
+      XT = DT
+      TS = TS + XT
+      IF ( TS . LE . 5.0D0 )                     GO TO 8015
+C-----THIS VEHICLE WAS PREVIOUSLY STOPPED, THE NEW VELOCITY IS EQ ZERO,
+C-----AND THE VEHICLE HAS NOT REACHED THE INTERSECTION CONFLICT THUS
+C-----REMAIN STOPPED AND RETURN LARGE NEGATIVE TIME
+      T = -1000.0D0
+      RETURN
+      END                                                               PREDTV
+C
+C
+C
+      SUBROUTINE PTYPE  ( LFORCE,LFTYPE,LOBAPD,LPATH,LPTYPE )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHF'
+      INTEGER           LFORCE,LFTYPE,LOBAPD,LPATH,LPTYPE
+      DOUBLE PRECISION  RADADD,RADPTH,RADVEH
+C
+C-----SUBROUTINE PTYPE DETERMINES THE PATH TYPE FOR LPATH AND SETS
+C-----LFORCE TO THE PATH WITH THE MINIMUM LPTYPE
+C
+C-----LPTP01 = RAD OK  NO LANE CHANGE WITHIN THE INTERSECTION TO LOBAPD
+C-----LPTP02 = RAD OK     LANE CHANGE WITHIN THE INTERSECTION TO LOBAPD
+C-----LPTP03 = RAD OK  NO LANE CHANGE WITHIN THE INTERSECTION STRAIGHT
+C-----LPTP04 = RAD OK     LANE CHANGE WITHIN THE INTERSECTION STRAIGHT
+C-----LPTP05 = RAD OK  NO LANE CHANGE WITHIN THE INTERSECTION ANY PATH
+C-----LPTP06 = RAD OK     LANE CHANGE WITHIN THE INTERSECTION ANY PATH
+C-----LPTP07 = RAD BAD NO LANE CHANGE WITHIN THE INTERSECTION TO LOBAPD
+C-----LPTP08 = RAD BAD    LANE CHANGE WITHIN THE INTERSECTION TO LOBAPD
+C-----LPTP09 = RAD BAD NO LANE CHANGE WITHIN THE INTERSECTION STRAIGHT
+C-----LPTP10 = RAD BAD    LANE CHANGE WITHIN THE INTERSECTION STRAIGHT
+C-----LPTP11 = RAD BAD NO LANE CHANGE WITHIN THE INTERSECTION ANY PATH
+C-----LPTP12 = RAD BAD    LANE CHANGE WITHIN THE INTERSECTION ANY PATH
+C-----LPTPNS = NOT SET
+C
+C-----RADADD=1.0 (IVEHCL=1=AG), 0.0 (IVEHCL=2=AVG), -1.5 (IVEHCL=3=SLOW)
+C-----RADADD=3.0 FOR ENCROACHMENT INTO THE ADJACENT LANE
+      RADADD = 10.0D0*(DCHAR(IDRICL(IV))-1.0D0) + 3.0D0
+      RADVEH = DBLE( IRMIN(IVEHCL(IV)) )
+     *       + 0.5D0*DBLE( WIDV(IVEHCL(IV)) )
+      RADPTH = DBLE( RADMIN(LPATH) )
+     *       + 0.5D0*DBLE( LWID(IL)-WIDV(IVEHCL(IV)) )
+     *       + RADADD
+      IF ( IOA(LPATH) . EQ . LOBAPD )            THEN
+        IF ( IOPT(LPATH) . EQ . 0 )              THEN
+          IF ( RADVEH . LE . RADPTH )            THEN
+C-----LPTP01 = RAD OK  NO LANE CHANGE WITHIN THE INTERSECTION TO LOBAPD
+            LPTYPE = LPTP01
+          ELSE
+C-----LPTP07 = RAD BAD NO LANE CHANGE WITHIN THE INTERSECTION TO LOBAPD
+            LPTYPE = LPTP07
+          END IF
+        ELSE
+          IF ( RADVEH . LE . RADPTH )            THEN
+C-----LPTP02 = RAD OK     LANE CHANGE WITHIN THE INTERSECTION TO LOBAPD
+            LPTYPE = LPTP02
+          ELSE
+C-----LPTP08 = RAD BAD    LANE CHANGE WITHIN THE INTERSECTION TO LOBAPD
+            LPTYPE = LPTP08
+          END IF
+        END IF
+      ELSE
+        IF ( IPT(LPATH) . EQ . 2 )               THEN
+          IF ( IOPT(LPATH) . EQ . 0 )            THEN
+            IF ( RADVEH . LE . RADPTH )          THEN
+C-----LPTP03 = RAD OK  NO LANE CHANGE WITHIN THE INTERSECTION STRAIGHT
+              LPTYPE = LPTP03
+            ELSE
+C-----LPTP09 = RAD BAD NO LANE CHANGE WITHIN THE INTERSECTION STRAIGHT
+              LPTYPE = LPTP09
+            END IF
+          ELSE
+            IF ( RADVEH . LE . RADPTH )          THEN
+C-----LPTP04 = RAD OK     LANE CHANGE WITHIN THE INTERSECTION STRAIGHT
+              LPTYPE = LPTP04
+            ELSE
+C-----LPTP10 = RAD BAD    LANE CHANGE WITHIN THE INTERSECTION STRAIGHT
+              LPTYPE = LPTP10
+            END IF
+          END IF
+        ELSE
+          IF ( IOPT(LPATH) . EQ . 0 )            THEN
+            IF ( RADVEH . LE . RADPTH )          THEN
+C-----LPTP05 = RAD OK  NO LANE CHANGE WITHIN THE INTERSECTION ANY PATH
+              LPTYPE = LPTP05
+            ELSE
+C-----LPTP11 = RAD BAD NO LANE CHANGE WITHIN THE INTERSECTION ANY PATH
+              LPTYPE = LPTP11
+            END IF
+          ELSE
+            IF ( RADVEH . LE . RADPTH )          THEN
+C-----LPTP06 = RAD OK     LANE CHANGE WITHIN THE INTERSECTION ANY PATH
+              LPTYPE = LPTP06
+            ELSE
+C-----LPTP12 = RAD BAD    LANE CHANGE WITHIN THE INTERSECTION ANY PATH
+              LPTYPE = LPTP12
+            END IF
+          END IF
+        END IF
+      END IF
+C-----SET LFORCE IF HIGHER PRIORITY PATH FOUND
+      IF ( LPTYPE . LT . LFTYPE )                THEN
+        LFORCE = LPATH
+        LFTYPE = LPTYPE
+      END IF
+      RETURN
+      END                                                               PTYPE
+C
+C
+C
+C6    SUBROUTINE PVAPRT
+C6    IMPLICIT NONE
+C6    INCLUDE 'PARAMS'
+C6    INCLUDE 'ABIAS'
+C6    INCLUDE 'CLASS'
+C6    INCLUDE 'INDEX'
+C6    INCLUDE 'PRTPVA'
+C6    INCLUDE 'QUE'
+C6    INCLUDE 'RUTINE'
+C6    INCLUDE 'USER'
+C6    CHARACTER*14      IFORM
+C6    INTEGER           IQACC,IQPOS,IQV,IQVEL
+C6    REAL              V
+C6701 FORMAT(5H('+',I3,3HX,',I1,2H'))
+C
+C-----SUBROUTINE PVAPRT PRINTS POS/VEL/ACC FOR THE VEHICLE
+C
+C6    NRNAME = NRNAME + 1
+C6    IRNAME(NRNAME) = 'PVAPRT'
+C6                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----FIND THE ONES DIGIT OF THE VEHICLE NUMBER
+C6    V = IQ(IV)/10.0
+C6    IQV = IDNINT( (V-IFIX( V ))*10.0 )
+C-----CONVERT AND WRITE THE VEHICLES POSITION FOR THE PAGE PLOT
+C6    IQPOS = MIN0( IDINT( (POSNEW+DISTAD(IV))/18.5D0+9.5D0 ),134 )
+C6    WRITE (IFORM,701) IQPOS,IQV
+C6    WRITE (IPP,IFORM)
+C-----CONVERT AND WRITE THE VEHICLES VELOCITY FOR THE PAGE PLOT
+C6    IQVEL = MIN0( IDINT( VELNEW*2.0D0+9.5D0 ),134 )
+C6    WRITE (IFORM,701) IQVEL,IQV
+C6    WRITE (IPV,IFORM)
+C-----CONVERT AND WRITE THE VEHICLES ACC/DEC FOR THE PAGE PLOT
+C6    IQACC = MIN0( MAX0( IDINT( -ACCNEW*5.0D0+59.5D0 ),9 ),134 )
+C6    WRITE (IFORM,701) IQACC,IQV
+C6    WRITE (IPA,IFORM)
+C6    RETURN
+C6    END                                                               PVAPRT
+C
+C
+C
+      SUBROUTINE QUADEQ ( A,B,C,NX,X1,X2 )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      DOUBLE PRECISION  ZERO
+      PARAMETER       ( ZERO   = 1.0D-14     )
+      INTEGER           NX
+      DOUBLE PRECISION  A,B,C,RADICL,X1,X2
+C
+C-----SUBROUTINE QUADEQ SOLVES FOR X USING A, B, AND C WHERE
+C-----A*X**2 + B*X + C = 0
+C
+C-----NX = NUMBER OF ROOTS OF THE QUADRATIC EQUATION
+C-----X1 = ROOT 1 WHEN NX GE 1
+C-----X2 = ROOT 2 WHEN NX GE 2
+C
+      NX = 0
+      X1 = 0.0D0
+      X2 = 0.0D0
+      IF ( DABS( A ) . LE . ZERO )               THEN
+        IF ( DABS( B ) . LE . ZERO )             THEN
+C-----    SIMPLE EQUATION
+C-----    C = 0
+          IF ( DABS( C ) . LE . ZERO )           THEN
+C-----      1 REAL ROOT
+            NX = 1
+            X1 = 0.0D0
+            RETURN
+          ELSE
+C-----      NO REAL ROOTS
+            RETURN
+          END IF
+        ELSE
+C-----    SIMPLE EQUATION
+C-----    B*X + C = 0
+C-----    1 REAL ROOT
+          NX = 1
+          X1 = -1.0D0*C/B
+          RETURN
+        END IF
+      ELSE
+C-----  QUADRATIC EQUATION
+C-----  A*X**2 + B*X + C = 0
+        RADICL = B**2 -4.0D0*A*C
+        IF ( DABS( RADICL ) . LE . ZERO )        RADICL = 0.0D0
+        IF ( RADICL . LT . 0.0D0 )               THEN
+C-----    NO REAL ROOTS
+          RETURN
+        END IF
+        IF ( RADICL . EQ . 0.0D0 )               THEN
+C-----    1 REAL ROOT
+          NX = 1
+          X1 = -1.0D0*B/(2.0D0*A)
+          RETURN
+        ELSE
+C-----    2 REAL ROOTS
+          NX = 2
+          X1 = (-1.0D0*B + DSQRT( RADICL ))/(2.0D0*A)
+          X2 = (-1.0D0*B - DSQRT( RADICL ))/(2.0D0*A)
+          RETURN
+        END IF
+      END IF
+      RETURN
+      END                                                               QUADEQ
+C
+C
+C
+      SUBROUTINE QUEUE
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INTEGER           IB,ILNB,JA,JAN,JLN,JVN,NVDI
+  601 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS VEH=',I6,
+     *       ' APPR=',I2,' LANE=',I1,' - INSERT VEHICLE ',I6,
+     *       ' HAS ALREADY SET FOR LOGIN THIS DT')
+  602 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS VEH=',I6,
+     *       ' APPR=',I2,' LANE=',I1,' - VEHICLE ',I6,
+     *       ' HAS ALREADY SET FOR LOGIN THIS DT')
+  603 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' QUEUE IN TIME=',F7.2,' IS LT TIME-DT=',F7.2,
+     *       ' OR GE TIME=',F7.2)
+  604 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' VEHICLE CLASS NUMBER=',I2,' IS LT 1 OR GT NVEHCL=',I2)
+  605 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' DRIVER CLASS NUMBER=',I1,' IS LT 1 OR GT NDRICL=',I1)
+  606 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' DESIRED SPEED IN FT/SEC=',I3,' IS LT 1 OR GT MDS=',I3)
+  607 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' DESIRED OUTBOUND APPROACH NUMBER=',I1,
+     *       ' IS NOT ON THE LIST OF OUTBOUND APPROACH NUMBERS')
+  608 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' INBOUND APPROACH NUMBER=',I1,
+     *       ' IS NOT ON THE LIST OF INBOUND APPROACH NUMBERS')
+  609 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' INBOUND LANE NUMBER=',I1,
+     *       ' IS LT 1 OR GT NLANES FOR INBOUND APPROACH ',I1,'=',I1)
+  610 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' WHETHER INDIVIDUAL STATISTICS ARE PRINTED AT LOGOUT',
+     *       ' (0=NO AND 1=YES)=',I1,' IS LT 0 OR GT 1')
+  611 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' WHETHER THE VEHICLE SHOULD TRY TO USE THE FREE U-TURN',
+     *       ' LANE AT A DIAMOND INTERCHANGE (0=NO AND 1=YES)=',I1,
+     *       ' IS LT 0 OR GT 1')
+  612 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED STOP TIME IN SECONDS (0=NO FORCED STOP)=',F7.2,
+     *       ' IS LT QUEUE IN TIME=',F7.2,' OR GT SIMTIM=',F7.2)
+  613 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED STOP LINK NUMBER (-=PATH AND +=APPROACH)=',I3,
+     *       ' IS LT -NPATHS=',I3,', EQ 0, OR GT NAP=',I2)
+  614 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED STOP LINK NUMBER FOR APPROACH)=',I2,
+     *       ' IS NOT ON THE LIST OF INBOUND OR OUTBOUND APPROACHES')
+  615 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED STOP POSITION ON LINK IN FEET (PATH)=',F7.2,
+     *       ' IS LT 0.0 OR GT LENP=',F7.2)
+  616 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED STOP POSITION ON LINK IN FEET (APPROACH)=',F7.2,
+     *       ' IS LT MINLLN=',F7.2,' OR GT MAXLLN=',F7.2)
+  617 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED STOP DWELL TIME IN SECONDS=',F7.2,
+     *       ' IS LE 0.0 OR GT MSTSEC=',F7.2)
+  618 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED GO TIME IN SECONDS (0=NO FORCED GO)=',F7.2,
+     *       ' IS LT QUEUE IN TIME=',F7.2,' OR GT SIMTIM=',F7.2)
+  619 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED GO ACTIVE TIME IN SECONDS=',F7.2,
+     *       ' IS LE 0.0 OR GT MSTSEC=',F7.2)
+  620 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED RUN RED SIGNAL TIME IN SECONDS (0=NO FORCED RUN',
+     *       ' RED SIGNAL)=',F7.2,' IS LT QUEUE IN TIME=',F7.2,
+     *       ' OR GT SIMTIM=',F7.2)
+  621 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' FORCED RUN RED SIGNAL ACTIVE TIME IN SECONDS=',F7.2,
+     *       ' IS LE 0.0 OR GT MSTSEC=',F7.2)
+  622 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' VEHICLE NUMBER=',I6,' IS LE 0')
+  623 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' EMERGENCY VEHICLE (0=NO AND 1=YES)=',I1,
+     *       ' IS LT 0 OR GT 1')
+  624 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' ENTRY SPEED IN FT/SEC=',F7.3,' IS LE 0.0 OR GT MDS=',
+     *       F7.3)
+  625 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' ENTRY ACCELERATION/DECELERATION IN FT/SEC/SEC=',F8.3,
+     *       ' IS LT DMAXAV=',F7.3,' OR GT AMAXAV=',F7.3)
+  626 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' ENTRY JERK RATE IN FT/SEC/SEC/SEC=',F8.3,
+     *       ' IS LT -SLPMAX*DCHRMX=',F7.3,' OR GT SLPMAX*DCHRMX=',F7.3)
+  627 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' APPR=',I2,' LANE=',I1,' - INSERT VEHICLE ',I6,
+     *       ' HAS ALREADY SET FOR LOGIN THIS DT')
+  628 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' APPR=',I2,' LANE=',I1,' - VEHICLE ',I6,
+     *       ' HAS ALREADY SET FOR LOGIN THIS DT')
+C
+C-----SUBROUTINE QUEUE DETERMINES WHICH VEHICLES IN THE QUEUE BUFFER
+C-----ARE TO BE LOGGED INTO THE SYSTEM THIS DT
+C
+C[    IB         = -2147483647
+C[    JA         = -2147483647
+C[    JAN        = -2147483647
+C[    JLN        = -2147483647
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'QUEUE'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----CHECK EACH QUEUE BUFFER TO DETERMINE WHICH VEHICLES ARE TO BE
+C-----LOGGED INTO THE SYSTEM THIS DT
+      DO 1010  IB = 1 , NIL
+C-----IF QTIME IS NEGATIVE OR QTIME IS GE THE TIME INTO THE SIMULATION
+C-----THEN SKIP TO THE NEXT QUEUE BUFFER
+                    IF ( QTIME(IB) .LT. 0.0D0 )  GO TO 1010
+                    IF ( QTIME(IB) .GE. TIME  )  GO TO 1010
+C-----SET THE QUEUE BUFFER INDEX FOR THE INBOUND APPROACH AND LANE THAT
+C-----THE VEHICLE IS TO LOG INTO
+      JLN = IBUF(IBUFLN,IB)
+      JA  = IBUF(IBUFIA,IB)
+      JAN = LIBAR(JA)
+      IF ( LQ(JAN,JLN) . GT . 0 )                THEN
+        IF ( LQ(JAN,JLN) . GT . NIL )            THEN
+          JVN = VDIIVN(LQ(JAN,JLN)-NIL)
+          WRITE (WRNMSG,601) TIME,IBUF(IBUFVN,IB),JA,JLN,JVN
+        ELSE
+          JVN = IBUF(IBUFVN,LQ(JAN,JLN))
+          WRITE (WRNMSG,602) TIME,IBUF(IBUFVN,IB),JA,JLN,JVN
+        END IF
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        GO TO 1010
+      END IF
+      LQ(JAN,JLN) = IB
+ 1010 CONTINUE
+C-----GET VEHICLE DATA TO INSERT
+      NVDI = NIL
+C-----TIME   = DP  SIMULATION TIME
+C-----DT     = DP  TIME STEP INCREMENT
+C-----NVDI   = INT SEND DIMENSION OF ARRAYS AND RECEIVE NUMBER OF
+C-----             VEHICLES TO INSERT
+C-----VEHICLE DATA INSERT - ARRAYS OF DATA DIMENSIONED TO NIL
+C-----VDIQIT = DP  QUEUE-IN TIME IN SECONDS
+C-----             (VDIQIT>=TIME-DT AND VDIQIT<TIME)
+C-----VDIVCN = INT VEHICLE CLASS NUMBER
+C-----VDIDCN = INT DRIVER  CLASS NUMBER
+C-----VDIDSP = INT DESIRED SPEED IN FPS
+C-----VDIOBN = INT DESIRED OUTBOUND APPROACH NUMBER
+C-----VDIIBN = INT INBOUND APPROACH NUMBER
+C-----VDIILN = INT INBOUND LANE NUMBER (1-NAL)
+C-----VDIPLO = INT WHETHER INDIVIDUAL STATISTICS ARE PRINTED AT LOGOUT
+C-----             (0=NO AND 1=YES)
+C-----VDIFUT = INT WHETHER THE VEHICLE SHOULD TRY TO USE THE FREE
+C-----             U-TURN LANE AT A DIAMOND INTERCHANGE
+C-----             (0=NO AND 1=YES)
+C-----VDIFST = DP  FORCED STOP TIME IN SECONDS
+C-----             (0=NO FORCED STOP)
+C-----VDIFSL = INT FORCED STOP LINK NUMBER
+C-----             (-=INTERSECTION PATH NUMBER AND +=APPROACH NUMBER)
+C-----VDIFSP = DP  FORCED STOP POSITION ON LINK IN FEET
+C-----VDIFSD = DP  FORCED STOP DWELL TIME IN SECONDS
+C-----VDIFGT = DP  FORCED GO TIME IN SECONDS
+C-----             (0=NO FORCED GO)
+C-----VDIFGA = DP  FORCED GO ACTIVE TIME IN SECONDS
+C-----VDIFRT = DP  FORCED RUN RED SIGNAL TIME IN SECONDS
+C-----             (0=NO FORCED RUN RED SIGNAL)
+C-----VDIFRA = DP  FORCED RUN RED SIGNAL ACTIVE TIME IN SECONDS
+C-----VDIIVN = INT VEHICLE NUMBER
+C-----             (1-65535) (NEGATIVE VALUE WILL BE USED FOR IQ(IV))
+C-----VDIEMV = INT EMERGENCY VEHICLE
+C-----             (0=NO AND 1=YES)
+C-----VDISPD = DP  ENTRY SPEED IN FT/SEC
+C-----VDIACC = DP  ENTRY ACCELERATION/DECELERATION IN FT/SEC/SEC
+C-----VDISLP = DP  ENTRY JERK RATE IN FT/SEC/SEC/SEC
+      CALL VDIGET ( TIME,DT,NVDI ,
+     *              VDIQIT,VDIVCN,VDIDCN,VDIDSP,VDIOBN,VDIIBN,
+     *              VDIILN,VDIPLO,VDIFUT,
+     *              VDIFST,VDIFSL,VDIFSP,VDIFSD,
+     *              VDIFGT,VDIFGA,
+     *              VDIFRT,VDIFRA,
+     *              VDIIVN,VDIEMV,
+     *              VDISPD,VDIACC,VDISLP )
+      IF ( NVDI . EQ . 0 )                       GO TO 2120
+ 2130 CONTINUE
+      IF ( NVDI . GT . NIL )                     GO TO 9770
+C-----CHECK EACH VEHICLE DATA INSERT TO DETERMINE WHICH VEHICLES ARE TO
+C-----BE LOGGED INTO THE SYSTEM THIS DT
+      DO 2110  IB = 1 , NVDI
+C-----CHECK QUEUE IN TIME FOR ERRORS
+      IF ( ( VDIQIT(IB) . LT . TIME-DT  ) . OR .
+     *     ( VDIQIT(IB) . GE . TIME     ) )      THEN
+        WRITE (WRNMSG,603) TIME,VDIIVN(IB),VDIQIT(IB),TIME-DT,TIME
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEQT )
+        GO TO 2110
+      END IF
+C-----CHECK VEHICLE CLASS NUMBER FOR ERRORS
+      IF ( ( VDIVCN(IB) . LT . 1      ) . OR .
+     *     ( VDIVCN(IB) . GT . NVEHCL ) )        THEN
+        WRITE (WRNMSG,604) TIME,VDIIVN(IB),VDIVCN(IB),NVEHCL
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEVC )
+        GO TO 2110
+      END IF
+C-----CHECK DRIVER CLASS NUMBER FOR ERRORS
+      IF ( ( VDIDCN(IB) . LT . 1      ) . OR .
+     *     ( VDIDCN(IB) . GT . NDRICL ) )        THEN
+        WRITE (WRNMSG,605) TIME,VDIIVN(IB),VDIDCN(IB),NDRICL
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEDC )
+        GO TO 2110
+      END IF
+C-----CHECK DESIRED SPEED IN FT/SEC FOR ERRORS
+      IF ( ( VDIDSP(IB) . LT . 1   ) . OR .
+     *     ( VDIDSP(IB) . GT . MDS ) )           THEN
+        WRITE (WRNMSG,606) TIME,VDIIVN(IB),VDIDSP(IB),MDS
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEDS )
+        GO TO 2110
+      END IF
+C-----CHECK DESIRED OUTBOUND APPROACH NUMBER FOR ERRORS
+      DO 2010  JAN = 1 , NOBA
+            IF ( VDIOBN(IB) . EQ . LOBA(JAN) )   GO TO 2020
+ 2010 CONTINUE
+      WRITE (WRNMSG,607) TIME,VDIIVN(IB),VDIOBN(IB)
+      WRITE (SER,FMT)
+      WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+      CALL  PRTWRN  ( WRNMSG )
+      CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEOA )
+      GO TO 2110
+ 2020 CONTINUE
+C-----CHECK INBOUND APPROACH NUMBER FOR ERRORS
+      DO 2030  JAN = 1 , NIBA
+            IF ( VDIIBN(IB) . EQ . LIBA(JAN) )   GO TO 2040
+ 2030 CONTINUE
+      WRITE (WRNMSG,608) TIME,VDIIVN(IB),VDIIBN(IB)
+      WRITE (SER,FMT)
+      WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+      CALL  PRTWRN  ( WRNMSG )
+      CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEIA )
+      GO TO 2110
+ 2040 CONTINUE
+C-----CHECK INBOUND LANE NUMBER FOR ERRORS
+      JA = VDIIBN(IB)
+      IF ( ( VDIILN(IB) . LT . 1          ) . OR .
+     *     ( VDIILN(IB) . GT . NLANES(JA) ) )    THEN
+        WRITE (WRNMSG,609) TIME,VDIIVN(IB),VDIILN(IB),JA,NLANES(JA)
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEIL )
+        GO TO 2110
+      END IF
+C-----CHECK WHETHER INDIVIDUAL STATISTICS ARE PRINTED AT LOGOUT (0=NO AND 1=YES) FOR
+C-----ERRORS
+      IF ( ( VDIPLO(IB) . LT . 0 ) . OR .
+     *     ( VDIPLO(IB) . GT . 1 ) )             THEN
+        WRITE (WRNMSG,610) TIME,VDIIVN(IB),VDIPLO(IB)
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEPO )
+        GO TO 2110
+      END IF
+C-----CHECK WHETHER THE VEHICLE SHOULD TRY TO USE THE FREE U-TURN LANE
+C-----AT A DIAMOND INTERCHANGE (0=NO AND 1=YES) FOR ERRORS
+      IF ( ( VDIFUT(IB) . LT . 0 ) . OR .
+     *     ( VDIFUT(IB) . GT . 1 ) )             THEN
+        WRITE (WRNMSG,611) TIME,VDIIVN(IB),VDIFUT(IB)
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEFU )
+        GO TO 2110
+      END IF
+C-----CHECK FORCED STOP TIME IN SECONDS (0=NO FORCED STOP) FOR ERRORS
+                    IF ( VDIFST(IB) .EQ. 0.0D0 ) GO TO 2080
+      IF ( ( VDIFST(IB) . LT . VDIQIT(IB) ) . OR .
+     *     ( VDIFST(IB) . GT . SIMTIM     ) )    THEN
+        WRITE (WRNMSG,612) TIME,VDIIVN(IB),VDIFST(IB),VDIQIT(IB),SIMTIM
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEFT )
+        GO TO 2110
+      END IF
+C-----CHECK FORCED STOP LINK NUMBER FOR ERRORS
+C-----(-=INTERSECTION PATH NUMBER AND +=APPROACH NUMBER)
+      IF ( ( VDIFSL(IB) . LT . -NPATHS ) . OR .
+     *     ( VDIFSL(IB) . EQ . 0       ) . OR .
+     *     ( VDIFSL(IB) . GT . NAP     ) )       THEN
+        WRITE (WRNMSG,613) TIME,VDIIVN(IB),VDIFSL(IB),-NPATHS,NAP
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEFL )
+        GO TO 2110
+      END IF
+      IF ( VDIFSL(IB) . GT . 0 )                 THEN
+        DO 2050  JAN = 1 , NIBA
+        JA = LIBA(JAN)
+                    IF ( VDIFSL(IB) . EQ . JA )  GO TO 2070
+ 2050   CONTINUE
+        DO 2060  JAN = 1 , NOBA
+        JA = LOBA(JAN)
+                    IF ( VDIFSL(IB) . EQ . JA )  GO TO 2070
+ 2060   CONTINUE
+        WRITE (WRNMSG,614) TIME,VDIIVN(IB),VDIFSL(IB)
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEFA )
+        GO TO 2110
+ 2070   CONTINUE
+      END IF
+C-----CHECK FORCED STOP POSITION ON LINK IN FEET FOR ERRORS
+      IF ( VDIFSL(IB) . LT . 0 )                 THEN
+        IF ( ( VDIFSP(IB) . LT . 0.0D0                     ) . OR .
+     *       ( VDIFSP(IB) . GT . DBLE( LENP(-VDIFSL(IB)) ) ) )
+     *                                           THEN
+          WRITE (WRNMSG,615) TIME,VDIIVN(IB),VDIFSP(IB),
+     *                       DBLE( LENP(-VDIFSL(IB)) )
+          WRITE (SER,FMT)
+          WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+          CALL  PRTWRN  ( WRNMSG )
+          CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEFP )
+          GO TO 2110
+        END IF
+      ELSE
+        IF ( ( VDIFSP(IB) . LT . DBLE( MINLLN(JA) ) ) . OR .
+     *       ( VDIFSP(IB) . GT . DBLE( MAXLLN(JA) ) ) )
+     *                                           THEN
+          WRITE (WRNMSG,616) TIME,VDIIVN(IB),VDIFSP(IB),
+     *                       DBLE( MINLLN(JA) ),DBLE( MAXLLN(JA) )
+          WRITE (SER,FMT)
+          WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+          CALL  PRTWRN  ( WRNMSG )
+          CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEFQ )
+          GO TO 2110
+        END IF
+      END IF
+C-----CHECK FORCED STOP DWELL TIME IN SECONDS FOR ERRORS
+      IF ( ( VDIFSD(IB) . LE . 0.0D0          ) . OR .
+     *     ( VDIFSD(IB) . GT . DBLE( MSTSEC ) ) )THEN
+        WRITE (WRNMSG,617) TIME,VDIIVN(IB),VDIFSD(IB),DBLE( MSTSEC )
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEFD )
+        GO TO 2110
+      END IF
+ 2080 CONTINUE
+C-----CHECK FORCED GO TIME IN SECONDS (0=NO FORCED GO) FOR ERRORS
+                    IF ( VDIFGT(IB) .EQ. 0.0D0 ) GO TO 2090
+      IF ( ( VDIFGT(IB) . LT . VDIQIT(IB) ) . OR .
+     *     ( VDIFGT(IB) . GT . SIMTIM     ) )    THEN
+        WRITE (WRNMSG,618) TIME,VDIIVN(IB),VDIFGT(IB),VDIQIT(IB),SIMTIM
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEGT )
+        GO TO 2110
+      END IF
+C-----CHECK FORCED GO ACTIVE TIME IN SECONDS FOR ERRORS
+      IF ( ( VDIFGA(IB) . LE . 0.0D0          ) . OR .
+     *     ( VDIFGA(IB) . GT . DBLE( MSTSEC ) ) )THEN
+        WRITE (WRNMSG,619) TIME,VDIIVN(IB),VDIFGA(IB),DBLE( MSTSEC )
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEGA )
+        GO TO 2110
+      END IF
+ 2090 CONTINUE
+C-----CHECK FORCED RUN RED SIGNAL TIME IN SECONDS (0=NO FORCED RUN RED
+C-----SIGNAL) FOR ERRORS
+                    IF ( VDIFRT(IB) .EQ. 0.0D0 ) GO TO 2100
+      IF ( ( VDIFRT(IB) . LT . VDIQIT(IB) ) . OR .
+     *     ( VDIFRT(IB) . GT . SIMTIM     ) )    THEN
+        WRITE (WRNMSG,620) TIME,VDIIVN(IB),VDIFRT(IB),VDIQIT(IB),SIMTIM
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIERT )
+        GO TO 2110
+      END IF
+C-----CHECK FORCED RUN RED SIGNAL ACTIVE TIME IN SECONDS FOR ERRORS
+      IF ( ( VDIFRA(IB) . LE . 0.0D0          ) . OR .
+     *     ( VDIFRA(IB) . GT . DBLE( MSTSEC ) ) )THEN
+        WRITE (WRNMSG,621) TIME,VDIIVN(IB),VDIFRA(IB),DBLE( MSTSEC )
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIERA )
+        GO TO 2110
+      END IF
+ 2100 CONTINUE
+C-----CHECK VEHICLE NUMBER FOR ERRORS
+      IF ( VDIIVN(IB) . LE . 0 )                 THEN
+        WRITE (WRNMSG,622) TIME,VDIIVN(IB),VDIIVN(IB)
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEVN )
+        GO TO 2110
+      END IF
+C-----CHECK EMERGENCY VEHICLE (0=NO AND 1=YES) FOR ERRORS
+      IF ( ( VDIEMV(IB) . LT . 0 ) . OR .
+     *     ( VDIEMV(IB) . GT . 1 ) )             THEN
+        WRITE (WRNMSG,623) TIME,VDIIVN(IB),VDIEMV(IB)
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEEV )
+        GO TO 2110
+      END IF
+C-----CHECK ENTRY SPEED IN FT/SEC FOR ERRORS
+      IF ( ( VDISPD(IB) . LE . 0.0D0       ) . OR .
+     *     ( VDISPD(IB) . GT . DBLE( MDS ) ) )   THEN
+        WRITE (WRNMSG,624) TIME,VDIIVN(IB),VDISPD(IB),DBLE( MDS )
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEES )
+        GO TO 2110
+      END IF
+C-----CHECK ENTRY ACCELERATION/DECELERATION IN FT/SEC/SEC FOR ERRORS
+      IF ( ( VDIACC(IB) . LT . DMAXAV ) . OR .
+     *     ( VDIACC(IB) . GT . AMAXAV ) )        THEN
+        WRITE (WRNMSG,625) TIME,VDIIVN(IB),VDIACC(IB),DMAXAV,AMAXAV
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEEA )
+        GO TO 2110
+      END IF
+C-----CHECK ENTRY JERK RATE IN FT/SEC/SEC/SEC FOR ERRORS
+      IF ( ( VDISLP(IB) . LT . -SLPMAX*DCHRMX ) . OR .
+     *     ( VDISLP(IB) . GT .  SLPMAX*DCHRMX ) )THEN
+        WRITE (WRNMSG,626) TIME,VDIIVN(IB),VDISLP(IB),-SLPMAX*DCHRMX,
+     *                     SLPMAX*DCHRMX
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,VDIIVN(IB),VDIEEJ )
+        GO TO 2110
+      END IF
+C-----SET THE QUEUE BUFFER INDEX FOR THE INBOUND APPROACH AND LANE THAT
+C-----THE VEHICLE IS TO LOG INTO
+      JLN = VDIILN(IB)
+      JA  = VDIIBN(IB)
+      JAN = LIBAR(JA)
+      IF ( LQ(JAN,JLN) . GT . 0 )                THEN
+        IF ( LQ(JAN,JLN) . GT . NIL )            THEN
+          JVN = VDIIVN(LQ(JAN,JLN)-NIL)
+          WRITE (WRNMSG,627) TIME,VDIIVN(IB),JA,JLN,JVN
+        ELSE
+          JVN = IBUF(IBUFVN,LQ(JAN,JLN))
+          WRITE (WRNMSG,628) TIME,VDIIVN(IB),JA,JLN,JVN
+        END IF
+        WRITE (SER,FMT)
+        WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+        CALL  PRTWRN  ( WRNMSG )
+        CALL  VDIERR  ( TIME,-IQ(IV),VDIELD )
+        GO TO 2110
+      END IF
+      LQ(JAN,JLN) = NIL + IB
+ 2110 CONTINUE
+      GO TO 3010
+ 2120 CONTINUE
+C-----VDIGET DID NOT READ FROM FILE, SEE IF ANY VEHICLES
+C-----INSERTED VIA VDIPUT
+      IF (VDIPUTN .GT. 0) THEN
+        NVDI = VDIPUTN
+        VDIPUTN = 0
+        GO TO 2130
+      END IF
+ 3010 CONTINUE
+      RETURN
+C-----PROCESS THE EXECUTION ERRORS AND STOP
+ 9770 CONTINUE
+      CALL  ABORTR  ( 'STOP 977 - NVDI GT NIL - QUEUE' )
+      STOP  977
+      END                                                               QUEUE
+C
+C
+C
+      SUBROUTINE SCVIVN ( POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                    POSNOF,LANCHG,JVPV,POSADD,
+     *                    DIRVAL,DIRPTH,PAIVPV         )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+C3    INCLUDE 'CHARAC'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           DIRPTH,DIRVAL,LANCHG
+      INTEGER           JVPV
+      DOUBLE PRECISION  AIVPV,AJVPV,ACCVEH,IVPVS,JVPVS,PAIVPV,PIVPV,
+     *                  PJVPV,POSADD,POSNOF,POSRB,POSVEH,SIVPV,SJVPV,
+     *                  SLPVEH,VIVPV,VJVPV,VELVEH
+C
+C-----SUBROUTINE SCVIVN SETS CRITICAL VEHICLE NUMBER BY COMPARING THE
+C-----SLOPE TO CAR FOLLOW OR STOP BEHIND THE DESIGNATED VEHICLE OR IF
+C-----SLOPES ARE CLOSE THEN BY COMPARING THE POSITION OF THE VEHICLES
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'SCVIVN'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----IF THERE IS NO JVPV VEHICLE THEN RETURN
+      IF ( JVPV . EQ . 0 )                       THEN
+        RETURN
+      END IF
+C-----IF THE JVPV VEHICLE IS THIS VEHICLE THEN RETURN
+      IF ( JVPV . EQ . IV )                      THEN
+        RETURN
+      END IF
+C-----IF THE IVPV VEHICLE IS THE JVPV VEHICLE THEN RETURN
+      IF ( IVPV . EQ . JVPV )                    THEN
+        RETURN
+      END IF
+C-----GET INFORMATION FOR THE JVPV VEHCILE
+      CALL  SPVAS   ( JVPV,PJVPV,VJVPV,AJVPV,SJVPV,
+     *                .TRUE.,.TRUE.,.FALSE.,.TRUE.  )
+      PJVPV = PJVPV + POSADD
+C-----IF THE JVPV VEHICLE IS CHANGING LANES OUT OF THE VEHICLES LANE AND
+C-----THE JVPV VEHICLES POSITION IS BEYOND THE NOF VEHICLES POSITION
+C-----THEN RETURN
+      IF ( LANCHG . AND . (PJVPV .GT. POSNOF) )  THEN
+        RETURN
+      END IF
+C-----IF THIS VEHICLE MAY NOT PROCEED AND THIS VEHICLE IS NOT IN THE
+C-----INTERSECTION AND THIS VEHICLE IS ON AN INBOUND LANE OR DIAMOND
+C-----INTERNAL INBOUND LANE AND THE JVPV VEHICLE IS BEYOND THE END OF
+C-----THE LANE THEN RETURN
+      IF ( ( .NOT. MPRO  (IV)             ) . AND .
+     *     ( .NOT. MININT(IV)             ) . AND .
+     *     ( ( ILTYPE(IL) . EQ . INBNDL ) . OR .
+     *       ( ILTYPE(IL) . EQ . DINBDL ) ) . AND .
+     *     ( PJVPV . GT . ENDLN           ) )    THEN
+        RETURN
+      END IF
+C-----IF THE JVPV VEHICLE IS BEHIND THIS VEHICLE THEN RETURN
+      POSRB = POSVEH - LENVAP
+      IF ( PJVPV . LT . POSRB )                  THEN
+        RETURN
+      END IF
+C-----IF THERE IS NO IVPV VEHICLE THEN SET THE IVPV VEHICLE TO THE JVPV
+C-----VEHICLE AND RETURN
+      IF ( IVPV . EQ . 0 )                       THEN
+        IVPV = JVPV
+        DIRPTH = DIRVAL
+        PAIVPV = POSADD
+        RETURN
+      END IF
+C-----GET INFORMATION FOR THE IVPV VEHCILE
+      CALL  SPVAS   ( IVPV,PIVPV,VIVPV,AIVPV,SIVPV,
+     *                .TRUE.,.TRUE.,.FALSE.,.TRUE.  )
+      PIVPV = PIVPV + PAIVPV
+C-----CALCULATE SLOPE FOR IVPV AND JVPV VEHICLES
+      CALL  SLPCFS  ( IVPVS,IV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                         PIVPV ,VIVPV ,AIVPV ,SIVPV   )
+      CALL  SLPCFS  ( JVPVS,IV,POSVEH,VELVEH,ACCVEH,SLPVEH,
+     *                         PJVPV ,VJVPV ,AJVPV ,SJVPV   )
+C-----CHOOSE THE CRITICAL VEHICLE
+      IF      ( JVPVS               .EQ. 0.0D0 ) THEN
+C-----  THE JVPV VEHICLE REQUIRES NO SLOPE THUS RETURN
+        RETURN
+      ELSE IF ( IVPVS               .EQ. 0.0D0 ) THEN
+C-----  THE IVPV VEHICLE REQUIRES NO SLOPE AND THE JVPV VEHICLE REQUIRES
+C-----  A NEGATIVE SLOPE THUS SET THE IVPV VEHICLE TO THE JVPV VEHICLE
+C-----  AND RETURN
+        IVPV   = JVPV
+        DIRPTH = DIRVAL
+        PAIVPV = POSADD
+        RETURN
+      ELSE IF ( DABS( IVPVS-JVPVS ) .LE. 0.2D0 ) THEN
+C-----  THE SLOPES ARE ALMOST EQUAL THUS IF THE JVPV VEHICLE IS CLOSER
+C-----  THAN THE IVPV VEHICLE THEN SET THE IVPV VEHICLE TO THE JVPV
+C-----  VEHICLE AND RETURN
+        IF ( PJVPV . LT . PIVPV )                THEN
+          IVPV   = JVPV
+          DIRPTH = DIRVAL
+          PAIVPV = POSADD
+          RETURN
+        END IF
+      ELSE IF ( JVPVS               .LT. IVPVS ) THEN
+C-----  THE JVPV VEHICLE REQUIRES MORE BRAKING THAN THE IVPV VEHICLE
+C-----  THUS SET THE IVPV VEHICLE TO THE JVPV VEHICLE AND RETURN
+        IVPV   = JVPV
+        DIRPTH = DIRVAL
+        PAIVPV = POSADD
+        RETURN
+      END IF
+      RETURN
+      END                                                               SCVIVN
+C
+C
+C
+      SUBROUTINE SETPTV ( JL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONCHK'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      INTEGER           JL
+      DOUBLE PRECISION  DESSPD
+C
+C-----SUBROUTINE SETPTV SETS THIS VEHICLES PARAMETERS FOR PREDICTING
+C-----TIME AND VELOCITY TO AN INTERSECTION CONFLICT
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'SETPTV'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----SET THIS VEHICLES PARAMETERS FOR PREDICTING TIME AND VELOCITY TO
+C-----AN INTERSECTION CONFLICT
+      CALL  SPVAS  ( IV,PO,VO,AO,SO,.FALSE.,.FALSE.,.FALSE.,.FALSE. )
+      IVPRTV = IV
+      CALL  SETDSP  ( IV,POSNEW,DBLE( ISPD(IV) ),.FALSE.,DESSPD )
+      JSPD   = IDNINT( DESSPD )
+      JSPDP  = ISPDP(IV)
+      MIMP   = LIMP(IX)
+      JSLIM  = ISLIM(ISNA(JL))
+      LGEOM4 = LGEOM(4,JL)
+      JDCONF = IDRICL(IV)
+      JVCONF = IVEHCL(IV)
+      RETURN
+      END                                                               SETPTV
+C
+C
+C
+      SUBROUTINE SLPCFS ( SLP,IVM,POM,VOM,AOM,SOM,POH,VOH,AOH,SOH )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      DOUBLE PRECISION  DECMIN
+      PARAMETER       ( DECMIN = -1.0D0/IACCFR )
+      INTEGER           IVM
+      DOUBLE PRECISION  A,ACCMAX,ACCN,ANM,AOH,AOM,CARDEC,CARDIS,CRISLP,
+     *                  DECVEH,DIST,DS,FACT,PNM,POH,POM,POSREL,PVSTP,
+     *                  PVVELM,RANGE,RELNEW,SFACT,SLP,SLPSTP,SOH,SOM,
+     *                  T,T1,TS,TSMAX,V,VELREL,VOH,VOM,VT1,X,XCRIT
+      DATA     RANGE  / -6.0D0 /
+      DATA     SFACT  /  1.0D0 /
+C
+C-----SUBROUTINE SLPCFS CALCULATES THE DECELERATION SLOPE FOR ME
+C-----(IVM/POM/VOM/AOM/SOM) TO CAR-FOLLOW OR STOP BEHIND THE DESIGNATED
+C-----VEHICLE (HIM) (POH/VOH/AOH/SOH)
+C-----SLPCFS WILL RETURN ZERO IF THE VEHICLE SHOULD ACCELERATE
+C-----SLPCFS WILL NEVER RETURN A POSITIVE VALUE FOR SLP
+C
+C[    CARDEC     = -2147483647.0
+C[    CRISLP     = -2147483647.0
+C[    DECMAX     = -2147483647.0
+C[    DENOM      = -2147483647.0
+C[    FACT       = -2147483647.0
+C[    POSREL     = -2147483647.0
+C[    PVSTP      = -2147483647.0
+C[    SLPSTP     = -2147483647.0
+C[    TCRIT      = -2147483647.0
+C[    TS         = -2147483647.0
+C[    VELREL     = -2147483647.0
+C[    XCRIT      = -2147483647.0
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'SLPCFS'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      DECVEH = DMAX(IVEHCL(IVM))
+      CRISLP = SLPMAX*DCHAR(IDRICL(IVM))
+      PVSTP  = -POSMAX
+      POSREL = POH - POM
+      VELREL = VOH - VOM
+C-----INITIALIZE SLP TO NOT SET
+      SLP = 0.0D0
+C-----IF THE VEHICLE IS STOPPED LESS THAN XRELMX FEET FROM THE
+C-----DESIGNATED VEHICLE THEN REMAIN STOPPED ELSE DO NOT SET SLP
+      IF ( VOM . LE . 0.0D0 )                    THEN
+        IF ( POSREL . LE . XRELMX )              THEN
+          SLP = -CRISLP
+        END IF
+        GO TO 3010
+      END IF
+C-----IF THE VEHICLE IS TOO CLOSE TO THE DESIGNATED VEHICLE THEN BRAKE
+C-----AS HARD AS POSSIBLE
+      IF ( POSREL . LE . 0.0D0 )                 THEN
+        SLP = -2.0D0*CRISLP
+        GO TO 3010
+      END IF
+                    IF ( VOH . LE . 0.0D0 )      GO TO 2010
+      XREL = XRELMX
+                    IF ( VELREL . GE . 0.0D0 )   XREL = XRELMI
+      IF ( ( VELREL . GE . 0.0D0 ) . AND .
+     *     ( POSREL . GE . XREL  ) )             GO TO 1020
+C
+C-----CAR-FOLLOW THE DESIGNATED VEHICLE
+C
+C-----FIND THE CONSERVATIVE CAR FOLLOWING DISTANCE
+      CARDIS = DMAX1( XRELMX,1.7D0*VOH+4.0D0*VELREL**2 )
+     *         / DCHAR(IDRICL(IVM))
+C-----IF THE VEHICLE IS FURTHER THAN CARDIS FROM THE DESIGNATED VEHICLE
+C-----THEN DO NOT SET SLP
+                    IF ( POSREL . GT . CARDIS )  GO TO 1050
+      POSREL = DMAX1( POSREL,0.01D0 )
+C-----CALCULATE THE REQUIRED ACC/DEC USING THE NON-INTEGER GENERALIZED
+C-----CAR FOLLOWING EQUATION
+      CARDEC = CAREQA * ((VOM**CAREQM)/(POSREL**CAREQL)) * VELREL
+C-----BOUND THE REQUIRED ACC/DEC
+      CARDEC = DMIN1( DMAX1( CARDEC,DECVEH ),-0.04D0 )
+C-----CALCULATE THE REQUIRED ACC/DEC SLOPE TO BRING THE VEHICLES ACC/DEC
+C-----TO CARDEC IN ONE SECOND
+      SLP = CARDEC - AOM
+                    IF ( POSREL . LE . XRELMI )  GO TO 1010
+C-----CALCULATE THE TIME REQUIRED TO BRING THE VEHICLE AHEAD TO A STOP
+C-----AASHTO RECOMMENDS 11.2FT/SEC/SEC DECELERATION RATE
+      TSMAX = DMAX1( 1.5D0*(VOH/11.2D0 + PIJR(IDRICL(IVM))),10.0D0 )
+      CALL  TIMSTP  ( VOH,AOH,SOH,TSMAX,T )
+                    IF ( T . EQ . TIMERR )       GO TO 1010
+C-----CALCLATE THE POSITION FOR THE VEHICLE AHEAD AFTER IT STOPS
+      PVSTP = POH + VOH*T + 0.5D0*AOH*T**2 + ONED6*SOH*T**3
+C-----CALCLATE THE PARAMETERS FOR A DECELERATION TO A STOP
+      PNM = POM + DMAX1( VOM*DT+0.5D0*AOM*DTSQ+ONED6*SOM*DTCU,0.0D0 )
+      XCRIT = DMIN1( 0.9D0*(PVSTP-POM),(PVSTP-PNM) )
+C-----AASHTO RECOMMENDS 11.2FT/SEC/SEC DECELERATION RATE
+      TSMAX = DMAX1( 1.5D0*(VOM/11.2D0 + PIJR(IDRICL(IVM))),10.0D0 )
+      CALL  SLPSTD ( POM+XCRIT,POM,VOM,AOM,SOM,TSMAX,TS,SLPSTP )
+      IF ( ( TS     . EQ . TIMERR ) . OR .
+     *     ( SLPSTP . EQ . 0.0D0  ) )            GO TO 1010
+      SLP = SLPSTP
+      FACT = - 1.0D0
+     *       - SFACT*DMAX1( DMIN1( 1.0D0,(SLP+SLPMAX)/RANGE ),
+     *                             0.0D0 )
+      SLP = DMIN1( DMAX1( SLP,FACT*1.3D0*CRISLP ),0.0D0 )
+      GO TO 3010
+ 1010 CONTINUE
+C-----CARFOL 2020 CONTINUE
+      FACT = - 1.0D0
+     *       - SFACT*DMAX1( DMIN1( 1.0D0,(SLP+SLPMAX)/RANGE ),
+     *                             0.0D0 )
+      SLP = DMIN1( DMAX1( SLP,FACT*0.65D0*CRISLP ),0.0D0 )
+      GO TO 3010
+ 1020 CONTINUE
+C-----CARFOL 4010 CONTINUE
+C-----THE PREVIOUS VEHICLE IS GOING FASTER THAN THIS VEHICLE SO RESET
+C-----THE CAR FOLLOWING DISTANCE
+      CARDIS = DMAX1( XRELMX,1.7D0*VOH)/DCHAR(IDRICL(IVM) )
+C-----IF THE RELATIVE POSITION OF THE VEHICLE IS GE 1.2 TIMES THE CAR
+C-----FOLLOWING DISTANCE THEN GO TO 3010 AND RETURN
+      IF ( POSREL . GE . 1.2D0*DMAX1( CARDIS,18.0D0 ) )
+     *                                           GO TO 3010
+C-----CARFOL 5010 CONTINUE
+C-----THE VEHICLES RELATIVE POSITION IS LT 1.2*CARDIS SO RESET CARDIS
+C[    IF ( CARDIS             .EQ.-2147483647.0 )STOP 'SLPCFS CARDIS 02'
+      CARDIS = 0.8D0*CARDIS
+C-----IF THE VEHICLES RELATIVE POSITION IS BETWEEN 80 PERCENT AND 120
+C-----PERCENT OF THE CARDIS FROM STATEMENT 1020 THEN GO TO 3010 AND
+C-----RETURN
+                    IF ( POSREL . GT . CARDIS )  GO TO 3010
+                    IF ( VOM . LE . VOH )        GO TO 3010
+      PVVELM = DMAX1( DMIN1( VOH,VOH+AOH*DT+0.5D0*SOH*DTSQ ),0.0D0 )
+                    IF ( PVVELM . LE . VELSTP )  GO TO 2010
+      SLP = 0.5D0*CRISLP
+      T1 = -AOM/SLP
+      VT1 = VOM + AOM*T1 + 0.5D0*SLP*T1**2
+C-----FIND THE ACCELERATION THE VEHICLE WOULD USE TO GET TO HIS DESIRED
+C-----SPEED
+      ACCMAX = AUTOL*(3.2D0+0.08D0*PVVELM)*DCHAR(IDRICL(IVM))
+      ACCN   = ACCMAX*(1.0D0-(VT1/(1.15D0*PVVELM)))
+                    IF ( ACCN . LE . 0.0D0 )     GO TO 1030
+C-----FIND THE TIME AND RELATIVE DISTANCE TRAVELED WHILE BRINGING THE
+C-----VELOCITY BACK UP TO THE DESIRED SPEED
+      T = T1 + ACCN/SLP + 0.25D0*DTMAX
+      DIST = VOM*T + 0.5D0*AOM*T**2 + ONED6*SLP*T**3 - VOH*T
+C-----IF THE NEW RELATIVE DISTANCE WOULD BE GE THE CAR FOLLOWING
+C-----DISTANCE THEN START ACCELERATING AT HALF CRITICAL SLOPE
+C[    IF ( CARDIS             .EQ.-2147483647.0 )STOP 'SLPCFS CARDIS 03'
+            IF ( (POSREL-DIST) . GE . CARDIS )   GO TO 1040
+ 1030 CONTINUE
+C-----CARFOL 5020 CONTINUE
+C-----SET THE ACC/DEC SLOPE TO MOVE THE VEHICLE BACK AWAY FROM THE
+C-----PREVIOUS VEHICLE
+C[    IF ( CARDIS             .EQ.-2147483647.0 )STOP 'SLPCFS CARDIS 04'
+      SLP = 0.10D0*DECVEH*DCHAR(IDRICL(IVM))*(CARDIS-POSREL)/CARDIS
+ 1040 CONTINUE
+C-----CARFOL 5030 CONTINUE
+C-----BOUND THE ACC/DEC SLOPE WHEN THE VEHICLE IS LT 0.8*CARDIS AND
+C-----CHECK FOR DECELERATION TO THE DESIRED SPEED
+      SLP = DMAX1( SLP,-CRISLP )
+      GO TO 3010
+ 1050 CONTINUE
+C-----CARFOL 7010 CONTINUE
+C-----THE PREVIOUS VEHICLE IS GOING SLOWER THAN THIS VEHICLE BUT IF HIS
+C-----RELATIVE POSITION IS GT 120 PERCENT OF CARDIS THEN GO TO 3010 AND
+C-----RETURN
+C[    IF ( CARDIS             .EQ.-2147483647.0 )STOP 'SLPCFS CARDIS 06'
+      IF ( POSREL . GT . 1.2D0*DMAX1( CARDIS,18.0D0 ) )
+     *                                           GO TO 3010
+C-----IF THE VEHICLES ACC/DEC IS VERY SMALL THEN GO TO 3020 AND RETURN
+            IF ( DABS( AOM ) . LE . 0.01D0 )     GO TO 3020
+C-----FIND THE ACC/DEC SLOPE TO BRING THE VEHICLES ACC/DEC TO ZERO IN
+C-----PIJR TIME
+      SLP = -1.01D0*AOM/PIJR(IDRICL(IVM))
+C-----IF THE VEHICLES ACC/DEC SLOPE OLD IS GT THE VEHICLES ACC/DEC SLOPE
+C-----NEW AND THE SLOPES ARE THE SAME SIGN THEN USE THE VEHICLES OLD
+C-----ACC/DEC SLOPE
+      IF ( ( DABS( SOM ) .GT. DABS( SLP ) ) . AND .
+     *     ( SOM*SLP     .GT. 0.0D0       ) )    SLP = SOM
+      SLP = DMIN1( DMAX1( SLP,-CRISLP ),0.0D0 )
+      ANM = AOM + SLP*DT
+C-----IF THE ACC/DEC CHANGES SIGNS IN ONE DT THEN SET THE ACC/DEC SLOPE
+C-----TO MAKE THE VEHICLES ACC/DEC ZERO IN ONE DT
+                    IF ( AOM*ANM . LT . 0.0D0 )  SLP = -AOM/DT
+      GO TO 3010
+C
+C-----STOP BEHIND THE DESIGNATED VEHICLE
+C
+ 2010 CONTINUE
+C-----CALCULATE THE TIME AND DISTANCE TO STOP NOT EXCEEDING THE MAXIMUM
+C-----DECELERATION RATE FOR THE DRIVER
+      CALL  TDSTPM  ( IVM,-6.0D0,VOM,VOM,AOM,.TRUE.,TS,DS )
+      XCRIT = VOM*DTMAX + DS
+                    IF ( POSREL . LE . XCRIT )   GO TO 2030
+C-----CALCULATE THE NEW RELATIVE POSITION AFTER PIJR SECONDS OR THE TIME
+C-----REQUIRED TO REDUCE THE VEHICLES ACC/DEC TO ZERO AT 0.5*CRISLP OR 1
+C-----SECOND
+      T = DMAX1( PIJR(IDRICL(IVM)),AOM/(0.5D0*CRISLP),1.0D0,2.0D0*DT )
+      RELNEW = POSREL - VOM*T - 0.5D0*AOM*T**2 - ONED6*SOM*T**3
+C-----IF THE CRITICAL STOPPING DISTANCE WILL NOT BE VIOLATED WITHIN PIJR
+C-----TIME THEN GO TO 3010 AND RETURN
+                    IF ( RELNEW . GT . XCRIT )   GO TO 3010
+      IF ( AOM . EQ . 0.0D0 )                    THEN
+        SLP = 0.0D0
+        GO TO 3010
+      END IF
+      T = 0.0D0
+ 2020 CONTINUE
+C-----CRIDIS 2010 CONTINUE
+C[    IF ( T                  .EQ.-2147483647.0 )STOP 'SLPCFS T      01'
+      T = T + DT
+                    IF ( T . GT . 10.0D0 )       GO TO 3010
+C-----CALCULATE THE ACC/DEC SLOPE REQUIRED TO REDUCE THE ACCELERATION TO
+C-----0.0 IN T SECONDS AND FIND THE ACCELERATION, VELOCITY, AND POSITION
+C-----OF THE VEHICLE AFTER T SECONDS
+      SLP = DMIN1( DMAX1( -AOM/T,-CRISLP ),CRISLP )
+      A =               AOM      +       SLP*T
+      V = VOM   +       AOM*T    + 0.5D0*SLP*T**2
+      X = VOM*T + 0.5D0*AOM*T**2 + ONED6*SLP*T**3
+                    IF ( V . LE . VELSTP )       GO TO 3010
+C-----CALCULATE THE TIME AND DISTANCE TO STOP NOT EXCEEDING THE MAXIMUM
+C-----DECELERATION RATE FOR THE DRIVER
+      CALL  TDSTPM  ( IVM,-6.0D0,V,V,A,.TRUE.,TS,DS )
+C-----CALCULATE THE CRITICAL STOPPING DISTANCE AFTER TS SECONDS
+      XCRIT = V*DTMAX + DS
+C-----IF THE CRITICAL STOPPING DISTANCE WILL NOT BE VIOLATED WITHIN T
+C-----SECONDS THUS GO TO 2020 AND INCREASE T BY DT AND CHECK AGAIN ELSE
+C-----GO TO 3010 AND RETURN
+                    IF ( (POSREL-X) .GT. XCRIT ) GO TO 2020
+      GO TO 3010
+ 2030 CONTINUE
+C-----CRIDIS 3010 CONTINUE
+      IF ( POSREL . LE . 0.0D0 )                 THEN
+        TS  = 0.0D0
+        SLP = -2.0D0*CRISLP
+      ELSE
+C-----  AASHTO RECOMMENDS 11.2FT/SEC/SEC DECELERATION RATE
+        TSMAX = DMAX1( 1.5D0*(VOM/11.2D0 + PIJR(IDRICL(IVM))),10.0D0 )
+        CALL  SLPSTD  ( POM+POSREL,POM,VOM,AOM,SOM,TSMAX,TS,SLP )
+        IF ( TS . EQ . TIMERR )                  THEN
+          IF ( VOM . LE . VSMALL )               THEN
+            SLP = -CRISLP
+          ELSE
+            GO TO 2040
+          END IF
+        END IF
+      END IF
+      SLP = DMIN1( DMAX1( SLP,-2.0D0*CRISLP ),2.0D0*CRISLP )
+      GO TO 3010
+ 2040 CONTINUE
+C-----CRIDIS 4010 CONTINUE
+C-----CALCULATE THE ACC/DEC SLOPE REQUIRED TO REDUCE THE ACC/DEC TO
+C-----DECMIN IN ONE SECOND
+      SLP =  DECMIN-AOM
+      SLP = DMIN1( DMAX1( SLP,-CRISLP ),0.0D0 )
+ 3010 CONTINUE
+                    IF ( SLP . GE . 0.0D0 )      GO TO 3020
+C-----BOUND AND RETURN NEGATIVE SLP
+      SLP = DMAX1( DMIN1( SLP,-0.001D0 ),-ISLPSH )
+      RETURN
+ 3020 CONTINUE
+C-----RETURN ZERO SLP
+      SLP = 0.0D0
+      RETURN
+      END                                                               SLPCFS
+C
+C
+C
+      SUBROUTINE SLPSTD ( POSSTP,POS,VEL,ACC,SLP,TMAX,T,SLPSTP )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CONSTN'
+      DOUBLE PRECISION  ZERO
+      PARAMETER       ( ZERO   = 1.0D-14     )
+      INTEGER           I,N
+      DOUBLE PRECISION  A,ACC,B,C,POS,POSSTP,PS,SLP,SLPSTP,SS,T,TMAX,TS,
+     *                  VEL
+C
+C-----SUBROUTINE SLPSTD CALCULATES THE SLOPE TO STOP AT POSSTP USING
+C-----POS, VEL, ACC, AND SLP WHERE
+c-----0      =       VEL   +       ACC*T    + 0.5D0*SLPSTP*T**2
+C-----POSSTP = POS + VEL*T + 0.5D0*ACC*T**2 + ONED6*SLPSTP*T**3
+C
+      T      = TIMERR
+      SLPSTP = SLP
+      IF ( ( POS . GE . POSSTP ) . OR .
+     *     ( VEL . LE . 0.0D0  ) )               THEN
+        T      = 0.0D0
+        SLPSTP = -ISLPSH
+        RETURN
+      END IF
+      IF ( DABS( ACC ) . LE . ZERO )             THEN
+C-----  POSSTP > POS, VEL > 0, ACC = 0, SLP = UNKNOWN
+        T = 1.5D0*(POSSTP-POS)/VEL
+        SLPSTP = -2.0D0*VEL/T**2
+        RETURN
+      ELSE
+C-----  POSSTP > POS, VEL > 0, ACC != 0, SLP = UNKNOWN
+C-----  (ACC)*T**2 + (4.0D0*VEL)*T + (-6.0D0*(POSSTP-POS)) = 0
+        A = ACC
+        B = 4.0D0*VEL
+        C = -6.0D0*(POSSTP-POS)
+        CALL  TMQUAD  ( A,B,C,TMAX,T )
+        IF ( T . EQ . TIMERR )                   THEN
+          IF ( DABS( C ) . LE . PSMALL )         THEN
+            T = 0.0D0
+          ELSE
+C OLD       DO  SS = SLP , ISLPSH , 0.5D0
+            N = IDNINT( (ISLPSH-SLP)/0.5D0 )
+            DO  I = 1 , N
+              SS = SLP + (I-1)*0.5D0
+              CALL  TIMSTP ( VEL,ACC,SS,TMAX,TS )
+              IF ( TS . EQ . TIMERR )            THEN
+                IF ( SS . EQ . SLP )             RETURN
+                CALL  TIMSTP ( VEL,ACC,SS-0.5D0,TMAX,TS )
+                IF ( TS . EQ . TIMERR )          RETURN
+                T = TS
+                SLPSTP = SS - 0.5D0
+                RETURN
+              END IF
+              PS = POS + VEL*TS + 0.5D0*ACC*TS**2 + ONED6*SS*TS**3
+              IF ( PS . GE . POSSTP )            THEN
+                T = TS
+                SLPSTP = SS
+                RETURN
+              END IF
+            END DO
+            RETURN
+          END IF
+        END IF
+        IF      ( T . EQ . 0.0D0 )               THEN
+          SLPSTP = -ISLPSH
+        ELSE IF ( T . GT . 0.0D0 )               THEN
+          SLPSTP = -2.0D0*(VEL+ACC*T)/(T**2)
+        END IF
+      END IF
+      RETURN
+      END                                                               SLPSTD
+C
+C
+C
+      SUBROUTINE SNEGEX ( MEAN,SHIFT,SNEVAL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      DOUBLE PRECISION  MEAN,SHIFT,SNEVAL,SRAN,TBAR
+C
+C-----SUBROUTINE SNEGEX GENERATES A SHIFTED NEGATIVE EXPONENTIAL RANDOM
+C-----DEVIATE
+C
+C-----SNEGEXP PARAMETER - MINIMUM HEADWAY (SECONDS)
+C-----THE PARAMETER FOR THE SNEGEXP HEADWAY DISTRIBUTION IS THE MINIMUM
+C-----HEADWAY IN SECONDS.
+      TBAR   = MEAN - SHIFT
+      SNEVAL = -DLOG( SRAN() )*TBAR + SHIFT
+      RETURN
+      END                                                               SNEGEX
+C
+C
+C
+      SUBROUTINE SNOFCV ( IVCONF,KP )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONCHK'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           ONIBAP
+      INTEGER           IVCONF,KL,KP,LP,LPPRTV
+      DOUBLE PRECISION  DESSPD
+C
+C-----SUBROUTINE SNOFCV SETS PONOF/VONOF/AONOF/SONOF FOR THE IVCONF
+C-----VEHICLE
+C
+C-----KP IS THE INTERSECTION PATH
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'SNOFCV'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      IVPRTV = IVCONF
+C-----SET PONOF/VONOF/AONOF/SONOF TO NOTHING
+      ONIBAP = .FALSE.
+      JDNOF  = 0
+      JVNOF  = 0
+      JVPRTV = 0
+      NOFSPD = 0
+      PONOF  = 0.0D0
+      VONOF  = 0.0D0
+      AONOF  = 0.0D0
+      SONOF  = 0.0D0
+      IF ( NOF(IVPRTV) . EQ . 0 )                THEN
+        IF ( MININT(IVPRTV) )                    THEN
+C-----    THE IVPRTV VEHICLE HAS NO NOF VEHICLE AND IS IN THE
+C-----    INTERSECTION THUS SET PONOF/VONOF/AONOF/SONOF TO LAST
+C-----    VEHICLE ON THE LINKING OUTBOUND LANE
+          KL = LOBL(LPRES(IVPRTV))
+          IF ( KL . GT . 0 )                     THEN
+            JVPRTV = ILVL(KL)
+            IF ( JVPRTV . GT . 0 )               THEN
+              CALL  SPVAS  ( JVPRTV,PONOF,VONOF,AONOF,SONOF,
+     *                       .TRUE.,.TRUE.,.TRUE.,.FALSE.    )
+              PONOF = PONOF +
+     *                DBLE( LGEOM4 + LENP(LPRES(IVPRTV)) - LGEOM(1,KL) )
+            END IF
+          END IF
+        ELSE
+C-----    THE IVPRTV VEHICLE HAS NO NOF VEHICLE AND IS NOT IN THE
+C-----    INTERSECTION THUS SET PONOF/VONOF/AONOF/SONOF TO LAST
+C-----    VEHICLE ON THE LINKING INTERSECTION PATH
+          LP = LNEXT(IVPRTV)
+          IF ( LP . GT . 0 )                     THEN
+            JVPRTV = ILVP(LP)
+            IF ( JVPRTV . GT . 0 )               THEN
+              CALL  SPVAS  ( JVPRTV,PONOF,VONOF,AONOF,SONOF,
+     *                       .TRUE.,.TRUE.,.TRUE.,.FALSE.    )
+              IF ( (     KP  . EQ .      LP ) . OR .
+     *             (LIBL(KP) . EQ . LIBL(LP)) )  THEN
+C-----          THE JVPRTV VEHICLE IS ON THE INTERSECTION PATH
+                PONOF = PONOF + DBLE( LGEOM4 )
+              ELSE
+C-----          THE JVPRTV VEHICLE IS ON THE SECOND INTERSECTION PATH
+                PONOF = PONOF + 
+     *                  DBLE( LGEOM4+LENP(KP)+LGEOM(4,LPREV(JVPRTV)) )
+              END IF
+            END IF
+          END IF
+        END IF
+      ELSE
+C-----  SET PONOF/VONOF/AONOF/SONOF TO NOF VEHICLE
+        JVPRTV = NOF(IVPRTV)
+        CALL  SPVAS  ( JVPRTV,PONOF,VONOF,AONOF,SONOF,
+     *                 .TRUE.,.TRUE.,.TRUE.,.FALSE.    )
+        LPPRTV = LPRES(JVPRTV)
+        IF ( MININT(JVPRTV) )                    THEN
+          IF ( (     LPPRTV .EQ.     KP ) . OR .
+     *         (LIBL(LPPRTV).EQ.LIBL(KP)) )      THEN
+C-----      THE JVPRTV VEHICLE IS ON THE INTERSECTION PATH
+            PONOF = PONOF + LGEOM4
+          ELSE IF ( LOBL(LPPRTV).EQ.LOBL(KP) )   THEN
+C-----      THE JVPRTV VEHICLE IS ON A DIFFERENT INTERSECTION PATH
+C-----      GOING TO THE SAME OUTBOUND LANE
+            PONOF = PONOF + DBLE( LGEOM4 + LENP(KP) - LENP(LPPRTV) )
+          ELSE
+C-----      THE JVPRTV VEHICLE IS ON THE SECOND INTERSECTION PATH
+            PONOF = PONOF +
+     *              DBLE( LGEOM4 + LENP(KP) + LGEOM(4,LPREV(JVPRTV)) )
+          END IF
+        ELSE
+          IF ( LPPRTV . EQ . LIBL(KP) )          THEN
+C-----      THE JVPRTV VEHICLE IS ON THE INBOUND LANE FOR THE
+C-----      INTERSECTION PATH
+C-----      PONOF IS CORRECT
+            ONIBAP = .TRUE.
+          ELSE
+C-----      THE JVPRTV VEHICLE IS ON THE OUTBOUND LANE FOR THE
+C-----      INTERSECTION PATH
+            PONOF = PONOF + DBLE( LGEOM4 + LENP(KP) - LGEOM(1,LPPRTV) )
+          END IF
+        END IF
+      END IF
+      IF ( JVPRTV . GT . 0 )                     THEN
+        JDNOF  = IDRICL(JVPRTV)
+        JVNOF  = IVEHCL(JVPRTV)
+        DESSPD = DBLE( ISPD(JVPRTV) )
+        IF ( ( ISPDP(JVPRTV) . EQ . 0 ) . AND .
+     *       ( ONIBAP                 ) . AND .
+     *       ( LNEXT(JVPRTV) . GT . 0 ) )        THEN
+C-----    FIND THE DESIRED SPEED FOR THE INTERSECTION PATH
+          DESSPD = DESSPD*DBLE( LIMP (     LNEXT(JVPRTV))  ) / 
+     *                    DBLE( ISLIM(ISNA(LPRES(JVPRTV))) )
+        END IF
+C-----  IF THE VEHICLE IS BLOCKED BY A MAJOR COLLISION THEN SET DESIRED
+C-----  SPEED TO STOP
+        IF ( MAJCLB(JVPRTV) .OR. MAJCLL(JVPRTV) .OR. CKINTB(JVPRTV) )
+     *                                           THEN
+          DESSPD = 0.0D0
+        END IF
+        CALL  SETDSP  ( JVPRTV,IPOS(JVPRTV),DESSPD,.FALSE.,DESSPD )
+        NOFSPD = IDNINT( DESSPD )
+      END IF
+      RETURN
+      END                                                               SNOFCV
+C
+C
+C
+      SUBROUTINE SNOFPV ( KP )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONCHK'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           ONIBAP
+      INTEGER           KP,LPPRTV
+      DOUBLE PRECISION  DESSPD
+C
+C-----SUBROUTINE SNOFPV SETS PONOF/VONOF/AONOF/SONOF TO THE IVPV VEHICLE
+C
+C-----KP IS THE INTERSECTION PATH
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'SNOFPV'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----SET PONOF/VONOF/AONOF/SONOF TO NOTHING
+      ONIBAP = .FALSE.
+      JDNOF  = 0
+      JVNOF  = 0
+      JVPRTV = 0
+      NOFSPD = 0
+      PONOF  = 0.0D0
+      VONOF  = 0.0D0
+      AONOF  = 0.0D0
+      SONOF  = 0.0D0
+      IF ( IVPV . GT . 0 )                       THEN
+        JVPRTV = IVPV
+        CALL  SPVAS  ( JVPRTV,PONOF,VONOF,AONOF,SONOF,
+     *                 .TRUE.,.TRUE.,.TRUE.,.FALSE.    )
+        LPPRTV = LPRES(JVPRTV)
+        IF ( MININT(JVPRTV) )                    THEN
+          IF ( (     LPPRTV  . EQ .      KP ) . OR .
+     *         (LIBL(LPPRTV) . EQ . LIBL(KP)) )  THEN
+C-----      THE JVPRTV VEHICLE IS ON THE INTERSECTION PATH
+            PONOF = PONOF + LGEOM4
+          ELSE IF ( LOBL(LPPRTV) .EQ. LOBL(KP) ) THEN
+C-----      THE JVPRTV VEHICLE IS ON A DIFFERENT INTERSECTION PATH
+C-----      GOING TO THE SAME OUTBOUND LANE
+            PONOF = PONOF + DBLE( LGEOM4 + LENP(KP) - LENP(LPPRTV) )
+          ELSE
+C-----      THE JVPRTV VEHICLE IS ON THE SECOND INTERSECTION PATH
+            PONOF = PONOF +
+     *              DBLE( LGEOM4 + LENP(KP) + LGEOM(4,LPREV(JVPRTV)) )
+          END IF
+        ELSE
+          IF ( LPPRTV . EQ . LIBL(KP) )          THEN
+C-----      THE JVPRTV VEHICLE IS ON THE INBOUND LANE FOR THE
+C-----      INTERSECTION PATH
+C-----      PONOF IS CORRECT
+            ONIBAP = .TRUE.
+          ELSE
+C-----      THE JVPRTV VEHICLE IS ON THE OUTBOUND LANE FOR THE
+C-----      INTERSECTION PATH
+            PONOF = PONOF + DBLE( LGEOM4 + LENP(KP) - LGEOM(1,LPPRTV) )
+          END IF
+        END IF
+      END IF
+      IF ( JVPRTV . GT . 0 )                     THEN
+        JDNOF  = IDRICL(JVPRTV)
+        JVNOF  = IVEHCL(JVPRTV)
+        DESSPD = DBLE( ISPD(JVPRTV) )
+        IF ( ( ISPDP(JVPRTV) . EQ . 0 ) . AND .
+     *       ( ONIBAP                 ) . AND .
+     *       ( LNEXT(JVPRTV) . GT . 0 ) )        THEN
+C-----    FIND THE DESIRED SPEED FOR THE INTERSECTION PATH
+          DESSPD = DESSPD*DBLE( LIMP (     LNEXT(JVPRTV))  ) / 
+     *                    DBLE( ISLIM(ISNA(LPRES(JVPRTV))) )
+        END IF
+C-----  IF THE VEHICLE IS BLOCKED BY A MAJOR COLLISION THEN SET DESIRED
+C-----  SPEED TO STOP
+        IF ( MAJCLB(JVPRTV) .OR. MAJCLL(JVPRTV) .OR. CKINTB(JVPRTV) )
+     *                                           THEN
+          DESSPD = 0.0D0
+        END IF
+        CALL  SETDSP  ( JVPRTV,IPOS(JVPRTV),DESSPD,.FALSE.,DESSPD )
+        NOFSPD = IDNINT( DESSPD )
+      END IF
+      RETURN
+      END                                                               SNOFPV
+C
+C
+C
+      SUBROUTINE SPVAS  ( KV,POSKV,VELKV,ACCKV,SLPKV,
+     *                    SUBLEN,SUBXRI,POLD,PNEW     )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           PNEW,POLD,SUBLEN,SUBXRI
+      INTEGER           KV
+      DOUBLE PRECISION  ACCKV,POSKV,SLPKV,VELKV
+C
+C-----SUBROUTINE SPVAS SETS THE POSITION, VELOCITY, ACCELERATION, AND
+C-----SLOPE FOR VEHICLE KV, OPTIONALLY SUBTRACTS THE VEHICLE LENGTH
+C-----(SUBLEN=TRUE), OPTIONALLY SUBTRACTS XRELMI (SUBLEN=TRUE AND
+C-----SUBXRI=TRUE), AND OPTIONALLY PREDICTS THE OLD (POLD=TRUE) OR NEW
+C-----(PNEW=TRUE) POSITION, VELOCITY, AND ACCELERATION
+C
+      IF ( KV . EQ . 0 )                         GO TO 9490
+      POSKV  = IPOS(KV)
+      IF ( SUBLEN )                              THEN
+        POSKV = POSKV - LVAP(KV)
+        IF ( SUBXRI )                            THEN
+          POSKV = POSKV - XRELMI
+        END IF
+      END IF
+      VELKV  = IVEL(KV)
+      ACCKV  = IACC(KV)
+            IF ( DABS( ACCKV ) . LE . IACC00 )   ACCKV = 0.0D0
+      SLPKV  = ISLP(KV)
+            IF ( DABS( SLPKV ) . LE . ISLP00 )   SLPKV = 0.0D0
+      IF      ( POLD . AND .        IUPDAT(KV)  )THEN
+        CALL  PREOLD  ( POSKV,VELKV,ACCKV,SLPKV )
+      ELSE IF ( PNEW . AND . (.NOT. IUPDAT(KV)) )THEN
+        CALL  PRENEW  ( POSKV,VELKV,ACCKV,SLPKV )
+      END IF
+      RETURN
+C-----PROCESS THE EXECUTION ERRORS AND STOP
+ 9490 CONTINUE
+      CALL  ABORTR  ( 'STOP 949 - VEHICLE NUMBER INVALID - SPVAS' )
+      STOP  949
+      END                                                               SPVAS
+C
+C
+C
+      FUNCTION   SRAN   ( )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CURAND'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      DOUBLE PRECISION  SRAN
+C
+C-----FROM KNUTH VOL2 P172 - SUBTRACTIVE RANDOM NUMBER GENERATOR
+C
+      IF ( NEWSED )                              THEN
+C
+C-----NEW SEED, INITIALIZE AND LOAD
+C
+        NEWSED = .FALSE.
+        CALL IN55
+        NEXTRN = 1
+        GO TO 1010
+      END IF
+      NEXTRN = NEXTRN + 1
+      IF ( NEXTRN . GT . 55 )                    THEN
+C
+C-----RELOAD
+C
+        CALL IRN55
+        NEXTRN = 1
+      END IF
+ 1010 CONTINUE
+      SRAN = DBLE( IASRAN(NEXTRN) )*1.0D-9
+      RETURN
+      END                                                               SRAN
+C
+C
+C
+      SUBROUTINE SSIBAP ( SSIPOS,INQUE )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'SUMST2'
+C8    INCLUDE 'TAPE10'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      LOGICAL           INQUE
+      DOUBLE PRECISION  DESSPD,SPFACT,SSIPOS
+C
+C-----SUBROUTINE SSIBAP UPDATES THE VEHICLES SIMULATION STATISTICS ON
+C-----THE INBOUND APPROACH
+C
+C[    SPFACT     = -2147483647.0
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'SSIBAP'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+C-----INCREMENT THE TRAVEL TIME
+      ITIMV(IV) = ITIMV(IV) + 1
+C-----IF THIS VEHICLE HAS ALREADY GATHERED QUEUE DELAY THEN THE QUEUE
+C-----IS NOT BROKEN AND CONTINUES TO GATHER QUEUE DELAY
+      IF ( IAFLAG(IA) . EQ . ILETTI )            THEN
+        ITIMVI(IV) = ITIMVI(IV) + 1
+        IF ( IQDSI(IV) . GT . 0 )                GO TO 1010
+      ELSE
+        IF ( IQDS(IV) . GT . 0 )                 GO TO 1010
+      END IF
+C-----THIS VEHICLE HAS NOT GATHERED ANY QUEUE DELAY YET THEN IF THE
+C-----QUEUE IS ALREADY BROKEN THEN THIS VEHICLE MAY NOT JOIN THE QUEUE
+                    IF ( (.NOT. INQUE) )         GO TO 1010
+C-----IF THIS VEHICLE IS MOVING FASTER THAN 3.0 FPS OR THIS VEHICLE IS
+C-----MORE THAN XQDIST FEET FROM THE VEHICLE IN FRONT OF HIM (OR THE END
+C-----OF THE LANE FOR THE FIRST VEHICLE IN THE LANE) THEN THE QUEUE IS
+C-----BROKEN FOR THIS LANE
+                    IF ( VELNEW . GT . 3.0D0 )   INQUE = .FALSE.
+            IF ( SSIPOS-POSNEW . GT . XQDIST )   INQUE = .FALSE.
+ 1010 CONTINUE
+C-----IF THIS VEHICLE IS IN THE QUEUE THEN INCREMENT QUEUE DELAY
+C-----WHEN THE VEHICLE FIRST JOINS THE QUEUE, THE TIME IS SET SUCH THAT
+C-----HE ACTUALLY JOINED THE QUEUE AT THE END OF LAST DT (=> TIME HE
+C-----JOINED THE QUEUE WAS TIME-DT)
+      IF ( INQUE )                               THEN
+        IQDS(IV) = IQDS(IV) + 1
+        IF ( IAFLAG(IA) . EQ . ILETTI )          IQDSI(IV)=IQDSI(IV)+1
+C-----IF THE VEHICLE IS STOPPED IN A QUEUE THEN INCREMENT STOPPED DELAY
+        IF ( VELNEW . LE . 3.0D0 )               THEN
+          ISDS(IV) = ISDS(IV) + 1
+          IF ( IAFLAG(IA) . EQ . ILETTI )        ISDSI(IV)=ISDSI(IV)+1
+        END IF
+      END IF
+C-----IF THE VELOCITY IS LE XFPS THEN INCREMENT THE DELAY BELOW XX MPH
+      IF ( VELNEW . LE . XFPS )                  THEN
+        IDVS(IV) = IDVS(IV) + 1
+        IF ( IAFLAG(IA) . EQ . ILETTI )          IDVSI(IV)=IDVSI(IV)+1
+      END IF
+      SPFACT = 1.0D0
+                    IF ( ISPDP(IV) . EQ . 0 )    GO TO 1020
+C-----THE VEHICLE HAS RESET HIS DESIRED SPEED TO THE DESIRED SPEED FOR
+C-----HIS INTERSECTION PATH THUS FIND THE FACTOR REQUIRED TO MAKE HIS
+C-----CURRENT DESIRED SPEED BE THE VALUE FOR THIS APPROACH FOR SUMMATION
+C-----FOR THE AVERAGE DESIRED SPEED
+      SPFACT = DBLE( ISLIM(IA) ) / DBLE( LIMP(LNEXT(IV)) )
+ 1020 CONTINUE
+C-----ADD THE DESIRED SPEED FOR THIS DT FOR THE AVERAGE DESIRED SPEED
+      CALL  SETDSP  ( IV,POSNEW,DBLE( ISPD(IV) ),.FALSE.,DESSPD )
+C[    IF ( SPFACT             .EQ.-2147483647.0 )STOP 'SSIBAP SPFACT 01'
+      ISPDS(IV) = ISPDS(IV) + DESSPD*SPFACT
+      IF ( IAFLAG(IA) . EQ . ILETTI )            THEN
+        ISPDSI(IV) = ISPDSI(IV) + DESSPD*SPFACT
+      END IF
+                    IF ( (.NOT. INQUE) )         RETURN
+C8                  IF ( IQDS(IV) . EQ . 1 )     NQUEUE(IV) = IVN
+C8                  IF ( IQDS(IV) . EQ . 1 )     TQUEUE(IV) = TIME - DT
+                    IF ( TIME . LE . STRTIM )    RETURN
+C-----THE VEHICLE HAS ACCUMULATED QUEUE DELAY SO UPDATE THE MAXIMUM
+C-----QUEUE LENGTH AND INCREMENT THE NUMBER OF VEHICLES IN THE QUEUE
+      LQUEUE(IAN,ILN) = LQUEUE(IAN,ILN) + 1
+      MQUEUE(IAN,ILN) = MAX0( MQUEUE(IAN,ILN),IVN )
+      RETURN
+      END                                                               SSIBAP
+C
+C
+C
+      SUBROUTINE SSINTR
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'SUMST2'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      CHARACTER*1       JAFLAG
+      INTEGER           JLN,JSNA
+      DOUBLE PRECISION  DESSPD
+C
+C-----SUBROUTINE SSINTR UPDATES THE VEHICLES SIMULATION STATISTICS IN
+C-----THE INTERSECTION
+C
+C[    JAFLAG     = '~'
+C[    JLN        = -2147483647
+C[    JSNA       = -2147483647
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'SSINTR'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      JAFLAG = IAFLAG( ISNA( LIBL(IP) ) )
+C-----INCREMENT THE TRAVEL TIME
+      ITIMV(IV) = ITIMV(IV) + 1
+C-----ADD THE DESIRED SPEED FOR THIS DT FOR THE AVERAGE DESIRED SPEED
+      CALL  SETDSP  ( IV,POSNEW,DBLE( ISPD(IV) ),.FALSE.,DESSPD )
+      ISPDS(IV) = ISPDS(IV) + DESSPD
+      IF ( JAFLAG . EQ . ILETTI )                THEN
+        ITIMVI(IV) = ITIMVI(IV) + 1
+        ISPDSI(IV) = ISPDSI(IV) + DESSPD
+      END IF
+C-----IF THE VELOCITY IS LE XFPS THEN INCREMENT THE DELAY BELOW XX MPH
+      IF ( VELNEW . LE . XFPS )                  THEN
+        IDVS(IV) = IDVS(IV) + 1
+        IF ( JAFLAG . EQ . ILETTI )              IDVSI(IV)=IDVSI(IV)+1
+      END IF
+                    IF ( POSNEW . GT . 5.0D0 )   RETURN
+                    IF ( VELNEW . GT . 3.0D0 )   RETURN
+C-----THE VEHICLE IS STILL STOPPED AT THE START OF THE INTERSECTION PATH
+C-----THUS INCREMENT QUEUE DELAY AND STOPPED DELAY FOR THE VEHICLE AND
+C-----INCREMENT THE QUEUE LENGTH FOR THE VEHICLES INBOUND APPROACH AND
+C-----LANE
+      IQDS(IV) = IQDS(IV) + 1
+      ISDS(IV) = ISDS(IV) + 1
+      IF ( JAFLAG . EQ . ILETTI )                THEN
+        IQDSI(IV) = IQDSI(IV) + 1
+        ISDSI(IV) = ISDSI(IV) + 1
+      END IF
+                    IF ( TIME . LE . STRTIM )    RETURN
+      JSNA = ISNA(LIBL(IP))
+      JLN  = ISNL(LIBL(IP))
+      IAN  = LIBAR(JSNA)
+C     DO 1010  JLN = 1 , NLANES(JSNA)
+C     IF ( LLANES(JLN,JSNA) . EQ . LIBL(IP) )    GO TO 1020
+C1010 CONTINUE
+C     GO TO 9010
+C1020 CONTINUE
+C[    IF ( JLN                .EQ.-2147483647   )STOP 'SSINTR JLN    01'
+      LQUEUE(IAN,JLN) = LQUEUE(IAN,JLN) + 1
+      MQUEUE(IAN,JLN) = MAX0( MQUEUE(IAN,JLN),1 )
+      RETURN
+C-----PROCESS THE EXECUTION ERROR AND STOP
+C9010 CONTINUE
+C     CALL  ABORTR  ( 'STOP 901 - '                        //
+C    *                'LIBL(IP) NOT ON LLANES FOR JSNA - ' //
+C    *                'SSINTR'                                )
+C     STOP  901
+      END                                                               SSINTR
+C
+C
+C
+      SUBROUTINE SSOBAP
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'CLASS'
+      INCLUDE 'INDEX'
+      INCLUDE 'LANE'
+      INCLUDE 'PATH'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'SUMST2'
+      INCLUDE 'USER'
+      INCLUDE 'VEHD'
+      INCLUDE 'VEHF'
+      CHARACTER*1       JAFLAG
+      DOUBLE PRECISION  DESSPD
+C
+C-----SUBROUTINE SSOBAP UPDATES THE VEHICLES SIMULATION STATISTICS ON
+C-----THE OUTBOUND APPROACH
+C
+C[    JAFLAG     = '~'
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'SSOBAP'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      IF ( INT2P(IV) . EQ . 0 )                  THEN
+        JAFLAG = ILETTL
+      ELSE
+        JAFLAG = IAFLAG( ISNA( LIBL( INT2P(IV) ) ) )
+      END IF
+C-----INCREMENT THE TRAVEL TIME
+      ITIMV(IV) = ITIMV(IV) + 1
+C[    IF ( JAFLAG             .EQ.'~' )          STOP 'SSOBAP JAFLAG 01'
+                    IF ( JAFLAG . EQ . ILETTI )  ITIMVI(IV)=ITIMVI(IV)+1
+C-----IF THE VELOCITY IS LE XFPS THEN INCREMENT THE DELAY BELOW XX MPH
+      IF ( VELNEW . LE . XFPS )                  THEN
+        IDVS(IV) = IDVS(IV) + 1
+        IF ( JAFLAG . EQ . ILETTI )              IDVSI(IV)=IDVSI(IV)+1
+      END IF
+C-----ADD THE DESIRED SPEED FOR THIS DT FOR THE AVERAGE DESIRED SPEED
+      CALL  SETDSP  ( IV,POSNEW,DBLE( ISPD(IV) ),.FALSE.,DESSPD )
+      ISPDS(IV) = ISPDS(IV) + DESSPD
+      IF ( JAFLAG . EQ . ILETTI )
+     *  ISPDSI(IV) = ISPDSI(IV) + DESSPD
+      RETURN
+      END                                                               SSOBAP
+C
+C
+C
+      SUBROUTINE TDSTPM  ( JV,BRAKE,DVJV,VOJV,AOJV,ALLOWN,TS,DS )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'ABIAS'
+      INCLUDE 'CLASS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+C*    INCLUDE 'RUTINE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHF'
+      LOGICAL           ALLOWN
+      INTEGER           JV
+      DOUBLE PRECISION  ACCTS,AOJV,BRAKE,CRISLP,DECMAX,DS,DVJV,SLPTS,
+     *                  TMAX,TS,VELTS,VOJV
+C
+C-----SUBROUTINE TDSTPM CALCULATES THE TIME AND DISTANCE TO STOP NOT
+C-----EXCEEDING THE MAXIMUM DECELERATION RATE FOR THE DRIVER
+C
+C-----JV     = VEHICLE NUMBER
+C-----BRAKE  = BRAKING VALUE (NEGATIVE) (-6.0 TO -8.0)
+C-----DVJV   = DESVEL FOR JV
+C-----VOJV   = VELOLD FOR JV
+C-----AOJV   = ACCOLD FOR JV
+C-----ALLOWN = ALLOW NEGATIVE ACCOLD
+C-----TS     = TIME TO STOP
+C-----DS     = DISTANCE TO STOP
+C
+C*    NRNAME = NRNAME + 1
+C*    IRNAME(NRNAME) = 'TDSTPM'
+C*                  IF ( NRNAME . GT . NRNAMM )  CALL ABORTR ( MSG )
+      TS     = 0.0D0
+      DS     = 0.0D0
+      CRISLP = SLPMAX*DCHAR(IDRICL(JV))
+C-----FIND THE MAXIMUM DECELERATION RATE THAT THE DRIVER WOULD USE TO
+C-----STOP FROM HIS OLD VELOCITY USING LINEAR DECELERATION AND BOUND IT
+C-----WITH THE MAXIMUM DECELERATION RATE FOR THE VEHICLE
+      DECMAX = DUTOL*(BRAKE-(DVJV/44.0D0))*DCHAR(IDRICL(JV))
+      DECMAX = DMAX1( DECMAX,DMAX(IVEHCL(JV)) )
+C-----COMPUTE THE CRITICAL STOPPING DISTANCE FOR VEHICLE JV
+      IF ( VOJV . EQ . 0.0D0 )                   THEN
+        IF ( DVJV . EQ . 0.0D0 )                 THEN
+          RETURN
+        END IF
+        ACCTS = 0.0D0
+        VELTS = DVJV
+      ELSE
+        IF ( ALLOWN )                            THEN
+          ACCTS = AOJV
+        ELSE
+          ACCTS = DMAX1( AOJV,0.0D0 )
+        END IF
+        ACCTS = DMIN1( ACCTS,-0.95D0*DECMAX )
+        VELTS = VOJV
+      END IF
+      TS  = -2.0D0*VELTS/(ACCTS+DECMAX)
+      IF ( TS . LT . 0.0D0 )                     THEN
+        TS = TIMERR
+        GO TO 1010
+      END IF
+      IF ( TS . EQ . 0.0D0 )                     THEN
+        GO TO 1010
+      END IF
+      TS    = DMIN1( TS,30.0D0 )
+      SLPTS = (DECMAX-ACCTS)/TS
+      SLPTS = DMIN1( DMAX1( SLPTS,-CRISLP ),CRISLP )
+      TMAX  = 30.0D0
+      CALL  TIMSTP  ( VELTS,ACCTS,SLPTS,TMAX,TS )
+      IF ( TS . EQ . TIMERR )                    THEN
+        GO TO 1010
+      END IF
+      DS = VELTS*TS + 0.5D0*ACCTS*TS**2 + ONED6*SLPTS*TS**3
+ 1010 CONTINUE
+      RETURN
+      END                                                               TDSTPM
+C
+C
+C
+      SUBROUTINE TIMPOS ( POSATT,POS,VEL,ACC,SLP,XT,TMAX,T )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CONSTN'
+      INTEGER           NT
+      DOUBLE PRECISION  A,ACC,B,C,D,POS,POSATT,POSAXT,SLP,T,T1,T2,T3,
+     *                  TMAX,VEL,XT
+C
+C-----SUBROUTINE TIMPOS SOLVES FOR TIME TO MOVE TO POSATT USING POS,
+C-----VEL, ACC, AND SLP WHERE
+C-----POSATT = POS + VEL*T + 0.5D0*ACC*T**2 + ONED6*SLP*T**3
+C
+      IF ( POS . GT . (POSATT+PSMALL) )          THEN
+        T = TIMERR
+        RETURN
+      END IF
+      IF ( POS . GE .  POSATT         )          THEN
+        T = 0.0D0
+        RETURN
+      END IF
+C-----SOLVES T FOR A*T**3 + B*T**2 + C*T + D = 0
+C-----(ONED6*SLP)*T**3 + (0.5D0*ACC)*T**2 + (VEL)*T + (POS-POSATT) = 0
+      A = ONED6*SLP
+      B = 0.5D0*ACC
+      C = VEL
+      D = POS - POSATT
+      T = TIMERR
+      IF ( DABS( A ) . LE . 1.0D-8 )             A = 0.0D0
+      CALL  CUBIC   ( A,B,C,D,NT,T1,T2,T3 )
+      IF ( ( NT . GE . 1     ) . AND .
+     *     ( T1 . GE . 0.0D0 ) . AND .
+     *     ( T1 . LE . TMAX  ) )                 T = DMIN1( T,T1 )
+      IF ( ( NT . GE . 2     ) . AND .
+     *     ( T2 . GE . 0.0D0 ) . AND .
+     *     ( T2 . LE . TMAX  ) )                 T = DMIN1( T,T2 )
+      IF ( ( NT . GE . 3     ) . AND .
+     *     ( T3 . GE . 0.0D0 ) . AND .
+     *     ( T3 . LE . TMAX  ) )                 T = DMIN1( T,T3 )
+      IF ( T . EQ . TIMERR )                     THEN
+        IF ( DABS( POS   -POSATT ) .LE. PSMALL ) THEN
+          T = 0.0D0
+          RETURN
+        END IF
+        POSAXT = POS + VEL*XT + 0.5D0*ACC*XT**2 + ONED6*SLP*XT**3
+        IF ( DABS( POSAXT-POSATT ) .LE. PSMALL ) THEN
+          T = XT
+          RETURN
+        END IF
+      END IF
+      RETURN
+      END                                                               TIMPOS
+C
+C
+C
+      SUBROUTINE TIMSTP  ( VEL,ACC,SLP,TMAX,T )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      DOUBLE PRECISION  ZERO
+      PARAMETER       ( ZERO   = 1.0D-14     )
+      DOUBLE PRECISION  A,ACC,B,C,SLP,T,TMAX,VEL
+C
+C-----SUBROUTINE TIMSTP SOLVES FOR TIME TO STOP USING VEL, ACC, AND SLP
+C-----WHERE
+C-----0 = VEL + ACC*T + 0.5D0*SLP*T**2
+C
+      IF ( DABS( VEL ) . LE . ZERO )             THEN
+        T = 0.0D0
+        RETURN
+      END IF
+      IF ( VEL . LT . 0.0D0 )                    THEN
+        T = TIMERR
+        RETURN
+      END IF
+      IF ( DABS( SLP ) . LE . ZERO )             THEN
+        IF ( DABS( ACC ) . LE . ZERO )           THEN
+C-----    VEL > 0, ACC = 0, SLP = 0
+          T = TIMERR
+          RETURN
+        ELSE
+C-----    VEL > 0, ACC != 0, SLP = 0
+          T = -VEL/ACC
+          IF ( ( T . LT . 0.0D0 ) . OR .
+     *         ( T . GT . TMAX  ) )              THEN
+            T = TIMERR
+            RETURN
+          END IF
+        END IF
+      ELSE
+C-----  VEL > 0, ACC = UNKNOWN, SLP != 0
+C-----  SOLVES T FOR A*T**2 + B*T + C = 0
+C-----  (0.5D0*SLP)*T**2 + (ACC)*T + (VEL) = 0
+        A = 0.5D0*SLP
+        B = ACC
+        C = VEL
+        CALL  TMQUAD  ( A,B,C,TMAX,T )
+        IF ( T . EQ . TIMERR )                   THEN
+          IF ( VEL . LE . VSMALL )               T = 0.0D0
+        END IF
+      END IF
+      RETURN
+      END                                                               TIMSTP
+C
+C
+C
+      SUBROUTINE TMQUAD  ( A,B,C,TMAX,T )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      DOUBLE PRECISION  ZERO
+      PARAMETER       ( ZERO   = 1.0D-14     )
+      INTEGER           NT
+      DOUBLE PRECISION  A,B,C,T,T1,T2,TMAX
+C
+C-----SUBROUTINE TMQUAD SOLVES FOR TIME USING A, B, AND C
+C
+      T = TIMERR
+      CALL  QUADEQ  ( A,B,C,NT,T1,T2 )
+      IF ( ( NT . GE . 1     ) . AND .
+     *     ( T1 . GE . 0.0D0 ) . AND .
+     *     ( T1 . LE . TMAX  ) )                 T = DMIN1( T,T1 )
+      IF ( ( NT . GE . 2     ) . AND .
+     *     ( T2 . GE . 0.0D0 ) . AND .
+     *     ( T2 . LE . TMAX  ) )                 T = DMIN1( T,T2 )
+      RETURN
+      END                                                               TMQUAD
+C
+C
+C
+      SUBROUTINE UNIFRM ( MEAN,STDDEV,UNFVAL )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'INDEX'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      DOUBLE PRECISION  A,B,MEAN,SRAN,STDDEV,UNFVAL
+C
+C-----SUBROUTINE UNIFRM GENERATES A UNIFORM RANDOM DEVIATE
+C
+C-----UNIFORM PARAMETER - STANDARD DEVIATION
+C-----THE PARAMETER FOR THE UNIFORM HEADWAY DISTRIBUTION IS THE STANDARD
+C-----DEVIATION.
+      A      = MEAN - SQRT3*STDDEV
+      B      = MEAN + SQRT3*STDDEV
+      UNFVAL = A + (B-A)*SRAN()
+      RETURN
+      END                                                               UNIFRM
+C
+C
+C
+      SUBROUTINE VDIERR ( ERRTIM,ERRIVN,ERRNUM )
+      IMPLICIT          NONE                                            CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'USER'
+      INCLUDE 'QUE'
+      DOUBLE PRECISION  ERRTIM
+      INTEGER           ERRIVN,ERRNUM
+  601 FORMAT('** VEHICLE WARNING/ERROR AT T=',F7.2,
+     *       ' SECS INSERTED VEH=',I6,' - NUMBER=',I1,
+     *       ' **  WARNING/ERROR  **')
+C
+C-----SUBROUTINE VDIERR PROCESSES VEHICLE DATA INSERT ERRORS
+C
+      WRITE (WRNMSG,601) ERRTIM,ERRIVN,ERRNUM
+      CALL  PRTWRN  ( WRNMSG )
+      VDIERRCNT = VDIERRCNT + 1
+      VDIERRTIM(VDIERRCNT) = ERRTIM
+      VDIERRIVN(VDIERRCNT) = ERRIVN
+      VDIERRNUM(VDIERRCNT) = ERRNUM
+      RETURN
+      END                                                               VDIERR
+C
+C
+C
+      SUBROUTINE VDIGET ( VIDTIM,VIDDT ,NVID,
+     *                    VIDQIT,VIDVCN,VIDDCN,VIDDSP,VIDOBN,VIDIBN,
+     *                    VIDILN,VIDPLO,VIDFUT,
+     *                    VIDFST,VIDFSL,VIDFSP,VIDFSD,
+     *                    VIDFGT,VIDFGA,
+     *                    VIDFRT,VIDFRA,
+     *                    VIDIVN,VIDEMV,
+     *                    VIDSPD,VIDACC,VIDSLP )
+      IMPLICIT          NONE                                            CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'QUE'
+      INCLUDE 'USER'
+      DOUBLE PRECISION  VIDDT      ,VIDTIM
+      DOUBLE PRECISION  NXTACC     ,NXTFGA     ,NXTFGT     ,NXTFRA     ,
+     *                  NXTFRT     ,NXTFSD     ,NXTFSP     ,NXTFST     ,
+     *                  NXTQIT     ,NXTSLP     ,NXTSPD     ,
+     *                  VIDACC(NIL),VIDFGA(NIL),VIDFGT(NIL),VIDFRA(NIL),
+     *                  VIDFRT(NIL),VIDFSD(NIL),VIDFSP(NIL),VIDFST(NIL),
+     *                  VIDQIT(NIL),VIDSLP(NIL),VIDSPD(NIL)
+      INTEGER           ILNB  ,NVID
+      INTEGER           NXTDCN     ,NXTDSP     ,NXTEMV     ,NXTFSL     ,
+     *                  NXTFUT     ,NXTIBN     ,NXTILN     ,NXTIVN     ,
+     *                  NXTOBN     ,NXTPLO     ,NXTVCN     ,
+     *                  VIDDCN(NIL),VIDDSP(NIL),VIDEMV(NIL),VIDFSL(NIL),
+     *                  VIDFUT(NIL),VIDIBN(NIL),VIDILN(NIL),VIDIVN(NIL),
+     *                  VIDOBN(NIL),VIDPLO(NIL),VIDVCN(NIL)
+      LOGICAL           ERR,FIRST,NVDEOF
+      SAVE              FIRST ,NVDEOF,NXTACC,NXTDCN,NXTDSP,NXTEMV,
+     *                  NXTFGA,NXTFGT,NXTFRA,NXTFRT,NXTFSD,NXTFSL,
+     *                  NXTFSP,NXTFST,NXTFUT,NXTIBN,NXTILN,NXTIVN,
+     *                  NXTOBN,NXTPLO,NXTQIT,NXTSLP,NXTSPD,NXTVCN
+      DATA     FIRST  / .TRUE.  /
+      DATA     NVDEOF / .FALSE. /
+  501 FORMAT(F7.2,I2,I1,I3,2I2,3I1,F7.2,I4,6F7.2,I6,I1,3F7.3)
+  601 FORMAT('** VEHICLE ELIMINATED AT T=',F7.2,' SECS INSERT VEH=',I6,
+     *       ' QUEUE IN TIME=',F7.2,' IS LT TIME-DT=',F7.2)
+C
+C-----SUBROUTINE VDIGET GETS VEHICLE DATA FOR INSERTING A VEHICLE
+C
+C-----VIDTIM = DP  SIMULATION TIME
+C-----VIDDT  = DP  TIME STEP INCREMENT
+C-----NVID   = INT RECEIVE DIMENSION OF ARRAYS AND RETURN NUMBER OF
+C-----             VEHICLES TO INSERT
+C-----VEHICLE DATA INSERT - ARRAYS OF DATA DIMENSIONED TO NIL
+C-----VIDQIT = DP  QUEUE-IN TIME IN SECONDS
+C-----             (VIDQIT>=TIME-DT AND VIDQIT<TIME)
+C-----VIDVCN = INT VEHICLE CLASS NUMBER
+C-----VIDDCN = INT DRIVER  CLASS NUMBER
+C-----VIDDSP = INT DESIRED SPEED IN FPS
+C-----VIDOBN = INT DESIRED OUTBOUND APPROACH NUMBER
+C-----VIDIBN = INT INBOUND APPROACH NUMBER
+C-----VIDILN = INT INBOUND LANE NUMBER (1-NAL)
+C-----VIDPLO = INT WHETHER INDIVIDUAL STATISTICS ARE PRINTED AT LOGOUT
+C-----             (0=NO AND 1=YES)
+C-----VIDFUT = INT WHETHER THE VEHICLE SHOULD TRY TO USE THE FREE
+C-----             U-TURN LANE AT A DIAMOND INTERCHANGE
+C-----             (0=NO AND 1=YES)
+C-----VIDFST = DP  FORCED STOP TIME IN SECONDS
+C-----             (0=NO FORCED STOP)
+C-----VIDFSL = INT FORCED STOP LINK NUMBER
+C-----             (+=LANE NUMBER AND -=INTERSECTION PATH NUMBER)
+C-----VIDFSP = DP  FORCED STOP POSITION ON LINK IN FEET
+C-----VIDFSD = DP  FORCED STOP DWELL TIME IN SECONDS
+C-----VIDFGT = DP  FORCED GO TIME IN SECONDS
+C-----             (0=NO FORCED GO)
+C-----VIDFGA = DP  FORCED GO ACTIVE TIME IN SECONDS
+C-----VIDFRT = DP  FORCED RUN RED SIGNAL TIME IN SECONDS
+C-----             (0=NO FORCED RUN RED SIGNAL)
+C-----VIDFRA = DP  FORCED RUN RED SIGNAL ACTIVE TIME IN SECONDS
+C-----VIDIVN = INT VEHICLE NUMBER
+C-----             (1-65535) (NEGATIVE VALUE WILL BE USED FOR IQ(IV))
+C-----VIDEMV = INT EMERGENCY VEHICLE
+C-----             (0=NO AND 1=YES)
+C-----VIDSPD = DP  ENTRY SPEED IN FT/SEC
+C-----VIDACC = DP  ENTRY ACCELERATION/DECELERATION IN FT/SEC/SEC
+C-----VIDSLP = DP  ENTRY JERK RATE IN FT/SEC/SEC/SEC
+C%    IF ( ILNB ( VEHDAT ).GT.0 )  CALL PCFS ( VEHDAT,USFILE,VEHDAT )
+      IF ( FIRST )                               THEN
+C-----  PERFORM FIRST TIME FUNCTIONS
+        FIRST = .FALSE.
+        NCVD   = ILNB( VEHDAT )
+        IF ( NCVD  . GT . 0 )                    THEN
+C-----    OPEN VEHDAT FILE
+          CALL  OPENRO  ( NVD,VEHDAT,'OLD','SEQUENTIAL','FORMATTED',0,
+     *                    ERR )
+                    IF ( ERR )                   GO TO 9780
+C-----    READ VEHICLE INSERT DATA
+          READ (NVD,501,END=1010) NXTQIT,NXTVCN,NXTDCN,NXTDSP,NXTOBN,
+     *                            NXTIBN,NXTILN,NXTPLO,NXTFUT,NXTFST,
+     *                            NXTFSL,NXTFSP,NXTFSD,NXTFGT,NXTFGA,
+     *                            NXTFRT,NXTFRA,NXTIVN,NXTEMV,NXTSPD,
+     *                            NXTACC,NXTSLP
+          GO TO 1020
+ 1010     CONTINUE
+          NVDEOF = .TRUE.
+ 1020     CONTINUE
+        ELSE
+          NVDEOF = .TRUE.
+        END IF
+      END IF
+                    IF ( NVID . GT . NIL )       GO TO 9790
+      NVID = 0
+      IF ( NVDEOF )                              THEN
+        IQFVDI = 0
+      ELSE
+        IQFVDI = 1
+      END IF
+                    IF ( NCVD . EQ . 0 )         GO TO 3010
+      DO WHILE ( .NOT. NVDEOF )
+C-----  CHECK QUEUE IN TIME FOR ERRORS
+        IF ( NXTQIT . LT . VIDTIM-VIDDT  )       THEN
+          WRITE (WRNMSG,601) VIDTIM,NXTIVN,NXTQIT,VIDTIM-VIDDT
+          WRITE (SER,FMT)
+          WRITE (SER,FMT) WRNMSG(1:ILNB( WRNMSG ))
+          CALL  PRTWRN  ( WRNMSG )
+          CALL  VDIERR  ( VIDTIM,NXTIVN,VDIEQL )
+C-----    ELIMINATE THIS VEHICLE, GO TO 2010, AND READ NEXT VEHICLE
+          GO TO 2010
+        END IF
+        IF ( NXTQIT . GE . VIDTIM )              GO TO 3010
+C-----  NXTQIT GE VIDTIM-VIDDT AND NXTQIT LT VIDTIM THUS SET FOR
+C-----  INSERTION THIS DT
+        NVID = NVID + 1
+        VIDQIT(NVID) = NXTQIT
+        VIDVCN(NVID) = NXTVCN
+        VIDDCN(NVID) = NXTDCN
+        VIDDSP(NVID) = NXTDSP
+        VIDOBN(NVID) = NXTOBN
+        VIDIBN(NVID) = NXTIBN
+        VIDILN(NVID) = NXTILN
+        VIDPLO(NVID) = NXTPLO
+        VIDFUT(NVID) = NXTFUT
+        VIDFST(NVID) = NXTFST
+        VIDFSL(NVID) = NXTFSL
+        VIDFSP(NVID) = NXTFSP
+        VIDFSD(NVID) = NXTFSD
+        VIDFGT(NVID) = NXTFGT
+        VIDFGA(NVID) = NXTFGA
+        VIDFRT(NVID) = NXTFRT
+        VIDFRA(NVID) = NXTFRA
+        VIDIVN(NVID) = NXTIVN
+        VIDEMV(NVID) = NXTEMV
+        VIDSPD(NVID) = NXTSPD
+        VIDACC(NVID) = NXTACC
+        VIDSLP(NVID) = NXTSLP
+ 2010   CONTINUE
+C-----  READ VEHICLE INSERT DATA
+        READ (NVD,501,END=2020) NXTQIT,NXTVCN,NXTDCN,NXTDSP,NXTOBN,
+     *                          NXTIBN,NXTILN,NXTPLO,NXTFUT,NXTFST,
+     *                          NXTFSL,NXTFSP,NXTFSD,NXTFGT,NXTFGA,
+     *                          NXTFRT,NXTFRA,NXTIVN,NXTEMV,NXTSPD,
+     *                          NXTACC,NXTSLP
+        GO TO 2030
+ 2020   CONTINUE
+        NVDEOF = .TRUE.
+        GO TO 3010
+ 2030   CONTINUE
+      END DO
+ 3010 CONTINUE
+      RETURN
+C-----PROCESS THE EXECUTION ERRORS AND STOP
+ 9780 CONTINUE
+      CALL  ABORTR  ( 'STOP 978 - ERROR OPENING VEHDAT FILE - VDIGET' )
+      STOP  978
+ 9790 CONTINUE
+      CALL  ABORTR  ( 'STOP 979 - NVID GT NIL - VDIGET' )
+      STOP  979
+      END                                                               VDIGET

@@ -1,0 +1,106 @@
+vehicle
+vehicle_id:2
+global_time:1163031300
+x_offset_in_feet:35.666
+y_offset_in_feet:219.426
+latitude:2230565.275
+longitude:1375745.285
+speed_in_miles_per_hour:13.6909090909
+acceleration_in_miles_per_hour_squared:-12984.5454545
+vehicle_length_in_feet:14.0
+vehicle_width_in_feet:7.0
+lane_id:6
+==section separator==
+vehicle
+vehicle_id:7
+global_time:1163031300
+x_offset_in_feet:39.837
+y_offset_in_feet:209.105
+latitude:2230567.599
+longitude:1375734.399
+speed_in_miles_per_hour:15.9477272727
+acceleration_in_miles_per_hour_squared:0.0
+vehicle_length_in_feet:15.5
+vehicle_width_in_feet:7.0
+lane_id:5
+==section separator==
+vehicle
+vehicle_id:8
+global_time:1163031300
+x_offset_in_feet:-21.087
+y_offset_in_feet:132.409
+latitude:2230494.413
+longitude:1375667.528
+speed_in_miles_per_hour:20.1068181818
+acceleration_in_miles_per_hour_squared:0.0
+vehicle_length_in_feet:14.6
+vehicle_width_in_feet:6.8
+lane_id:21
+==section separator==
+signal
+lane_id:102
+signal_state:Green-Ball
+==section separator==
+signal
+lane_id:110
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:100
+signal_state:Yellow-Ball
+==section separator==
+signal
+lane_id:141
+signal_state:Red-Ball
+==section separator==
+signal
+lane_id:112
+signal_state:Green-Ball
+==section separator==
+signal
+lane_id:140
+signal_state:Green-Left_Arrow
+==section separator==
+signal
+lane_id:140
+signal_state:Green-Ball
+==section separator==
+signal
+lane_id:120
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:113
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:121
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:123
+signal_state:Green-Ball
+==section separator==
+signal
+lane_id:111
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:142
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:101
+signal_state:Red-Ball
+==section separator==
+signal
+lane_id:143
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:103
+signal_state:Red-Ball
+==section separator==
+signal
+lane_id:122
+signal_state:Red-Left_Arrow

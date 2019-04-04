@@ -1,0 +1,1716 @@
+      SUBROUTINE SUMARY
+C
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** *  COPYRIGHT (C) 1989 by The University of Texas at Austin   * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of The University of Texas at Austin shall not be used in  * ***
+C *** * advertising or publicity related to the distribution of    * ***
+C *** * the software without specific, written, prior permission.  * ***
+C *** * This software is provided as-delivered without expressed   * ***
+C *** * or implied warranty.  The University of Texas at Austin    * ***
+C *** * makes no representation about the suitability of this      * ***
+C *** * software for any purpose and accepts no responsibility for * ***
+C *** * its use.                                                   * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'APPRO'
+      INCLUDE 'ARC'
+      INCLUDE 'LANE'
+      INCLUDE 'LINE'
+      INCLUDE 'LOOPS'
+      INCLUDE 'PATH'
+      INCLUDE 'CHARAC'
+      INCLUDE 'DIAMON'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'PHASES'
+      INCLUDE 'SDR'
+      INCLUDE 'SUMST2'
+      INCLUDE 'TITLE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHDS2'
+      INCLUDE 'VEHFS'
+      INCLUDE 'VEHILS'
+C;    COMMON / TWRD   / DVILNI(NAL,NAP),FVILNI(NAL,NAP),GVILNI(NAL,NAP),
+C;   *                  HVILNI(NAL,NAP),TVILNI(NAL,NAP)
+C;    DOUBLE PRECISION  DVILNI         ,FVILNI         ,GVILNI         ,
+C;   *                  HVILNI         ,TVILNI
+C;    COMMON / TWR4   / KVILNI(NAL,NAP)
+C;    INTEGER*4         KVILNI
+      DIMENSION         IPTURN(NTC)
+      CHARACTER*11      IPTURN
+      CHARACTER*3       IYESNO
+      INTEGER           I,IARC,ILINE,ILOOP,ISDRC,ITC,JA,JTYPLD,K,LL
+C;    DOUBLE PRECISION  DHESAV,FHESAV,GHESAV,HHESAV,THESAV
+      DATA     IPTURN / '   U-TURN  ','    LEFT   ','  STRAIGHT ',
+     *                  '   RIGHT   ',' INT LEFT  ',' INT RIGHT ' /
+  601 FORMAT(' SUMMARY STATISTICS FOR INBOUND APPROACH ',I2)
+  602 FORMAT(' APPRCH ',I2,' ')
+  701 FORMAT(40I12)
+C
+C-----SUBROUTINE SUMARY PRINTS THE SUMMARY STATISTICS
+C
+C[    IYESNO     = '~~~'
+C[    ITC        = -2147483647
+C[    JA         = -2147483647
+C-----GET THE TM TIME FOR THIS JOB AT THE END OF SIMULATION TIME
+C>    CALL  EXTIME  ( 4 )
+C;    DO 102 IAN = 1 , NIBA
+C;    IA = LIBA(IAN)
+C;    DO 101 ILN = 1 , NLANES(IA)
+C;    IF ( KVILNI(ILN,IA) . EQ . 0 )             GO TO 101
+C;    FHESAV = FVILNI(ILN,IA) / KVILNI(ILN,IA)
+C;    GHESAV = GVILNI(ILN,IA) / KVILNI(ILN,IA)
+C;    HHESAV = HVILNI(ILN,IA) / KVILNI(ILN,IA)
+C;    DHESAV = DVILNI(ILN,IA) / KVILNI(ILN,IA)
+C;    THESAV = TVILNI(ILN,IA) / KVILNI(ILN,IA)
+C;    WRITE (6,666) IA,ILN,KVILNI(ILN,IA),FHESAV,GHESAV,HHESAV,DHESAV,
+C;   *              THESAV
+C;666 FORMAT(' IA=',I2,'  ILN=',I2,'  N=',I3,'  FHESAV=',F6.3,
+C;   *       '  GHESAV=',F6.3,'  HHESAV=',F6.3,'  DHESAV=',F6.3,
+C;   *       '  THESAV=',F6.3)
+C;101 CONTINUE
+C;102 CONTINUE
+C-----FIND THE ACTUAL SIMULATION TIME
+      SIMTIM = TIME - STRTIM - DT
+C-----INITIALIZE THE STATISTICS
+      CALL  INISTA
+C-----ADD AND CALCULATE THE SUMMARY STATISTICS
+      CALL  ADDSTA
+C-----WRITE THE SUMMARY STATISTICS TO UNIT ICS
+      CALL  PUNSTA
+C-----PROCESS EACH INBOUND APPROACH
+      DO 2020  IAN = 1 , NIBA
+C-----IF NO VEHICLES WERE PROCESSED FOR INBOUND APPROACH IAN THEN GO TO
+C-----2010 AND SKIP TO THE NEXT INBOUND APPROACH
+      IF ( NUMPRO(IAN,NTC+1) . LE . 0 )          GO TO 2010
+      JA = LIBA(IAN)
+      WRITE (CHDRL,601) JA
+      IF ( IAFLAG(JA) . EQ . ILETTI )            THEN
+        CHDRL(45:54) = '(INTERNAL)'
+      END IF
+C-----IF STATISTICS WERE NOT REQUESTED BY TURN CODE THEN GO TO 1020
+                    IF ( IPTC . NE . IYES )      GO TO 1020
+C-----PROCESS EACH TURN CODE
+      DO 1010  ITC = 1 , NTC
+C-----IF NO VEHICLES WERE PROCESSED FOR INBOUND APPROACH JA AND TURN
+C-----CODE ITC THEN GO TO 1010 AND SKIP TO THE NEXT TURN CODE
+                    IF ( NUMPRO(IAN,ITC).LE.0 )  GO TO 1010
+C-----PRINT SUMMARY STATISTICS FOR INBOUND APPROACH IAN AND TURN CODE
+C-----ITC
+      CHDRR(NTABC+1) = IPTURN(ITC)
+      CALL  FMTSTA  ( IAN,ITC,IPTC )
+                    IF ( IWNOUT . EQ . ILETTN )  CALL  PRTSTA
+ 1010 CONTINUE
+C-----END OF TURN CODE LOOP
+ 1020 CONTINUE
+C-----PRINT SUMMARY STATISTICS FOR INBOUND APPROACH IAN AND TURN CODE
+C-----NTC+1 (SUM FOR ALL THE TURN CODES)
+C[    IF ( JA                 .EQ.-2147483647   )STOP 'SUMARY JA     01'
+      IF ( IPAP . EQ . IYES )                    THEN
+        WRITE (CHDRR(NTABC+1),602) JA
+      END IF
+      IF ( ((IWNOUT.EQ.ILETTN).AND.(IPAP.EQ.IYES)) . OR .
+     *     ((IWNOUT.EQ.ILETTW).AND.(IPTC.EQ.IYES)) )
+     *                                           THEN
+        IYESNO = IYES
+      ELSE
+        IYESNO = INO
+      END IF
+      CALL  FMTSTA  ( IAN,NTC+1,IYESNO )
+                    IF ( IYESNO . EQ . IYES )    CALL PRTSTA
+ 2010 CONTINUE
+C-----END OF INBOUND APPROACH LOOP
+ 2020 CONTINUE
+C-----IF NO VEHICLES WERE PROCESSED FOR THE NON-INTERNAL INBOUND
+C-----APPROACHES FOR THE INTERSECTION THEN GO TO 3030 AND CHECK THE
+C-----INTERNAL INBOUND APPROACHES
+            IF ( NUMPRO(NIA+1,NTC+1) . LE . 0 )  GO TO 3030
+      IF ( DIAMON )                              THEN
+        CHDRL = ' SUMMARY STATISTICS FOR ALL NON-INTERNAL APPROACHES'
+      ELSE
+        CHDRL = ' SUMMARY STATISTICS FOR ALL APPROACHES'
+      END IF
+C-----PRINT SUMMARY STATISTICS FOR INBOUND APPROACH NIA+1 AND TURN CODE
+C-----NTC+1 (THE NON-INTERNAL INBOUND APPROACHES FOR THE INTERSECTION)
+      IF ( IWNOUT.EQ.ILETTN                   )  GO TO 3020
+      IF ((IWNOUT.EQ.ILETTW).AND.(IPAP.EQ.INO))  GO TO 3020
+      DO 3010  IAN = 1 , NIBA
+            IF ( NUMPRO(IAN,NTC+1) . LE . 0 )    GO TO 3010
+      JA = LIBA(IAN)
+            IF ( IAFLAG(JA) . EQ . ILETTI )      GO TO 3010
+      WRITE (CHDRR(NTABC+1),602) JA
+      CALL  FMTSTA  ( IAN,NTC+1,IYES )
+ 3010 CONTINUE
+ 3020 CONTINUE
+      CHDRR(NTABC+1) = '  ALL APPRS'
+      CALL  FMTSTA  ( NIA+1,NTC+1,IYES )
+      CALL  PRTSTA
+ 3030 CONTINUE
+C-----IF NO VEHICLES WERE PROCESSED FOR THE INTERNAL INBOUND APPROACHES
+C-----FOR THE INTERSECTION THEN GO TO 4010 AND FINISH PROCESSING
+            IF ( NUMPRO(NIA+2,NTC+1) . LE . 0 )  GO TO 4010
+      IF ( DIAMON )                              THEN
+        CHDRL = ' SUMMARY STATISTICS FOR ALL INTERNAL APPROACHES'
+      ELSE
+        CHDRL = ' SUMMARY STATISTICS FOR ALL APPROACHES'
+      END IF
+C-----PRINT SUMMARY STATISTICS FOR INBOUND APPROACH NIA+2 AND TURN CODE
+C-----NTC+1 (THE INTERNAL INBOUND APPROACHES FOR THE INTERSECTION)
+      IF ( IWNOUT.EQ.ILETTN                   )  GO TO 3050
+      IF ((IWNOUT.EQ.ILETTW).AND.(IPAP.EQ.INO))  GO TO 3050
+      DO 3040  IAN = 1 , NIBA
+            IF ( NUMPRO(IAN,NTC+1) . LE . 0 )    GO TO 3040
+      JA = LIBA(IAN)
+            IF ( IAFLAG(JA) . NE . ILETTI )      GO TO 3040
+      WRITE (CHDRR(NTABC+1),602) JA
+      CALL  FMTSTA  ( IAN,NTC+1,IYES )
+ 3040 CONTINUE
+ 3050 CONTINUE
+      CHDRR(NTABC+1) = '  ALL APPRS'
+      CALL  FMTSTA  ( NIA+2,NTC+1,IYES )
+      CALL  PRTSTA
+ 4010 CONTINUE
+                    IF ( ICONTR . LT . ICPSIG )  GO TO 4020
+C-----PRINT THE SIGNAL CONTROLLER STATISTICS AND OPTIONALLY WRITE THE
+C-----SIGNAL CONTROLLER STATISTICS ONTO UNIT ICS
+      CALL  SIGSTA
+ 4020 CONTINUE
+C-----PRINT THE COMPUTER TIME STATISTICS
+      CALL  TIMSTA
+      IF ( IPUNCH . EQ . INO )                   GO TO 5120
+C-----PROCESS GEOMETRY
+      WRITE (ICS,701) NAPS,NIBA,NOBA,NLEGS,NFUT,(LOBA(I),I=1,NOBA)
+      WRITE (ICS,701) INT(XMININ-0.9999),INT(XMAXIN+0.9999),
+     *                INT(YMININ-0.9999),INT(YMAXIN+0.9999)
+      DO 5010  I = 1 , NIBA
+      JA = LIBA(I)
+      WRITE (ICS,701) JA,IAAZIM(JA),IAPX(JA),IAPY(JA),NLANES(JA),
+     *                (LLANES(K,JA),K=1,NLANES(JA))
+ 5010 CONTINUE
+      DO 5020  I = 1 , NOBA
+      JA = LOBA(I)
+      WRITE (ICS,701) JA,IAAZIM(JA),IAPX(JA),IAPY(JA),NLANES(JA),
+     *                (LLANES(K,JA),K=1,NLANES(JA))
+ 5020 CONTINUE
+      WRITE (ICS,701) NRLAN
+      DO 5030  I = 1 , NRLAN
+      WRITE (ICS,701) I,ISNA(I),(LGEOM(LL,I),LL=1,4),LWID(I),LCONTR(I)
+ 5030 CONTINUE
+      WRITE (ICS,701) NPATHS
+      DO 5040  I = 1 , NPATHS
+      WRITE (ICS,701) I,
+     *                IXL1(I),IYL1(I),JXL1(I),JYL1(I),
+     *                IXA1(I),IYA1(I),IRA1(I),IBA1(I),IDA1(I),
+     *                IXA2(I),IYA2(I),IRA2(I),IBA2(I),IDA2(I),
+     *                IXL2(I),IYL2(I),JXL2(I),JYL2(I),
+     *                LENP(I),LIBL(I),LOBL(I)
+ 5040 CONTINUE
+      WRITE (ICS,701) NARCS
+                    IF ( NARCS . EQ . 0 )        GO TO 5060
+      DO 5050  I = 1 , NARCS
+      IARC = LARCS(I)
+      WRITE (ICS,701) IARC,IARCX (IARC),IARCY(IARC),IARCAZ(IARC),
+     *                     IARCSW(IARC),IARCR(IARC)
+ 5050 CONTINUE
+ 5060 CONTINUE
+      WRITE (ICS,701) NLINES
+                    IF ( NLINES . EQ . 0 )       GO TO 5080
+      DO 5070  I = 1 , NLINES
+      ILINE = LLINES(I)
+      WRITE (ICS,701) ILINE,ILX1(ILINE),ILY1(ILINE),
+     *                      ILX2(ILINE),ILY2(ILINE)
+ 5070 CONTINUE
+ 5080 CONTINUE
+      WRITE (ICS,701) NSDRC
+                    IF ( NSDRC . LE . 0 )        GO TO 5100
+      DO 5090  I = 1 , NSDRC
+      ISDRC = LSDRC(I)
+      WRITE (ICS,701) ISDRC,IXSDRC(ISDRC),IYSDRC(ISDRC)
+ 5090 CONTINUE
+ 5100 CONTINUE
+      WRITE (ICS,701) NLOOPS
+                    IF ( NLOOPS . LE . 0 )       GO TO 5120
+      DO 5110  I = 1 , NLOOPS
+      ILOOP = LLOOPS(I)
+      IF      ( ITYPLD(ILOOP) . EQ . ICLAS )     THEN
+        JTYPLD = 1
+      ELSE IF ( ITYPLD(ILOOP) . EQ . IPULS )     THEN
+        JTYPLD = 2
+      ELSE IF ( ITYPLD(ILOOP) . EQ . IPRES )     THEN
+        JTYPLD = 3
+      ELSE
+        JTYPLD = 0
+      END IF
+      WRITE (ICS,701) ILOOP,JTYPLD       ,LDSTRT(ILOOP),LDSTOP(ILOOP),
+     *                      LDA   (ILOOP),NLDLN (ILOOP),
+     *                      (LLDLN(K,ILOOP),K=1,NLDLN(ILOOP))
+ 5110 CONTINUE
+ 5120 CONTINUE
+C-----PRINT THE FILE NAMES USED
+      CALL  SHONAM  ( 'Simulation Processor output listing is on    ',
+     *                LFILE(1:NCLF),78                               )
+      IF ( IPOLL . NE . INO )                    THEN
+        ENDFILE NPD
+        CALL  SHONAM  ( 'Pollution/Display data is on                 ',
+     *                  PVAFIL(1:NCPVA ),78                            )
+      END IF
+      IF ( IPUNCH . EQ . IYES )                  THEN
+        ENDFILE ICS
+        CALL  SHONAM  ( 'Compressed Statistics data is on             ',
+     *                  STAFIL(1:NCSTA ),78                            )
+      END IF
+      IF ( ISSAM . EQ . IYES )                   THEN
+        ENDFILE ISS
+        CALL  SHONAM  ( 'Surrogate Safety Assessment Model data is on ',
+     *                  SSAM  (1:NCSSAM),78                            )
+      END IF
+      ENDFILE 6
+      ENDFILE SER
+      RETURN
+      END                                                               SUMARY
+C
+C
+C
+      SUBROUTINE INISTA
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CONSTN'
+      INCLUDE 'SUMST1'
+      INCLUDE 'VEHDS1'
+      INCLUDE 'VEHFS'
+      INCLUDE 'VEHILS'
+      INTEGER           NISNAL,NISNTS
+      PARAMETER       ( NISNAL = NIS*NAL )
+      PARAMETER       ( NISNTS = NIS*NTS )
+      CHARACTER*4       IXMPH
+      INTEGER           I,ITABR
+      DOUBLE PRECISION  XMPH
+  101 FORMAT(F4.1)
+C-----SUBROUTIUNE INISTA INITIALIZE THE STATISTICS
+C[    IXMPH      = '~~~~'
+C[    I          = -2147483647
+C[    ITABR      = -2147483647
+C[    XMPH       = -2147483647.0
+      DO 1010  I = 1 , NIS
+      APLVDV(I) = 0.0D0
+ 1010 CONTINUE
+      DO 1020  I = 1 , NISNTS
+      PTD   (I) = 0.0D0
+      ATD   (I) = 0.0D0
+      ATDAST(I) = 0.0D0
+      PQD   (I) = 0.0D0
+      AQD   (I) = 0.0D0
+      AQDAST(I) = 0.0D0
+      PSD   (I) = 0.0D0
+      ASD   (I) = 0.0D0
+      ASDAST(I) = 0.0D0
+      PDM   (I) = 0.0D0
+      ADM   (I) = 0.0D0
+      ADMAST(I) = 0.0D0
+      AVMT  (I) = 0.0D0
+      ASTIM (I) = 0.0D0
+      VOLUME(I) = 0.0D0
+      TMSPD (I) = 0.0D0
+      SMSPD (I) = 0.0D0
+      ADSPD (I) = 0.0D0
+      AMAXV (I) = 0.0D0
+      DMAXV (I) = 0.0D0
+      OATD  (I) = 0.0D0
+      OAQD  (I) = 0.0D0
+      OASD  (I) = 0.0D0
+      OADM  (I) = 0.0D0
+      PTURN (I) = 0.0D0
+ 1020 CONTINUE
+      DO 1030  I = 1 , NISNAL
+      AQUEUE(I) = 0.0D0
+ 1030 CONTINUE
+      XMPH = XFPS*FPS2MH
+      WRITE (IXMPH,101) XMPH
+      CTABL( 1)=' TOTAL DELAY (VEHICLE-SECONDS) --------------------- ='
+      CTABL( 2)=' NUMBER OF VEHICLES INCURRING TOTAL DELAY ---------- ='
+      CTABL( 3)=' PERCENT OF VEHICLES INCURRING TOTAL DELAY --------- ='
+      CTABL( 4)=' AVERAGE TOTAL DELAY (SECONDS) --------------------- ='
+      CTABL( 5)=' AVERAGE TOTAL DELAY/AVERAGE TRAVEL TIME ----------- ='
+      CTABL( 6)='                                                      '
+      CTABL( 7)=' QUEUE DELAY (VEHICLE-SECONDS) --------------------- ='
+      CTABL( 8)=' NUMBER OF VEHICLES INCURRING QUEUE DELAY ---------- ='
+      CTABL( 9)=' PERCENT OF VEHICLES INCURRING QUEUE DELAY --------- ='
+      CTABL(10)=' AVERAGE QUEUE DELAY (SECONDS) --------------------- ='
+      CTABL(11)=' AVERAGE QUEUE DELAY/AVERAGE TRAVEL TIME ----------- ='
+      CTABL(12)='                                                      '
+      CTABL(13)=' STOPPED DELAY (VEHICLE-SECONDS) ------------------- ='
+      CTABL(14)=' NUMBER OF VEHICLES INCURRING STOPPED DELAY -------- ='
+      CTABL(15)=' PERCENT OF VEHICLES INCURRING STOPPED DELAY ------- ='
+      CTABL(16)=' AVERAGE STOPPED DELAY (SECONDS) ------------------- ='
+      CTABL(17)=' AVERAGE STOPPED DELAY/AVERAGE TRAVEL TIME --------- ='
+      CTABL(18)='                                                      '
+      CTABL(19)=' DELAY BELOW 12.1 MPH (VEHICLE-SECONDS) ------------ ='
+      CTABL(20)=' NUMBER OF VEHICLES INCURRING DELAY BELOW 12.1 MPH - ='
+      CTABL(21)=' PERCENT OF VEHICLES INCURRING DELAY BELOW 12.1 MPH  ='
+      CTABL(22)=' AVERAGE DELAY BELOW 12.1 MPH (SECONDS) ------------ ='
+      CTABL(23)=' AVERAGE DELAY BELOW 12.1 MPH/AVERAGE TRAVEL TIME -- ='
+      CTABL(24)='                                                      '
+      CTABL(25)=' VEHICLE-MILES OF TRAVEL --------------------------- ='
+      CTABL(26)=' AVERAGE VEHICLE-MILES OF TRAVEL ------------------- ='
+      CTABL(27)=' TRAVEL TIME (VEHICLE-SECONDS) --------------------- ='
+      CTABL(28)=' AVERAGE TRAVEL TIME (SECONDS) --------------------- ='
+      CTABL(29)=' NUMBER OF VEHICLES PROCESSED ---------------------- ='
+      CTABL(30)=' VOLUME PROCESSED (VEHICLES/HOUR) ------------------ ='
+      CTABL(31)=' TIME MEAN SPEED (MPH) = MEAN OF ALL VEHICLE SPEEDS  ='
+      CTABL(32)=' SPACE MEAN SPEED (MPH) = TOT DIST / TOT TRAVEL TIME ='
+      CTABL(33)=' AVERAGE DESIRED SPEED (MPH) ----------------------- ='
+      CTABL(34)=' AVERAGE MAXIMUM ACCELERATION (FT/SEC/SEC) --------- ='
+      CTABL(35)=' AVERAGE MAXIMUM DECELERATION (FT/SEC/SEC) --------- ='
+      CTABL(36)='                                                      '
+      CTABL(37)=' OVERALL AVERAGE TOTAL DELAY (SECONDS) ------------- ='
+      CTABL(38)=' OVERALL AVERAGE QUEUE DELAY (SECONDS) ------------- ='
+      CTABL(39)=' OVERALL AVERAGE STOPPED DELAY (SECONDS) ----------- ='
+      CTABL(40)=' OVERALL AVERAGE DELAY BELOW 12.1 MPH (SECONDS) ---- ='
+      CTABL(41)='                                                      '
+      CTABL(42)=' PERCENT OF VEHICLES MAKING A U-TURN --------------- ='
+      CTABL(43)=' PERCENT OF VEHICLES MAKING A LEFT TURN ------------ ='
+      CTABL(44)=' PERCENT OF VEHICLES GOING STRAIGHT ---------------- ='
+      CTABL(45)=' PERCENT OF VEHICLES MAKING A RIGHT TURN ----------- ='
+      CTABL(46)=' PERCENT OF VEHICLES MAKING A INTERNAL LEFT TURN --- ='
+      CTABL(47)=' PERCENT OF VEHICLES MAKING A INTERNAL RIGHT TURN -- ='
+      CTABL(48)='                                                      '
+      CTABL(49)=' MAXIMUM AND AVERAGE QUEUE LENGTH FOR LANE 1 ------- ='
+      CTABL(50)=' MAXIMUM AND AVERAGE QUEUE LENGTH FOR LANE 2 ------- ='
+      CTABL(51)=' MAXIMUM AND AVERAGE QUEUE LENGTH FOR LANE 3 ------- ='
+      CTABL(52)=' MAXIMUM AND AVERAGE QUEUE LENGTH FOR LANE 4 ------- ='
+      CTABL(53)=' MAXIMUM AND AVERAGE QUEUE LENGTH FOR LANE 5 ------- ='
+      CTABL(54)=' MAXIMUM AND AVERAGE QUEUE LENGTH FOR LANE 6 ------- ='
+      CTABL(55)='                                                      '
+      CTABL(56)=' NUM/PER GO   ON YELLOW STOP LINE TO END DILEMMA ZONE='
+      CTABL(57)=' NUM/PER STOP ON YELLOW STOP LINE TO END DILEMMA ZONE='
+      CTABL(58)=' NUM/PER GO   ON YELLOW END TO BEG DILEMMA ZONE ---- ='
+      CTABL(59)=' NUM/PER STOP ON YELLOW END TO BEG DILEMMA ZONE ---- ='
+      CTABL(60)=' NUM/PER GO   ON YELLOW BEG DILEMMA ZONE TO BEG LANE ='
+      CTABL(61)=' NUM/PER STOP ON YELLOW BEG DILEMMA ZONE TO BEG LANE ='
+      CTABL(62)='                                                      '
+      CTABL(63)=' NUMBER OF CLEAR ZONE INTRUSIONS ------------------- ='
+      CTABL(64)=' NUMBER OF VEHICLES ELIMINATED (LANE FULL) --------- ='
+      CTABL(65)=' AVERAGE OF LOGIN SPEED/DESIRED SPEED (PERCENT) ---- ='
+C[    IF ( IXMPH              .EQ.'~~~~' )       STOP 'INISTA IXMPH  01'
+      CTABL(19)(14:17) = IXMPH
+      CTABL(20)(43:46) = IXMPH
+      CTABL(21)(44:47) = IXMPH
+      CTABL(22)(22:25) = IXMPH
+      CTABL(23)(22:25) = IXMPH
+      CTABL(40)(30:33) = IXMPH
+      NTABC =  0
+      NTABR = 40
+      DO 2010  ITABR = 1 , MTABR
+      ITABP(ITABR) = 0
+ 2010 CONTINUE
+      RETURN
+      END                                                               INISTA
+C
+C
+C
+      SUBROUTINE ADDSTA
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'SUMST1'
+      INCLUDE 'USER'
+      INCLUDE 'VEHDS1'
+      INTEGER           IANILN,IANINT,IANITC,IANTOT,INTNIA,INTRNL,ITC,
+     *                  ITOT,IVAL,NONINT,NUM
+      DOUBLE PRECISION  ASTIME
+C
+C-----SUBROUTINE ADDSTA ADDS AND CALCULATES THE SUMMARY STATISTICS
+C
+C[    IANILN     = -2147483647
+C[    IANINT     = -2147483647
+C[    IANITC     = -2147483647
+C[    IANTOT     = -2147483647
+C[    INTNIA     = -2147483647
+C[    INTRNL     = -2147483647
+C[    ITC        = -2147483647
+C[    ITOT       = -2147483647
+C[    IVAL       = -2147483647
+C[    NONINT     = -2147483647
+C[    NUM        = -2147483647
+C[    ASTIME     = -2147483647.0
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (NIA+1,NTC+1)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+      NONINT = ((NTC+1)-1)*NIS + (NIA+1)
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (NIA+2,NTC+1)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+      INTRNL = ((NTC+1)-1)*NIS + (NIA+2)
+      DO 1020  IAN = 1 , NIBA
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (IAN,NTC+1)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+      IANTOT = ((NTC+1)-1)*NIS + IAN
+      IF ( IAFLAG(LIBA(IAN)) . EQ . ILETTI )   THEN
+        IANINT = INTRNL
+        INTNIA = NIA+2
+      ELSE
+        IANINT = NONINT
+        INTNIA = NIA+1
+      END IF
+      DO 1010  ITC = 1 , NTC+1
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (IAN,ITC)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+      IANITC = (ITC-1)*NIS + IAN
+      IF ( ITC . LE . NTC )                      THEN
+        IVAL = IANITC
+C[      IF ( IANTOT           .EQ.-2147483647   )STOP 'ADDSTA IANTOT 01'
+        ITOT = IANTOT
+      ELSE
+C[      IF ( IANTOT           .EQ.-2147483647   )STOP 'ADDSTA IANTOT 02'
+        IVAL = IANTOT
+C[      IF ( IANINT           .EQ.-2147483647   )STOP 'ADDSTA IANINT 01'
+        ITOT = IANINT
+      END IF
+C-----ADD THE SUMMARY STATISTICS FOR (IVAL) TO (ITOT)
+C-----PROCESS TOTAL DELAY
+C[    IF ( ITOT               .EQ.-2147483647   )STOP 'ADDSTA ITOT   01'
+C[    IF ( IVAL               .EQ.-2147483647   )STOP 'ADDSTA IVAL   01'
+      TD(ITOT)      = TD(ITOT)      + TD(IVAL)
+      NTD(ITOT)     = NTD(ITOT)     + NTD(IVAL)
+C-----PROCESS QUEUE DELAY
+      QD(ITOT)      = QD(ITOT)      + QD(IVAL)
+      NQD(ITOT)     = NQD(ITOT)     + NQD(IVAL)
+C-----PROCESS STOPPED DELAY
+      SD(ITOT)      = SD(ITOT)      + SD(IVAL)
+      NSD(ITOT)     = NSD(ITOT)     + NSD(IVAL)
+C-----PROCESS DELAY BELOW XX MPH
+      DMPH(ITOT)    = DMPH(ITOT)    + DMPH(IVAL)
+      NDMPH(ITOT)   = NDMPH(ITOT)   + NDMPH(IVAL)
+C-----PROCESS THE VEHICLE MILES OF TRAVEL
+      VMT(ITOT)     = VMT(ITOT)     + VMT(IVAL)
+C-----PROCESS THE TRAVEL TIME
+      STIME(ITOT)   = STIME(ITOT)   + STIME(IVAL)
+C-----PROCESS THE NUMBER OF VEHICLES PROCESSED
+      NUMPRO(ITOT)  = NUMPRO(ITOT)  + NUMPRO(IVAL)
+C-----PROCESS THE AVERAGE SPEED AND AVERAGE DESIRED SPEED
+      ASPEED(ITOT)  = ASPEED(ITOT)  + ASPEED(IVAL)
+      ADESPD(ITOT)  = ADESPD(ITOT)  + ADESPD(IVAL)
+C-----PROCESS THE AVERAGE MAXIMUM ACCELERATION AND DECELERATION FOR THE
+C-----VEHICLE
+      VMAXA(ITOT)   = VMAXA(ITOT)   + VMAXA(IVAL)
+      VMAXD(ITOT)   = VMAXD(ITOT)   + VMAXD(IVAL)
+ 1010 CONTINUE
+C-----PROCESS THE NUMBER OF CLEAR ZONE INTRUSIONS AND THE NUMBER OF
+C-----VEHICLES ELIMINATED
+C[    IF ( INTNIA             .EQ.-2147483647   )STOP 'ADDSTA INTNIA 01'
+      NBANG(INTNIA) = NBANG(INTNIA) + NBANG(IAN)
+      NELIM(INTNIA) = NELIM(INTNIA) + NELIM(IAN)
+C-----PROCESS THE AVERAGE PERCENT LOG IN VELOCITY PER DESIRED
+C-----SPEED
+      PLVDV(INTNIA) = PLVDV(INTNIA) + PLVDV(IAN)
+      NLVDV(INTNIA) = NLVDV(INTNIA) + NLVDV(IAN)
+ 1020 CONTINUE
+      DO 2030  IAN = 1 , NIS
+      IF ((IAN.GT.NIBA) .AND. (IAN.LT.(NIA+1)))  GO TO 2030
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (IAN,NTC+1)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+      IANTOT = ((NTC+1)-1)*NIS + IAN
+      DO 2010  ITC = 1 , NTC+1
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (IAN,ITC)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+      IANITC = (ITC-1)*NIS + IAN
+      NUM = NUMPRO(IANITC)
+                    IF ( NUM . LE . 0 )          GO TO 2010
+C-----CALCULATE THE SUMMARY STATISTICS FOR (IVAL)
+C-----PROCESS THE AVERAGE TRAVEL TIME
+      ASTIME         = STIME(IANITC)/NUM
+C-----PROCESS TOTAL DELAY
+      PTD(IANITC)    = (100.0D0*NTD(IANITC))/NUM
+      IF ( NTD(IANITC) . GT . 0 )                THEN
+        ATD(IANITC)  = TD(IANITC)/NTD(IANITC)
+      END IF
+      ATDAST(IANITC) = (100.0D0*ATD(IANITC))/ASTIME
+C-----PROCESS QUEUE DELAY
+      PQD(IANITC)    = (100.0D0*NQD(IANITC))/NUM
+      IF ( NQD(IANITC) . GT . 0 )                THEN
+        AQD(IANITC)  = QD(IANITC)/NQD(IANITC)
+      END IF
+      AQDAST(IANITC) = (100.0D0*AQD(IANITC))/ASTIME
+C-----PROCESS STOPPED DELAY
+      PSD(IANITC)    = (100.0D0*NSD(IANITC))/NUM
+      IF ( NSD(IANITC) . GT . 0 )                THEN
+        ASD(IANITC)  = SD(IANITC)/NSD(IANITC)
+      END IF
+      ASDAST(IANITC) = (100.0D0*ASD(IANITC))/ASTIME
+C-----PROCESS DELAY BELOW XX MPH
+      PDM(IANITC)    = (100.0D0*NDMPH(IANITC))/NUM
+      IF ( NDMPH(IANITC) . GT . 0 )              THEN
+        ADM(IANITC)  = DMPH(IANITC)/NDMPH(IANITC)
+      END IF
+      ADMAST(IANITC) = (100.0D0*ADM(IANITC))/ASTIME
+C-----PROCESS THE VEHICLE MILES OF TRAVEL
+      AVMT(IANITC)   = VMT(IANITC)/NUM
+C-----PROCESS THE TRAVEL TIME
+      ASTIM(IANITC)  = ASTIME
+C-----PROCESS THE NUMBER OF VEHICLES PROCESSED
+      VOLUME(IANITC) = NUM/(SIMTIM/3600.0D0)
+C-----PROCESS THE AVERAGE SPEED AND AVERAGE DESIRED SPEED
+      TMSPD(IANITC)  = ASPEED(IANITC)/NUM
+      SMSPD(IANITC)  = 3600.0D0*VMT(IANITC)/STIME(IANITC)
+      ADSPD(IANITC)  = ADESPD(IANITC)/NUM
+C-----PROCESS THE AVERAGE MAXIMUM ACCELERATION AND DECELERATION FOR THE
+C-----VEHICLE
+      AMAXV(IANITC)  = VMAXA(IANITC)/NUM
+      DMAXV(IANITC)  = VMAXD(IANITC)/NUM
+C-----PROCESS THE OVERALL AVERAGE DELAYS
+      OATD(IANITC)   = TD(IANITC)/NUM
+      OAQD(IANITC)   = QD(IANITC)/NUM
+      OASD(IANITC)   = SD(IANITC)/NUM
+      OADM(IANITC)   = DMPH(IANITC)/NUM
+C-----PROCESS THE PERCENT OF TURN MOVEMENTS
+      PTURN(IANITC)  = (100.0D0*NUM)/NUMPRO(IANTOT)
+ 2010 CONTINUE
+      DO 2020  ILN = 1 , NAL
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NAL)
+C-----OR (NIS*NAL) WHERE NIS=NIA+2 THEREFORE (NIA+2,NAL)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND LANE NUMBER
+C-----(ILN=1,NAL) FOR (IAN,ILN)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+      IANILN         = (ILN-1)*NIS + IAN
+      AQUEUE(IANILN) = LQUEUE(IANILN)*DT/SIMTIM
+ 2020 CONTINUE
+C-----PROCESS THE AVERAGE PERCENT LOG IN VELOCITY PER DESIRED
+C-----SPEED
+      IF ( NLVDV(IAN) . GT . 0 )                 THEN
+        APLVDV(IAN)  = (100.0D0*PLVDV(IAN))/NLVDV(IAN)
+      END IF
+ 2030 CONTINUE
+      RETURN
+      END                                                               ADDSTA
+C
+C
+C
+      SUBROUTINE PUNSTA
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'CONSTN'
+      INCLUDE 'DIAMON'
+      INCLUDE 'INDEX'
+      INCLUDE 'INTER'
+      INCLUDE 'LANE'
+      INCLUDE 'PHASES'
+      INCLUDE 'SIGCAM'
+      INCLUDE 'SUMST1'
+      INCLUDE 'TITLE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHDS1'
+      DIMENSION         JNDEX(NAL)
+      INTEGER           JNDEX
+      CHARACTER*12      DIAFLG
+      INTEGER           I,INDEX,ITC,IWIA,IWTC,MLANES
+      DOUBLE PRECISION  ANVSY,XMPH
+  701 FORMAT('SIMULATION PROCESSOR FOR THE TEXAS TRAFFIC ',
+     *       'SIMULATION PACKAGE (',A5,') - ',
+     *       'STATISTICS (V02)        - CARDS 01-06 = SIMULATION INFO')
+  702 FORMAT('GEOPRO TITLE = ',A80, ' - CARDS 07-08 = LIBA AND IAFLAG')
+  703 FORMAT('DVPRO  TITLE = ',A80, ' - CARDS 09-10 = LANE CONTROL')
+  704 FORMAT('SIMPRO TITLE = ',A80, ' - CARDS 11-NN = APPROACH DATA')
+  705 FORMAT(10F12.3,2I12,F12.3,/,3I12,F12.3,8I12,A12)
+  706 FORMAT(13I12)
+  707 FORMAT(13(11X,A1))
+  708 FORMAT(13I12)
+  709 FORMAT(2I12,2(F12.3,I12,3F12.3))
+  710 FORMAT(2I12,4F12.3,I12,6F12.3)
+  711 FORMAT(2I12,5F12.3)
+  712 FORMAT(2I12,I12,6I12)
+  713 FORMAT(2I12,I12,6F12.3)
+  714 FORMAT(2I12,2I12,F12.3)
+C[    DO  I = 1 , NAL
+C[    JNDEX(I)   = -2147483647
+C[    END DO
+C[    DIAFLG     = '~~~~~~~~~~'
+C[    I          = -2147483647
+C[    INDEX      = -2147483647
+C[    ITC        = -2147483647
+C[    IWIA       = -2147483647
+C[    IWTC       = -2147483647
+C[    MLANES     = -2147483647
+C[    ANVSY      = -2147483647.0
+C[    XMPH       = -2147483647.0
+                    IF ( IPUNCH . NE . IYES )    RETURN
+C-----WRITE THE STATISTICS FOR THE SIMULATION TO UNIT ICS
+      WRITE (ICS,701) IVERSN
+      WRITE (ICS,702) GTITLE
+      WRITE (ICS,703) DTITLE
+      WRITE (ICS,704) STITLE
+      IF ( DIAMON )                              THEN
+        DIAFLG = '     DIAMOND'
+      ELSE
+        DIAFLG = '    STANDARD'
+      END IF
+      XMPH = XFPS*FPS2MH
+      TLEAD = TLEAD + APIJR
+      TLAG  = TLAG  + APIJR
+      ANVSY = NVSYA*DT/SIMTIM
+C[    IF ( DIAFLG             .EQ.'~~~~~~~~~~' ) STOP 'PUNSTA DIAFLG 01'
+      WRITE (ICS,705) STRTIM/60.0D0,SIMTIM/60.0D0,DT,XMPH,XQDIST,CAREQL,
+     *                CAREQM,CAREQA,TLEAD,TLAG,ICONTR,NVE,HESFAC,
+     *                NUMPSU,NUMPST,NVSY,ANVSY,MNVSY,NIA,NIBA,NLA,NRLAN,
+     *                NTC,NCAMSP,NPHASE,DIAFLG
+      WRITE (ICS,706) (LIBA(IAN)        ,IAN=1,NIBA)
+      WRITE (ICS,707) (IAFLAG(LIBA(IAN)),IAN=1,NIBA)
+      WRITE (ICS,708) (LCONTR(I),I=1,NLA)
+C-----PROCESS EACH INBOUND APPROACH
+      DO 1040  IAN = 1 , NIS
+      IWIA = IAN
+                    IF ( IAN . LE . NIA  )       IWIA = LIBA(IAN)
+                    IF ( IWIA . EQ . 0 )         GO TO 1040
+C-----PROCESS EACH TURN CODE
+      DO 1010  ITC = 1 , NTS
+      IF ( (IAN.GE.NIA+1) . AND . (ITC.LE.NTC) ) GO TO 1010
+      IWTC = ITC
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (IAN,ITC)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+      INDEX = (ITC-1)*NIS + IAN
+      IF ((ITC.LE.NTC).AND.(NUMPRO(INDEX).EQ.0)) GO TO 1010
+      WRITE (ICS,709) IWIA,IWTC,
+     * TD(INDEX),NTD(INDEX),PTD(INDEX),ATD(INDEX),ATDAST(INDEX),
+     * QD(INDEX),NQD(INDEX),PQD(INDEX),AQD(INDEX),AQDAST(INDEX)
+      WRITE (ICS,709) IWIA,IWTC,
+     * SD(INDEX),NSD(INDEX),PSD(INDEX),ASD(INDEX),ASDAST(INDEX),
+     * DMPH(INDEX),NDMPH(INDEX),PDM(INDEX),ADM(INDEX),ADMAST(INDEX)
+      WRITE (ICS,710) IWIA,IWTC,
+     * VMT(INDEX),AVMT(INDEX),STIME(INDEX),ASTIM(INDEX),NUMPRO(INDEX),
+     * VOLUME(INDEX),TMSPD(INDEX),SMSPD(INDEX),ADSPD(INDEX),
+     * AMAXV(INDEX),DMAXV(INDEX)
+      WRITE (ICS,711) IWIA,IWTC,
+     * OATD(INDEX),OAQD(INDEX),OASD(INDEX),OADM(INDEX),PTURN(INDEX)
+ 1010 CONTINUE
+                    IF ( IAN . GE . NIA+1 )      GO TO 1030
+C-----PROCESS MAXIMUM AND AVERAGE QUEUE LENGTHS
+      IA = LIBA(IAN)
+      MLANES = NLANES(IA)
+      DO 1020  ILN = 1 , MLANES
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NAL)
+C-----OR (NIS*NAL) WHERE NIS=NIA+2 THEREFORE (NIA+2,NAL)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND LANE NUMBER
+C-----(ILN=1,NAL) FOR (IAN,ILN)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+      JNDEX(ILN) = (ILN-1)*NIS + IAN
+ 1020 CONTINUE
+C[    IF ( MLANES             .EQ.-2147483647   )STOP 'PUNSTA MLANES 01'
+C[    DO 987  ILN = 1 , MLANES
+C[    IF ( JNDEX(ILN)         .EQ.-2147483647   )STOP 'PUNSTA JNDEX  01'
+C[987 CONTINUE
+C[    IF ( IWIA               .EQ.-2147483647   )STOP 'PUNSTA IWIA   01'
+C[    IF ( IWTC               .EQ.-2147483647   )STOP 'PUNSTA IWTC   01'
+      WRITE (ICS,712) IWIA,IWTC,MLANES,(MQUEUE(JNDEX(ILN)),ILN=1,MLANES)
+      WRITE (ICS,713) IWIA,IWTC,MLANES,(AQUEUE(JNDEX(ILN)),ILN=1,MLANES)
+ 1030 CONTINUE
+C-----PROCESS THE NUMBER OF CLEAR ZONE INTRUSIONS, THE NUMBER OF
+C-----VEHICLES ELIMINATED, AND THE AVERAGE PERCENT LOG IN VELOCITY PER
+C-----DESIRED SPEED
+C[    IF ( IWIA               .EQ.-2147483647   )STOP 'PUNSTA IWIA   02'
+C[    IF ( IWTC               .EQ.-2147483647   )STOP 'PUNSTA IWTC   02'
+      WRITE (ICS,714) IWIA,IWTC,NBANG(IAN),NELIM(IAN),APLVDV(IAN)
+ 1040 CONTINUE
+      RETURN
+      END                                                               PUNSTA
+C
+C
+C
+      SUBROUTINE FMTSTA ( JAN,JTC,IFSTAT )
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'APPRO'
+      INCLUDE 'CHARAC'
+      INCLUDE 'INTER'
+      INCLUDE 'SUMST1'
+      INCLUDE 'USER'
+      INCLUDE 'VEHDS1'
+      INCLUDE 'VEHFS'
+      INCLUDE 'VEHILS'
+      CHARACTER*(*)     IFSTAT
+      INTEGER           INDEX,ITABR,JA,JAN,JLN,JTC,KTC,NUM,NUMB2B,
+     *                  NUME2B,NUMS2E
+      DOUBLE PRECISION  PB2BG,PB2BS,PE2BG,PE2BS,PS2EG,PS2ES
+  101 FORMAT(F11.3)
+  102 FORMAT(F9.1,'  ')
+  103 FORMAT(F9.1,' %')
+  104 FORMAT(I7,'    ')
+  105 FORMAT(I4,F5.1,'  ')
+  106 FORMAT(I4,I5,' %')
+C
+C-----SUBROUTINE FMTSTA FORMATS SUMMARY STATISTICS FOR INBOUND APPROACH
+C-----JAN AND TURN CODE JTC
+C
+C[    INDEX      = -2147483647
+C[    ITABR      = -2147483647
+C[    JA         = -2147483647
+C[    JLN        = -2147483647
+C[    KTC        = -2147483647
+C[    NUM        = -2147483647
+                    IF ( IFSTAT . NE . IYES )    RETURN
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (JAN,JTC)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+      INDEX  = (JTC-1)*NIS + JAN
+C-----INITIALIZE SOME PARAMETERS FOR FMTSTA
+      NUM    = NUMPRO(INDEX)
+C-----IF NO VEHICLES WERE PROCESSED FOR INBOUND APPROACH I AND TURN
+C-----CODE JTC THEN RETURN
+                    IF ( NUM . LE . 0 )          RETURN
+                    IF ( IFSTAT . NE . IYES )    GO TO 2010
+C-----FORMAT SUMMARY STATISTICS FOR INBOUND APPROACH JAN AND TURN CODE
+C-----JTC
+      NTABC = NTABC + 1
+      WRITE (CTABR(NTABC,01),102) TD(INDEX)
+      WRITE (CTABR(NTABC,02),104) NTD(INDEX)
+      WRITE (CTABR(NTABC,03),102) PTD(INDEX)
+      WRITE (CTABR(NTABC,04),102) ATD(INDEX)
+      WRITE (CTABR(NTABC,05),103) ATDAST(INDEX)
+             CTABR(NTABC,06)    = ' '
+      WRITE (CTABR(NTABC,07),102) QD(INDEX)
+      WRITE (CTABR(NTABC,08),104) NQD(INDEX)
+      WRITE (CTABR(NTABC,09),102) PQD(INDEX)
+      WRITE (CTABR(NTABC,10),102) AQD(INDEX)
+      WRITE (CTABR(NTABC,11),103) AQDAST(INDEX)
+             CTABR(NTABC,12)    = ' '
+      WRITE (CTABR(NTABC,13),102) SD(INDEX)
+      WRITE (CTABR(NTABC,14),104) NSD(INDEX)
+      WRITE (CTABR(NTABC,15),102) PSD(INDEX)
+      WRITE (CTABR(NTABC,16),102) ASD(INDEX)
+      WRITE (CTABR(NTABC,17),103) ASDAST(INDEX)
+             CTABR(NTABC,18)    = ' '
+      WRITE (CTABR(NTABC,19),102) DMPH(INDEX)
+      WRITE (CTABR(NTABC,20),104) NDMPH(INDEX)
+      WRITE (CTABR(NTABC,21),102) PDM(INDEX)
+      WRITE (CTABR(NTABC,22),102) ADM(INDEX)
+      WRITE (CTABR(NTABC,23),103) ADMAST(INDEX)
+             CTABR(NTABC,24)    = ' '
+      WRITE (CTABR(NTABC,25),101) VMT(INDEX)
+      WRITE (CTABR(NTABC,26),101) AVMT(INDEX)
+      WRITE (CTABR(NTABC,27),102) STIME(INDEX)
+      WRITE (CTABR(NTABC,28),102) ASTIM(INDEX)
+      WRITE (CTABR(NTABC,29),104) NUM
+      WRITE (CTABR(NTABC,30),102) VOLUME(INDEX)
+      WRITE (CTABR(NTABC,31),102) TMSPD(INDEX)
+      WRITE (CTABR(NTABC,32),102) SMSPD(INDEX)
+      WRITE (CTABR(NTABC,33),102) ADSPD(INDEX)
+      WRITE (CTABR(NTABC,34),102) AMAXV(INDEX)
+      WRITE (CTABR(NTABC,35),102) DMAXV(INDEX)
+             CTABR(NTABC,36)    = ' '
+      WRITE (CTABR(NTABC,37),102) OATD(INDEX)
+      WRITE (CTABR(NTABC,38),102) OAQD(INDEX)
+      WRITE (CTABR(NTABC,39),102) OASD(INDEX)
+      WRITE (CTABR(NTABC,40),102) OADM(INDEX)
+C-----BLANK OUT REMAINDER OF TABLE FOR COLUMN NTABC
+      DO 1010  ITABR = 41 , MTABR
+             CTABR(NTABC,ITABR) = ' '
+ 1010 CONTINUE
+      IF ( JTC . EQ . NTC+1 )                    THEN
+C-----PROCESS PERCENT OF APPROACH VEHICLES MAKING MOVEMENT
+        DO 1020  KTC = 1 , NTC
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NTS)
+C-----OR (NIS*NTS) WHERE NIS=NIA+2 AND NTS=NTC+1 THEREFORE (NIA+2,NTC+1)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND TURN CODE OF
+C-----THE VEHICLE (ITC=1,NTC) FOR (JAN,KTC)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NTC+1=TURN CODE TOTALS FOR APPROACH)
+        INDEX = (KTC-1)*NIS + JAN
+        IF ( NUMPRO(INDEX) . EQ . 0 )            GO TO 1020
+        WRITE (CTABR(NTABC,41+KTC),102) PTURN(INDEX)
+        ITABP(41+KTC) = 1
+ 1020   CONTINUE
+      ELSE
+C[      IF ( INDEX            .EQ.-2147483647   )STOP 'FMTSTA INDEX  01'
+        WRITE (CTABR(NTABC,41+JTC),102) PTURN(INDEX)
+        ITABP(41+JTC) = 1
+      END IF
+                    IF ( JTC . NE . NTC+1 )      GO TO 2010
+                    IF ( JAN . GE . NIA+1 )      GO TO 1040
+C-----PROCESS MAXIMUM AND AVERAGE QUEUE LENGTHS
+      JA = LIBA(JAN)
+      DO 1030  JLN = 1 , NLANES(JA)
+C-----COMPUTE THE INDEX FOR THE /SUMSTA/ ARRAYS DIMENSIONED TO (NIS,NAL)
+C-----OR (NIS*NAL) WHERE NIS=NIA+2 THEREFORE (NIA+2,NAL)
+C-----BASED ON THE INBOUND APPROACH NUMBER (IAN=1,NIA) AND LANE NUMBER
+C-----(ILN=1,NAL) FOR (JAN,JLN)
+C-----(NIA+1=NON-INTERNAL INBOUND APPROACH TOTALS FOR INTERSECTION)
+C-----(NIA+2=INTERNAL     INBOUND APPROACH TOTALS FOR INTERSECTION)
+      INDEX = (JLN-1)*NIS + JAN
+      WRITE (CTABR(NTABC,48+JLN),105) MQUEUE(INDEX),AQUEUE(INDEX)
+      ITABP(48+JLN) = 1
+ 1030 CONTINUE
+ 1040 CONTINUE
+C-----PROCESS DILEMMA ZONE STATISTICS
+                    IF ( ICONTR . LT . ICPSIG )  GO TO 1045
+                    IF ( JAN    . GE . NIA+1  )  GO TO 1045
+      JA = LIBA(JAN)
+      PS2EG = 0.0D0
+      PS2ES = 0.0D0
+      PE2BG = 0.0D0
+      PE2BS = 0.0D0
+      PB2BG = 0.0D0
+      PB2BS = 0.0D0
+      NUMS2E = DZS2EG(JA) + DZS2ES(JA)
+      NUME2B = DZE2BG(JA) + DZE2BS(JA)
+      NUMB2B = DZB2BG(JA) + DZB2BS(JA)
+      IF ( NUMS2E . GT . 0 )                     THEN
+        PS2EG = 100.0D0*DZS2EG(JA)/NUMS2E
+        PS2ES = 100.0D0*DZS2ES(JA)/NUMS2E
+      END IF
+      IF ( NUME2B . GT . 0 )                     THEN
+        PE2BG = 100.0D0*DZE2BG(JA)/NUME2B
+        PE2BS = 100.0D0*DZE2BS(JA)/NUME2B
+      END IF
+      IF ( NUMB2B . GT . 0 )                     THEN
+        PB2BG = 100.0D0*DZB2BG(JA)/NUMB2B
+        PB2BS = 100.0D0*DZB2BS(JA)/NUMB2B
+      END IF
+      WRITE (CTABR(NTABC,56),106) DZS2EG(JA),NINT( PS2EG )
+      WRITE (CTABR(NTABC,57),106) DZS2ES(JA),NINT( PS2ES )
+      WRITE (CTABR(NTABC,58),106) DZE2BG(JA),NINT( PE2BG )
+      WRITE (CTABR(NTABC,59),106) DZE2BS(JA),NINT( PE2BS )
+      WRITE (CTABR(NTABC,60),106) DZB2BG(JA),NINT( PB2BG )
+      WRITE (CTABR(NTABC,61),106) DZB2BS(JA),NINT( PB2BS )
+      ITABP(56) = 1
+      ITABP(57) = 1
+      ITABP(58) = 1
+      ITABP(59) = 1
+      ITABP(60) = 1
+      ITABP(61) = 1
+ 1045 CONTINUE
+C-----PROCESS THE NUMBER OF CLEAR ZONE INTRUSIONS
+                    IF ( NBANG(JAN) . EQ . 0 )   GO TO 1050
+      WRITE (CTABR(NTABC,63),104) NBANG(JAN)
+      ITABP(63) = 1
+ 1050 CONTINUE
+C-----PROCESS THE NUMBER OF VEHICLES ELIMINATED
+                    IF ( NELIM(JAN) . EQ . 0 )   GO TO 1060
+      WRITE (CTABR(NTABC,64),104) NELIM(JAN)
+      ITABP(64) = 1
+ 1060 CONTINUE
+C-----PROCESS THE AVERAGE PERCENT LOG IN VELOCITY PER DESIRED
+C-----SPEED
+                    IF ( NLVDV(JAN) . LE . 0 )   GO TO 1070
+      WRITE (CTABR(NTABC,65),102) APLVDV(JAN)
+      ITABP(65) = 1
+ 1070 CONTINUE
+ 2010 CONTINUE
+      RETURN
+      END                                                               FMTSTA
+C
+C
+C
+      SUBROUTINE PRTSTA
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CHARAC'
+      INCLUDE 'SUMST1'
+      INCLUDE 'TITLE'
+      INCLUDE 'USER'
+      INCLUDE 'VEHDS1'
+      INCLUDE 'VEHFS'
+      INCLUDE 'VEHILS'
+      INTEGER           IFIRST,ITABC,ITABR
+  601 FORMAT(1X,A,/)
+  602 FORMAT(A54,7A11)
+C
+C-----SUBROUTINE PRTSTA PRINTS SUMMARY STATISTICS
+C
+C[    IFIRST     = -2147483647
+C[    ITABC      = -2147483647
+C[    ITABR      = -2147483647
+                    IF ( NTABC . EQ . 0 )        RETURN
+C-----PRINT SUMMARY STATISTICS
+      CALL  PHEADR  ( 6 )
+      WRITE (6,601) STITLE
+      WRITE (6,602) CHDRL,(CHDRR(ITABC),ITABC=1,NTABC)
+      WRITE (6,602)
+      DO 1010  ITABR = 1 , NTABR
+      WRITE (6,602) CTABL(ITABR),(CTABR(ITABC,ITABR),ITABC=1,NTABC)
+ 1010 CONTINUE
+      IFIRST = 0
+      DO 2010  ITABR = 42 , 47
+                    IF ( ITABP(ITABR) . EQ . 0 ) GO TO 2010
+                    IF ( IFIRST . EQ . 0 )       WRITE (6,602)
+      WRITE (6,602) CTABL(ITABR),(CTABR(ITABC,ITABR),ITABC=1,NTABC)
+      IFIRST = 1
+ 2010 CONTINUE
+      IFIRST = 0
+      DO 2020  ITABR = 49 , 54
+                    IF ( ITABP(ITABR) . EQ . 0 ) GO TO 2020
+                    IF ( IFIRST . EQ . 0 )       WRITE (6,602)
+      WRITE (6,602) CTABL(ITABR),(CTABR(ITABC,ITABR),ITABC=1,NTABC)
+      IFIRST = 1
+ 2020 CONTINUE
+      IFIRST = 0
+      DO 2030  ITABR = 56 , 61
+                    IF ( ITABP(ITABR) . EQ . 0 ) GO TO 2030
+                    IF ( IFIRST . EQ . 0 )       WRITE (6,602)
+      WRITE (6,602) CTABL(ITABR),(CTABR(ITABC,ITABR),ITABC=1,NTABC)
+      IFIRST = 1
+ 2030 CONTINUE
+      IFIRST = 0
+      DO 2040  ITABR = 63 , 65
+                    IF ( ITABP(ITABR) . EQ . 0 ) GO TO 2040
+                    IF ( IFIRST . EQ . 0 )       WRITE (6,602)
+      WRITE (6,602) CTABL(ITABR),(CTABR(ITABC,ITABR),ITABC=1,NTABC)
+      IFIRST = 1
+ 2040 CONTINUE
+      NTABC = 0
+      DO 3010  ITABR = 1 , MTABR
+      ITABP(ITABR) = 0
+ 3010 CONTINUE
+      RETURN
+      END                                                               PRTSTA
+C
+C
+C
+      SUBROUTINE SIGSTA
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'CHARAC'
+      INCLUDE 'INTER'
+      INCLUDE 'PHASES'
+      INCLUDE 'TITLE'
+      INCLUDE 'TXDSIG'
+      INCLUDE 'USER'
+      DIMENSION         TOTGRN(NPC)
+      DOUBLE PRECISION  TOTGRN
+      INTEGER           I,IGROUP,IPHASE,IPHR,IST,J,JPC,K,L,N,NAITOT,
+     *                  NGRTOT,NN
+      DOUBLE PRECISION  AAIMID,AGRMID,ATGAPO,ATMAXO,ATTIMO,PAIMAX,
+     *                  PAIMID,PAIMIN,PERGRN,PGRMAX,PGRMID,PGRMIN,
+     *                  SUMGRN
+  601 FORMAT(1X,A,//)
+  602 FORMAT(' SUMMARY STATISTICS FOR ',A,' SIGNAL',/)
+  603 FORMAT(' A TOTAL OF',I3,' SIGNAL PHASES',/)
+  604 FORMAT(
+     *' DILEMMA ZONE BEGIN TIME (SECONDS) ----------------- =',F6.1,/,
+     *' DILEMMA ZONE END   TIME (SECONDS) ----------------- =',F6.1)
+  605 FORMAT(
+     *' HARDWARE IN THE LOOP SLEEP TIME (SECONDS) --------- =',I4)
+  606 FORMAT(
+     *' ENABLE SIMULTANEOUS GAP OUT FOR NEMA (YES/NO) ----- =',3X,A3)
+  607 FORMAT(//,
+     *' MAIN STREET PHASE NUMBER -------------------------- =   1'/
+     *' MAIN STREET MINIMUM GREEN INTERVAL (SECONDS) ------ =',F6.1/
+     *' MAIN STREET YELLOW CHANGE INTERVAL (SECONDS) ------ =',F6.1/
+     *' MAIN STREET RED CLEARANCE INTERVAL (SECONDS) ------ =',F6.1/
+     *' MAIN STREET NUMBER OF PHASES CLEARED TO ----------- =',I4/
+     *' MAIN STREET LIST OF PHASES CLEARED TO ------------- =',7I4)
+  608 FORMAT(
+     *' NUMBER OF MAIN STREET GREEN PHASES----------------- =',I4/
+     *' AVERAGE LENGTH OF MAIN STREET GREEN (SECONDS) ----- =',F6.1)
+  609 FORMAT(//,
+     *' SIGNAL PHASE NUMBER ------------------------------- =',I4/
+     *' INITIAL INTERVAL (SECONDS) ------------------------ =',F6.1/
+     *' VEHICLE INTERVAL (SECONDS) ------------------------ =',F6.1/
+     *' YELLOW CHANGE INTERVAL (SECONDS) ------------------ =',F6.1/
+     *' RED CLEARANCE INTERVAL (SECONDS) ------------------ =',F6.1/
+     *' MAXIMUM EXTENSION AFTER DEMAND ON RED (SECONDS) --- =',F6.1)
+  610 FORMAT(
+     *' SKIP PHASE SWITCH POSITION (ON/OFF) --------------- =',3X,A3,/,
+     *' RECALL SWITCH POSITION (ON/OFF) ------------------- =',3X,A3,/,
+     *' MINOR MOVEMENT CONTROLLER OPTION (YES/NO) --------- =',3X,A3,/,
+     *' DUAL LEFTS TO BE FOLLOWED BY 2 SINGLE LEFTS (YES/NO)=',3X,A3)
+  611 FORMAT(
+     *' EXCLUSIVE PEDESTRIAN PHASE NUMBER ----------------- =',I4,/,
+     *' WALK (SECONDS) ------------------------------------ =',F6.1,/,
+     *' PEDESTRIAN CLEARANCE (SECONDS) -------------------- =',F6.1,/,
+     *' ENABLE PEDESTRIAN RECALL (YES/NO) ----------------- =',3X,A3,/,
+     *' ENABLE PEDESTRIAN RECYCLE (YES/NO) ---------------- =',3X,A3)
+  612 FORMAT(//,
+     *' SIGNAL PHASE NUMBER ------------------------------- =',I4,/,
+     *' MIN GREEN (SECONDS) ------------------------------- =',F6.1,/,
+     *' PASSAGE TIME (SECONDS) ---------------------------- =',F6.1,/,
+     *' MAXIMUM 1 (SECONDS) ------------------------------- =',F6.1,/,
+     *' MAXIMUM 2 (SECONDS) ------------------------------- =',F6.1,/,
+     *' TIME TO SWITCH FROM MAXIMUM 1 TO MAXIMUM 2 (MINUTES)=',F6.1,/,
+     *' YELLOW CHANGE (SECONDS) --------------------------- =',F6.1,/,
+     *' RED CLEARANCE (SECONDS) --------------------------- =',F6.1,/,
+     *' RED REVERT (SECONDS) ------------------------------ =',F6.1,/,
+     *' WALK (SECONDS) ------------------------------------ =',F6.1,/,
+     *' PEDESTRIAN CLEARANCE (FLASHING DON'
+     *                                1H','T WALK) (SECS) - =',F6.1,/,
+     *' DUAL ENTRY PHASE NUMBER (0=SINGLE ENTRY PERMITTED)  =',I4,/,
+     *' PROVISION FOR STORING DEMAND (YES/NO) ------------- =',3X,A3,/,
+     *' ENABLE MAXIMUM RECALL (YES/NO) -------------------- =',3X,A3,/,
+     *' ENABLE MINIMUM RECALL (YES/NO) -------------------- =',3X,A3,/,
+     *' ENABLE PEDESTRIAN RECALL (YES/NO) ----------------- =',3X,A3,/,
+     *' ENABLE PEDESTRIAN RECYCLE (YES/NO) ---------------- =',3X,A3,/,
+     *' PLACE CALL ON MAXIMUM TIME OUT (YES/NO) ----------- =',3X,A3,/,
+     *' ENABLE CONDITIONAL SERVICE (YES/NO) --------------- =',3X,A3)
+  613 FORMAT(//,
+     *' SIGNAL PHASE NUMBER ------------------------------- =',I4)
+  614 FORMAT(
+     *' ENABLE VOLUME DENSITY OPERATION (YES/NO) ---------- =',3X,A3)
+  615 FORMAT(
+     *' VOLUME DENSITY ADDED INITIAL PER ACTUATION (SECONDS)=',F6.1,/,
+     *' VOLUME DENSITY MAXIMUM INITIAL (SECONDS) ---------- =',F6.1,/,
+     *' VOLUME DENSITY TIME TO REDUCE (SECONDS) ----------- =',F6.1,/,
+     *' VOLUME DENSITY TIME BEFORE REDUCTION (SECONDS) ---- =',F6.1,/,
+     *' VOLUME DENSITY MINIMUM GAP (SECONDS) -------------- =',F6.1)
+  616 FORMAT(
+     *' VOLUME DENSITY INITIAL AT MINIMUM VALUE (NUM % MIN) =',I4,F7.1,
+     *                                                         F7.3,/,
+     *' VOLUME DENSITY INITIAL BETWEEN MIN&MAX  (NUM % AVG) =',I4,F7.1,
+     *                                                         F7.3,/,
+     *' VOLUME DENSITY INITIAL AT MAXIMUM VALUE (NUM % MAX) =',I4,F7.1,
+     *                                                         F7.3,/,
+     *' VOLUME DENSITY GAP     AT MINIMUM VALUE (NUM % MIN) =',I4,F7.1,
+     *                                                         F7.3,/,
+     *' VOLUME DENSITY GAP     BETWEEN MIN&MAX  (NUM % AVG) =',I4,F7.1,
+     *                                                         F7.3,/,
+     *' VOLUME DENSITY GAP     AT MAXIMUM VALUE (NUM % MAX) =',I4,F7.1,
+     *                                                         F7.3)
+  617 FORMAT(
+     *' NUMBER OF PHASES CLEARED TO ----------------------- =',I4,/,
+     *' LIST OF PHASES CLEARED TO ------------------------- =',7I4)
+  618 FORMAT(
+     *' DETECTOR CONNECTION TYPE (AND/OR) ----------------- =',3X,A3)
+  619 FORMAT(
+     *' NUMBER OF DETECTORS CONNECTED TO PHASE ------------ =',I4)
+  620 FORMAT(
+     *' LIST OF CALL & EXTEND DETECTORS CONNECTED TO PHASE  =',7I4)
+  621 FORMAT(
+     *' LIST OF CALL & EXTEND DETECTORS CONNECTED TO PHASE  =',5I4,/,
+     *54X                                                     ,5I4)
+  622 FORMAT(
+     *' LIST OF CALL ONLY     DETECTORS CONNECTED TO PHASE  =',7I4)
+  623 FORMAT(
+     *' LIST OF CALL ONLY     DETECTORS CONNECTED TO PHASE  =',5I4,/,
+     *54X                                                     ,5I4)
+  624 FORMAT(
+     *' LIST OF EXTEND ONLY   DETECTORS CONNECTED TO PHASE  =',7I4)
+  625 FORMAT(
+     *' LIST OF EXTEND ONLY   DETECTORS CONNECTED TO PHASE  =',5I4,/,
+     *54X                                                     ,5I4)
+  626 FORMAT(
+     *' NUMBER OF PEDESTRIAN INTERVALS--------------------- =',I4)
+  627 FORMAT(
+     *' NUMBER OF MAX-OUTS -------------------------------- =',I4/
+     *' AVERAGE TIME INTO PHASE FOR MAX-OUT (SECONDS) ----- =',F6.1/
+     *' NUMBER OF GAP-OUTS -------------------------------- =',I4/
+     *' AVERAGE TIME INTO PHASE FOR GAP-OUT (SECONDS) ----- =',F6.1)
+  628 FORMAT(
+     *' NUMBER OF TIME-OUTS ------------------------------- =',I4/
+     *' AVERAGE TIME INTO PHASE FOR TIME-OUT (SECONDS) ---- =',F6.1)
+  629 FORMAT(
+     *' PERCENT OF GREEN TIME FOR PHASE ------------------- =',F6.1)
+C 630 FORMAT(1H )
+  631 FORMAT(
+     *' PERCENT OF GREEN TIME FOR PHASE IN RING ',I1,' --------- =',
+     *F6.1)
+  632 FORMAT(
+     *' PERCENT OF GREEN+PED. TIME FOR PHASE IN RING ',I1,' ---- =',
+     *F6.1)
+  633 FORMAT(1H )
+  634 FORMAT(
+     *' SIGNAL PHASE COMBINATION NUMBER ------------------- =',I4/
+     *' SIGNAL PHASE NUMBER IN RING 1 --------------------- =',I4/
+     *' SIGNAL PHASE NUMBER IN RING 2 --------------------- =',I4)
+  635 FORMAT(
+     *' PERCENT OF GREEN TIME FOR PHASE COMBINATION ------- =',F6.1)
+  701 FORMAT(I10,5F10.3,5(7X,A3),/,3(F10.3,I10))
+  702 FORMAT(3I10,3(F10.3,I10))
+C
+C-----SUBROUTINE SIGSTA PRINTS THE ACTUATED SIGNAL CONTROLLER STATISTICS
+C-----AND OPTIONALLY WRITES THE ACTUATED SIGNAL CONTROLLER STATISTICS
+C-----ONTO UNIT ICS
+C
+C[    DO  I = 1 , NPC
+C[    TOTGRN(I)  = -2147483647.0
+C[    END DO
+C[    I          = -2147483647
+C[    IGROUP     = -2147483647
+C[    IPHASE     = -2147483647
+C[    IPHR       = -2147483647
+C[    IRING      = -2147483647
+C[    IST        = -2147483647
+C[    J          = -2147483647
+C[    JPC        = -2147483647
+C[    K          = -2147483647
+C[    N          = -2147483647
+C[    NAITOT     = -2147483647
+C[    NGRTOT     = -2147483647
+C[    NN         = -2147483647
+C[    AAIMID     = -2147483647.0
+C[    AGRMID     = -2147483647.0
+C[    ATGAPO     = -2147483647.0
+C[    ATMAXO     = -2147483647.0
+C[    ATTIMO     = -2147483647.0
+C[    PAIMAX     = -2147483647.0
+C[    PAIMID     = -2147483647.0
+C[    PAIMIN     = -2147483647.0
+C[    PERGRN     = -2147483647.0
+C[    PGRMAX     = -2147483647.0
+C[    PGRMID     = -2147483647.0
+C[    PGRMIN     = -2147483647.0
+C[    SUMGRN     = -2147483647.0
+      CALL  PHEADR  ( 6 )
+      WRITE (6,601) STITLE
+      IF ( ICONTR .EQ. ICPSIG )  WRITE (6,602) 'PRETIMED'
+      IF ( ICONTR .EQ. ICSACT )  WRITE (6,602) 'SEMI-ACTUATED'
+      IF ( ICONTR .EQ. ICFACT )  WRITE (6,602) 'FULL-ACTUATED'
+      IF ( ICONTR .EQ. ICTDF3 )  WRITE (6,602) 'TEXAS DIAMOND FIGURE 3'
+      IF ( ICONTR .EQ. ICTDF4 )  WRITE (6,602) 'TEXAS DIAMOND FIGURE 4'
+      IF ( ICONTR .EQ. ICTDF6 )  WRITE (6,602) 'TEXAS DIAMOND FIGURE 6'
+      IF ( ICONTR .EQ. ICTDF7 )  WRITE (6,602) 'TEXAS DIAMOND FIGURE 7'
+      IF ( ICONTR .EQ. ICDDF3 )  WRITE (6,602) 'DALLAS DIAMOND FIGURE 3'
+      IF ( ICONTR .EQ. ICDDF4 )  WRITE (6,602) 'DALLAS DIAMOND FIGURE 4'
+      IF ( ICONTR .EQ. ICDDF6 )  WRITE (6,602) 'DALLAS DIAMOND FIGURE 6'
+      IF ( ICONTR .EQ. ICDDF7 )  WRITE (6,602) 'DALLAS DIAMOND FIGURE 7'
+      IF ( ICONTR .EQ. ICNEMA )  WRITE (6,602) 'NEMA'
+      IF ( ICONTR .EQ. ICNEMV )  WRITE (6,602) 'NEMA VOLUME DENSITY'
+      IF ( ICONTR .EQ. ICHDWR )  WRITE (6,602) 'HARDWARE IN THE LOOP'
+      WRITE (6,603) NPHASE
+      IF ( ICONTR . GE . ICPSIG )                THEN
+        WRITE (6,604)  DZBTIM,DZETIM
+        IF ( ICONTR .EQ. ICHDWR )                THEN
+          WRITE (6,605)  HITLST
+        END IF
+      END IF
+      IF ( ( ICONTR .GE. ICNEMA ) . AND . ( ICONTR .LE. ICNEMV ) )
+     *                                           THEN
+        IF ( ESIMGO )                            THEN
+          WRITE (6,606) IYES
+        ELSE
+          WRITE (6,606) INO//' '
+        END IF
+      END IF
+      IF ( ICONTR .EQ. ICPSIG )                  RETURN
+      IF ( ICONTR .EQ. ICHDWR )                  RETURN
+C-----FIND THE TOTAL GREEN TIME
+      IF ( ICONTR . LE . ICFACT )                THEN
+C-----  SEMI-ACT AND FULL-ACT
+        TOTGRN(1) = 0.0D0
+        DO 1010 K = 1 , NPHASE
+        I = LPHASE(K)
+        TOTGRN(1) = TOTGRN(1) + TMAXPH(I) + TGAPPH(I) + TTIMPH(I)
+ 1010   CONTINUE
+      END IF
+      IF ( ( ICONTR .GE. ICTDF3 ) . AND . ( ICONTR .LE. ICDDF7 ) )
+     *                                           THEN
+C-----  TEX-DIA OR DAL-DIA
+        DO 1030 IRING = 1 , NRING
+        TOTGRN(IRING) = 0.0D0
+        DO 1020 I = IFPR(IRING) , ILPR(IRING)
+        TOTGRN(IRING) = TOTGRN(IRING) + TMAXPH(PTX2DL(I))
+     *                                + TGAPPH(PTX2DL(I))
+     *                                + TTIMPH(PTX2DL(I))
+ 1020   CONTINUE
+ 1030   CONTINUE
+      END IF
+      IF ( ( ICONTR .GE. ICNEMA ) .AND. ( ICONTR .LE. ICNEMV ) )
+     *                                           THEN
+C-----  NEMA CONTROLLER
+        DO 1060 IRING = 1 , NRING
+        TOTGRN(IRING) = 0.0D0
+        DO 1050 IGROUP = 1 , NGROUP
+        DO 1040 IPHASE = 1 , NPHPS(IRING,IGROUP)
+        I = LPHPS(IRING,IGROUP,IPHASE)
+        TOTGRN(IRING) = TOTGRN(IRING) + TMAXPH(I)+TGAPPH(I)+TTIMPH(I)
+ 1040   CONTINUE
+ 1050   CONTINUE
+ 1060   CONTINUE
+      END IF
+C-----IF THE INTERSECTION IS FULL-ACT, TEX-DIA, DAL-DIA, OR HARDWARE
+C-----CONTROLLED THEN GO TO 2020 AND CONTINUE ELSE PRINT THE MAIN STREET
+C-----SEMI-ACTUATED SIGNAL CONTROLLER STATISTICS
+                    IF ( ICONTR . GE . ICFACT )  GO TO 2020
+C-----SET THE STARTING INDEX FOR /PHASES/ PRINT TO 2 (THE FIRST IS THE
+C-----MAIN STREET SEMI-ACTUATED SIGNAL CONTROLLER PHASE)
+      IST = 2
+      ATMAXO = 0.0D0
+                    IF ( NMAXPH(PTX2DL(1)).LE.0 )GO TO 2010
+C-----FIND THE AVERAGE TIME INTO THE SIGNAL PHASE TO MAX-OUT
+      ATMAXO = TMAXPH(PTX2DL(1))/NMAXPH(PTX2DL(1))
+ 2010 CONTINUE
+      NN = NPHNXT(PTX2DL(1))
+      WRITE (6,607) TII(PTX2DL(1)),TCI(PTX2DL(1)),TAR(PTX2DL(1)),NN,
+     *              (LPHNXT(J,PTX2DL(1)),J=1,NN)
+C[    IF ( ATMAXO             .EQ.-2147483647.0 )STOP 'SIGSTA ATMAXO 01'
+      WRITE (6,608) NMAXPH(PTX2DL(1)),ATMAXO
+C-----OPTIONALLY WRITE THE ACTUATED SIGNAL CONTROLLER STATISTICS ONTO
+C-----UNIT ICS
+                    IF ( IPUNCH . NE . IYES )    GO TO 2030
+      I = 1
+      ATGAPO = 0.0D0
+      ATTIMO = 0.0D0
+      WRITE (ICS,701) PTX2DL(1),TII(PTX2DL(1)),TVI(PTX2DL(1)),
+     *                TCI(PTX2DL(1)),TAR(PTX2DL(1)),TMX(PTX2DL(1)),
+     *                ISKP(PTX2DL(1)),IREC(PTX2DL(1)),IMINOR(PTX2DL(1)),
+     *                IDUALL(PTX2DL(1)),IANDOR(PTX2DL(1)),ATMAXO,
+     *                NMAXPH(PTX2DL(1)),ATGAPO,NGAPPH(PTX2DL(1)),ATTIMO,
+     *                NTIMPH(PTX2DL(1))
+      GO TO 2030
+ 2020 CONTINUE
+C-----SET THE STARTING INDEX FOR /PHASES/ PRINT TO 1 (START AT FIRST)
+      IST = 1
+ 2030 CONTINUE
+C-----PROCESS EACH ACTUATED SIGNAL CONTROLLER PHASE STARTING AT IST
+C[    IF ( IST                .EQ.-2147483647   )STOP 'SIGSTA IST    01'
+      DO 3110  K = IST , NPHASE
+      I = LPHASE(K)
+      ATMAXO = 0.0D0
+                    IF ( NMAXPH(PTX2DL(I)).EQ.0 )GO TO 3010
+C-----FIND THE AVERAGE TIME INTO THE SIGNAL PHASE TO MAX-OUT
+      ATMAXO = TMAXPH(PTX2DL(I))/NMAXPH(PTX2DL(I))
+ 3010 CONTINUE
+      ATGAPO = 0.0D0
+C[    IF ( I                  .EQ.-2147483647   )STOP 'SIGSTA I      01'
+                    IF ( NGAPPH(PTX2DL(I)).EQ.0 )GO TO 3020
+C-----FIND THE AVERAGE TIME INTO THE SIGNAL PHASE TO GAP-OUT
+      ATGAPO = TGAPPH(PTX2DL(I))/NGAPPH(PTX2DL(I))
+ 3020 CONTINUE
+      ATTIMO = 0.0D0
+C[    IF ( I                  .EQ.-2147483647   )STOP 'SIGSTA I      02'
+                    IF ( NTIMPH(PTX2DL(I)).EQ.0 )GO TO 3030
+C-----FIND THE AVERAGE TIME INTO THE SIGNAL PHASE TO TIM-OUT
+      ATTIMO = TTIMPH(PTX2DL(I))/NTIMPH(PTX2DL(I))
+ 3030 CONTINUE
+C[    IF ( I                  .EQ.-2147483647   )STOP 'SIGSTA I      03'
+      N = NLD(PTX2DL(I))
+      NN = NPHNXT(PTX2DL(I))
+      IF ( ICONTR . LE . ICDDF7 )                THEN
+        WRITE (6,609) PTX2DL(I),TII(PTX2DL(I)),TVI(PTX2DL(I)),
+     *                TCI(PTX2DL(I)),TAR(PTX2DL(I)),TMX(PTX2DL(I))
+      END IF
+      IF ( ICONTR . LE . ICFACT )                THEN
+        WRITE (6,610) ISKP(PTX2DL(I)),IREC(PTX2DL(I)),IMINOR(PTX2DL(I)),
+     *                IDUALL(PTX2DL(I))
+      END IF
+      L = PTX2DL(I)
+      IF ( ( ICONTR .GE. ICNEMA ) . AND . ( ICONTR .LE. ICNEMV ) )
+     *                                           THEN
+        IF (PDEXCL(L))                           THEN
+          WRITE (6,611) L,TWK   (L),TPC   (L),IPRCL (L),IPRCY (L)
+        ELSE
+          WRITE (6,612) L,TMI   (L),TVI   (L),TM1   (L),TM2   (L),
+     *                    IDNINT( T2S(L)/60.0D0 )
+     *                             ,TCI   (L),TAR   (L),TRR   (L),
+     *                    TWK   (L),TPC   (L),IDEPH (L),ISTO  (L),
+     *                    IMXR  (L),IMNR  (L),IPRCL (L),IPRCY (L),
+     *                    IMEM  (L),ICNDSV(L)
+        END IF
+      END IF
+      IF ( ICONTR . EQ . ICHDWR )                THEN
+        WRITE (6,613) L
+      END IF
+      IF ( ICONTR . EQ . ICNEMV )                THEN
+        IF ( VOLDEN(PTX2DL(I)) )                 THEN
+          WRITE (6,614) IYES
+          WRITE (6,615) TIIADD(L),TIIMAX(L),TVITTR(L),TVITBR(L),
+     *                  TVIMIN(L)
+          NAITOT = NAIMIN(PTX2DL(I))+NAIMID(PTX2DL(I))+NAIMAX(PTX2DL(I))
+          IF ( NAITOT . EQ . 0 )                 THEN
+            PAIMIN = 0.0D0
+            PAIMID = 0.0D0
+            PAIMAX = 0.0D0
+          ELSE
+            PAIMIN = (100.0D0*NAIMIN(PTX2DL(I)))/NAITOT
+            PAIMID = (100.0D0*NAIMID(PTX2DL(I)))/NAITOT
+            PAIMAX = (100.0D0*NAIMAX(PTX2DL(I)))/NAITOT
+          END IF
+          IF ( NAIMID(PTX2DL(I)) . EQ . 0 )      THEN
+            AAIMID = 0.0D0
+          ELSE
+            AAIMID = TAIMID(PTX2DL(I))/NAIMID(PTX2DL(I))
+          END IF
+          NGRTOT = NGRMIN(PTX2DL(I))+NGRMID(PTX2DL(I))+NGRMAX(PTX2DL(I))
+          IF ( NGRTOT . EQ . 0 )                 THEN
+            PGRMIN = 0.0D0
+            PGRMID = 0.0D0
+            PGRMAX = 0.0D0
+          ELSE
+            PGRMIN = (100.0D0*NGRMIN(PTX2DL(I)))/NGRTOT
+            PGRMID = (100.0D0*NGRMID(PTX2DL(I)))/NGRTOT
+            PGRMAX = (100.0D0*NGRMAX(PTX2DL(I)))/NGRTOT
+          END IF
+          IF ( NGRMID(PTX2DL(I)) . EQ . 0 )      THEN
+            AGRMID = 0.0D0
+          ELSE
+            AGRMID = TGRMID(PTX2DL(I))/NGRMID(PTX2DL(I))
+          END IF
+C[        IF ( AAIMID         .EQ.-2147483647.0 )STOP 'SIGSTA AAIMID 01'
+C[        IF ( AGRMID         .EQ.-2147483647.0 )STOP 'SIGSTA AGRMID 01'
+C[        IF ( PAIMAX         .EQ.-2147483647.0 )STOP 'SIGSTA PAIMAX 01'
+C[        IF ( PAIMID         .EQ.-2147483647.0 )STOP 'SIGSTA PAIMID 01'
+C[        IF ( PAIMIN         .EQ.-2147483647.0 )STOP 'SIGSTA PAIMIN 01'
+C[        IF ( PGRMAX         .EQ.-2147483647.0 )STOP 'SIGSTA PGRMAX 01'
+C[        IF ( PGRMID         .EQ.-2147483647.0 )STOP 'SIGSTA PGRMID 01'
+C[        IF ( PGRMIN         .EQ.-2147483647.0 )STOP 'SIGSTA PGRMIN 01'
+          WRITE (6,616) NAIMIN(PTX2DL(I)),PAIMIN,TMI   (PTX2DL(I)),
+     *                  NAIMID(PTX2DL(I)),PAIMID,AAIMID           ,
+     *                  NAIMAX(PTX2DL(I)),PAIMAX,TIIMAX(PTX2DL(I)),
+     *                  NGRMIN(PTX2DL(I)),PGRMIN,TVIMIN(PTX2DL(I)),
+     *                  NGRMID(PTX2DL(I)),PGRMID,AGRMID           ,
+     *                  NGRMAX(PTX2DL(I)),PGRMAX,TVI   (PTX2DL(I))
+        ELSE
+          WRITE (6,614) INO//' '
+        END IF
+      END IF
+      IF ( ICONTR . LE . ICFACT )                THEN
+        IF ( NN . GT . 0 )                       THEN
+          WRITE (6,617) NN,(LPHNXT(J,PTX2DL(I)),J=1,NN)
+        END IF
+        IF ( N . GT . 0 )                        THEN
+          WRITE (6,618) IANDOR(I)
+          WRITE (6,619) N
+          IF ( N . LE . 7 )                      THEN
+            WRITE (6,620) (LLD(J,I),J=1,N)
+          ELSE
+            WRITE (6,621) (LLD(J,I),J=1,N)
+          END IF
+        END IF
+      END IF
+      IF ( ICONTR . GE . ICNEMA )                THEN
+        IF ( NLD(I) . GT . 0 )                   THEN
+          WRITE (6,619) NLD(I)
+          IF ( NLDF(I) . GT . 0 )                THEN
+            IF ( NLDF(I) . LE . 7 )              THEN
+              WRITE (6,620) (LLD(J,I),J=1,NLDF(I))
+            ELSE
+              WRITE (6,621) (LLD(J,I),J=1,NLDF(I))
+            END IF
+          END IF
+          IF ( NLDC(I) . GT . 0 )                THEN
+            IF ( NLDC(I) . LE . 7 )              THEN
+              WRITE (6,622) (LLD(NLDF(I)+J,I),J=1,NLDC(I))
+            ELSE
+              WRITE (6,623) (LLD(NLDF(I)+J,I),J=1,NLDC(I))
+            END IF
+          END IF
+          IF ( NLDE(I) . GT . 0 )                THEN
+            IF ( NLDE(I) . LE . 7 )              THEN
+              WRITE (6,624) (LLD(NLDF(I)+NLDC(I)+J,I),J=1,NLDE(I))
+            ELSE
+              WRITE (6,625) (LLD(NLDF(I)+NLDC(I)+J,I),J=1,NLDE(I))
+            END IF
+          END IF
+        END IF
+      END IF
+C[    IF ( I                  .EQ.-2147483647   )STOP 'SIGSTA I      04'
+C[    IF ( ATGAPO             .EQ.-2147483647.0 )STOP 'SIGSTA ATGAPO 01'
+C[    IF ( ATMAXO             .EQ.-2147483647.0 )STOP 'SIGSTA ATMAXO 02'
+      IF      ( PDEXCL(I)            )           THEN
+        WRITE (6,626) NPDEXC(PTX2DL(I))
+      ELSE IF ( ICONTR . LT . ICHDWR )           THEN
+        WRITE (6,627) NMAXPH(PTX2DL(I)),ATMAXO,NGAPPH(PTX2DL(I)),ATGAPO
+      END IF
+C[    IF ( ATTIMO             .EQ.-2147483647.0 )STOP 'SIGSTA ATTIMO 01'
+      IF ( ( ICONTR .GE. ICTDF3 ) . AND . ( ICONTR .LE. ICDDF7 ) )
+     *                                           THEN
+        WRITE (6,628) NTIMPH(PTX2DL(I)),ATTIMO
+      END IF
+      IF ( ICONTR . LE . ICFACT )                THEN
+C-----  SEMI-ACT OR FULL-ACT
+C[      IF ( TOTGRN(1)        .EQ.-2147483647.0 )STOP 'SIGSTA TOTGRN 01'
+        IF ( TOTGRN(1) . EQ . 0.0D0 )            THEN
+          PERGRN = 0.0D0
+        ELSE
+          PERGRN = (100.0D0*(TMAXPH(I)+TGAPPH(I)+TTIMPH(I)))/TOTGRN(1)
+        END IF
+        WRITE (6,629) PERGRN
+C[      IF ( K                .EQ.-2147483647   )STOP 'SIGSTA K      01'
+        IF ( (((K/2)*2).EQ.K).AND.(K.NE.NPHASE) )THEN
+C         WRITE (6,630)
+          WRITE (6,FMT) CHAR( 12 )
+        END IF
+      END IF
+      IF ( ( ICONTR .GE. ICTDF3 ) . AND . ( ICONTR .LE. ICDDF7 ) )
+     *                                           THEN
+C-----  TEX-DIA OR DAL-DIA
+        DO 3050 IRING = 1 , NRING
+        DO 3040 IPHR = IFPR(IRING) , ILPR(IRING)
+                  IF ( I . EQ . IPHR )           GO TO 3060
+ 3040   CONTINUE
+ 3050   CONTINUE
+        IRING = 1
+ 3060   CONTINUE
+C[      IF ( IRING            .EQ.-2147483647   )STOP 'SIGSTA IRING  01'
+C[      IF ( TOTGRN(IRING)    .EQ.-2147483647.0 )STOP 'SIGSTA TOTGRN 02'
+        IF ( TOTGRN(IRING) . EQ . 0.0D0 )        THEN
+          PERGRN = 0.0D0
+        ELSE
+C[        IF ( I              .EQ.-2147483647   )STOP 'SIGSTA I      05'
+          PERGRN = (100.0D0*(TMAXPH(PTX2DL(I))+
+     *                       TGAPPH(PTX2DL(I))+
+     *                       TTIMPH(PTX2DL(I)) ))/TOTGRN(IRING)
+        END IF
+        WRITE (6,631) IRING,PERGRN
+C[      IF ( K                .EQ.-2147483647   )STOP 'SIGSTA K      02'
+        IF ( (((K/3)*3).EQ.K).AND.(K.NE.NPHASE) )THEN
+C         WRITE (6,630)
+          WRITE (6,FMT) CHAR( 12 )
+        END IF
+      END IF
+      IF ( ( ICONTR .GE. ICNEMA ) .AND. ( ICONTR .LE. ICNEMV ) )
+     *                                           THEN
+C-----  NEMA
+        DO 3090 IRING = 1 , NRING
+        DO 3080 IGROUP = 1 , NGROUP
+        DO 3070 IPHASE = 1 , NPHPS(IRING,IGROUP)
+        IPHR = LPHPS(IRING,IGROUP,IPHASE)
+                  IF ( I . EQ . IPHR )           GO TO 3100
+ 3070   CONTINUE
+ 3080   CONTINUE
+ 3090   CONTINUE
+        IRING = 1
+ 3100   CONTINUE
+C[      IF ( IRING            .EQ.-2147483647   )STOP 'SIGSTA IRING  02'
+C[      IF ( TOTGRN(IRING)    .EQ.-2147483647.0 )STOP 'SIGSTA TOTGRN 03'
+        IF ( TOTGRN(IRING) . EQ . 0.0D0 )        THEN
+          PERGRN = 0.0D0
+        ELSE
+C[        IF ( I              .EQ.-2147483647   )STOP 'SIGSTA I      06'
+          IF ( PDEXCL(I) )                       THEN
+            PERGRN = (100.0D0*(TMAXPH(I)+TGAPPH(I)+
+     *                         TTIMPH(I)+TPDEXC(I) )) /
+     *              (TOTGRN(IRING)+TPDEXC(I))
+          ELSE
+            PERGRN = (100.0D0*(TMAXPH(I)+TGAPPH(I)+TTIMPH(I))) /
+     *               TOTGRN(IRING)
+          END IF
+        END IF
+        IF ( PDEXCL(I) )                         THEN
+          WRITE (6,632) IRING,PERGRN
+        ELSE
+          WRITE (6,631) IRING,PERGRN
+        END IF
+C[      IF ( K                .EQ.-2147483647   )STOP 'SIGSTA K      03'
+        IF ( ICONTR . EQ . ICNEMA )              THEN
+          IF ((((K/2)*2).EQ.K).AND.(K.NE.NPHASE))THEN
+C           WRITE (6,630)
+            WRITE (6,FMT) CHAR( 12 )
+          END IF
+        ELSE
+          IF ( K . NE . NPHASE )                 THEN
+C           WRITE (6,630)
+            WRITE (6,FMT) CHAR( 12 )
+          END IF
+        END IF
+      END IF
+C-----OPTIONALLY WRITE THE ACTUATED SIGNAL CONTROLLER STATISTICS ONTO
+C-----UNIT ICS
+                    IF ( IPUNCH . NE . IYES )    GO TO 3110
+C[    IF ( I                  .EQ.-2147483647   )STOP 'SIGSTA I      07'
+C[    IF ( ATGAPO             .EQ.-2147483647.0 )STOP 'SIGSTA ATGAPO 02'
+C[    IF ( ATMAXO             .EQ.-2147483647.0 )STOP 'SIGSTA ATMAXO 03'
+C[    IF ( ATTIMO             .EQ.-2147483647.0 )STOP 'SIGSTA ATTIMO 02'
+      WRITE (ICS,701) PTX2DL(I),TII(PTX2DL(I)),TVI(PTX2DL(I)),
+     *                TCI(PTX2DL(I)),TAR(PTX2DL(I)),TMX(PTX2DL(I)),
+     *                ISKP(PTX2DL(I)),IREC(PTX2DL(I)),IMINOR(PTX2DL(I)),
+     *                IDUALL(PTX2DL(I)),IANDOR(PTX2DL(I)),ATMAXO,
+     *                NMAXPH(PTX2DL(I)),ATGAPO,NGAPPH(PTX2DL(I)),ATTIMO,
+     *                NTIMPH(PTX2DL(I))
+ 3110 CONTINUE
+                    IF ( ICONTR . LT . ICTDF3 )  RETURN
+                    IF ( ICONTR . GT . ICDDF7 )  RETURN
+C-----PROCESS SIGNAL PHASE COMBINATIONS FOR TEXAS DIAMOND FIGURE 3, 4,
+C-----6, AND 7
+      CALL  PHEADR  ( 6 )
+      WRITE (6,601) STITLE
+      SUMGRN = 0.0D0
+      DO 4010 JPC = 1 , NPC
+      TOTGRN(JPC) = TMAXPC(JPC) + TGAPPC(JPC) + TTIMPC(JPC)
+      SUMGRN = SUMGRN + TOTGRN(JPC)
+ 4010 CONTINUE
+C-----PROCESS EACH PHASE COMBINATION
+      DO 4050  JPC = 1 , NPC
+      ATMAXO = 0.0D0
+                    IF ( NMAXPC(JPC) . EQ . 0 )  GO TO 4020
+C-----FIND THE AVERAGE TIME INTO THE PHASE COMBINATION TO MAX-OUT
+      ATMAXO = TMAXPC(JPC)/NMAXPC(JPC)
+ 4020 CONTINUE
+      ATGAPO = 0.0D0
+C[    IF ( JPC                .EQ.-2147483647   )STOP 'SIGSTA JPC    01'
+                    IF ( NGAPPC(JPC) . EQ . 0 )  GO TO 4030
+C-----FIND THE AVERAGE TIME INTO THE PHASE COMBINATION TO GAP-OUT
+      ATGAPO = TGAPPC(JPC)/NGAPPC(JPC)
+ 4030 CONTINUE
+      ATTIMO = 0.0D0
+C[    IF ( JPC                .EQ.-2147483647   )STOP 'SIGSTA JPC    02'
+                    IF ( NTIMPC(JPC) . EQ . 0 )  GO TO 4040
+C-----FIND THE AVERAGE TIME INTO THE PHASE COMBINATION TO TIM-OUT
+      ATTIMO = TTIMPC(JPC)/NTIMPC(JPC)
+ 4040 CONTINUE
+C[    IF ( JPC                .EQ.-2147483647   )STOP 'SIGSTA JPC    03'
+      IF ( JPC . NE . 1 )                        WRITE (6,633)
+      WRITE (6,634) JPC,PTX2DL(IPH(JPC,1)),PTX2DL(IPH(JPC,2))
+C[    IF ( ATGAPO             .EQ.-2147483647.0 )STOP 'SIGSTA ATGAPO 03'
+C[    IF ( ATMAXO             .EQ.-2147483647.0 )STOP 'SIGSTA ATMAXO 04'
+      WRITE (6,627) NMAXPC(JPC),ATMAXO,NGAPPC(JPC),ATGAPO
+C[    IF ( ATTIMO             .EQ.-2147483647.0 )STOP 'SIGSTA ATTIMO 03'
+      WRITE (6,628) NTIMPC(JPC),ATTIMO
+C[    IF ( SUMGRN             .EQ.-2147483647.0 )STOP 'SIGSTA SUMGRN 01'
+      IF ( SUMGRN . EQ . 0.0D0 )                 THEN
+        PERGRN = 0.0D0
+      ELSE
+C[      IF ( TOTGRN(JPC)      .EQ.-2147483647.0 )STOP 'SIGSTA TOTGRN 04'
+        PERGRN = (100.0D0*TOTGRN(JPC))/SUMGRN
+      END IF
+      WRITE (6,635) PERGRN
+      IF ((((JPC/5)*5).EQ.JPC).AND.(JPC.NE.NPC)) THEN
+C       WRITE (6,630)
+        WRITE (6,FMT) CHAR( 12 )
+      END IF
+C-----OPTIONALLY WRITE THE SIGNAL PHASE COMBINATION STATISTICS ONTO
+C-----UNIT ICS
+                    IF ( IPUNCH . NE . IYES )    GO TO 4050
+      WRITE (ICS,702) JPC,PTX2DL(IPH(JPC,1)),PTX2DL(IPH(JPC,2)),ATMAXO,
+     *                NMAXPC(JPC),ATGAPO,NGAPPC(JPC),ATTIMO,NTIMPC(JPC)
+ 4050 CONTINUE
+      RETURN
+      END                                                               SIGSTA
+C
+C
+C
+      SUBROUTINE TIMSTA
+      IMPLICIT NONE                                                     CCODE=C.
+      INCLUDE 'PARAMS'
+      INCLUDE 'INTER'
+      INCLUDE 'SUMST2'
+      INCLUDE 'TITLE'
+      INCLUDE 'USER'
+      DOUBLE PRECISION  ANVSY
+C>    DOUBLE PRECISION  COSTIN,COSTSI,COSTSU,COSTSS,COSTTO,TMIN,TMRAT,
+C>   *                  TMRDT,TMRSI,TMRSU,TMSI,TMSS,TMSU,TMTO
+  601 FORMAT(1X,A,//)
+  602 FORMAT('      ',I5,' OF',I6,
+     *       ' SIMULATION TIME PERIODS WERE NOT COMPLETED ON TIME',//)
+  603 FORMAT('      START-UP TIME   =',F9.3,' SECONDS',
+     *       '      NUMBER OF VEHICLES PROCESSED =',I5//,
+     *       '      SIMULATION TIME =',F9.3,' SECONDS',
+     *       '      NUMBER OF VEHICLES PROCESSED =',I5//,
+     *       '      NUMBER OF VEHICLES IN THE SYSTEM AT SUMMARY =',I5/,
+     *       '      AVERAGE NUMBER OF VEHICLES IN THE SYSTEM -- =',F7.1,
+     *'  MAX =',I4)
+C>604 FORMAT(////,
+C>   *'      INITIAL TM TIME =',F9.3,' SECONDS',3X,'COST = $',F6.2//,
+C>   *'      START-UP TM TIME=',F9.3,' SECONDS',3X,'COST = $',F6.2/,
+C>   *'              REAL/TM =',F9.3,'        '//,
+C>   *'      SIMULATION TM TIME =',F9.3,' SECONDS',3X,'COST = $',F6.2/,
+C>   *'                 REAL/TM =',F9.3,'        '//,
+C>   *'    SUMMARY TM TIME =',F9.3,' SECONDS',3X,'COST = $',F6.2///,
+C>   *'    TOTAL   TM TIME =',F9.3,' SECONDS',3X,' COST = $',F6.2///)
+C>605 FORMAT('    VEHICLE-SECONDS OF SIMULATION PER TM TIME =',F9.3//,
+C>   *       '      VEHICLE UPDATES PER TM TIME =',F9.3)
+C
+C-----SUBROUTINE TIMSTA PRINTS THE COMPUTER TIME STATISTICS
+C
+C[    ANVSY      = -2147483647.0
+C-----FIND THE AVERAGE NUMBER OF VEHICLES IN THE SYSTEM DURING
+C-----SIMULATION TIME
+      ANVSY = NVSYA*DT/SIMTIM
+C-----FIND THE TM TIME FOR INITIAL
+C>    TMIN = TMTIME(2) - TMTIME(1)
+C-----FIND THE TM TIME FOR START-UP
+C>    TMSU = DMAX1( TMTIME(3)-TMTIME(2),0.00000001D0 )
+C>    TMRSU = STRTIM / TMSU
+C-----FIND THE TM TIME FOR SIMULATION
+C>    TMSI = TMTIME(4) - TMTIME(3)
+C>    TMRSI = SIMTIM / TMSI
+C-----GET THE TM TIME FOR THIS JOB AT THE END OF SUMMARY
+C>    CALL  EXTIME  ( 5 )
+C-----FIND THE TM TIME FOR SUMMARY
+C>    TMSS = TMTIME(5) - TMTIME(4)
+C-----FIND THE TM TIME FOR THE TOTAL JOB
+C>    TMTO = TMTIME(5) - TMTIME(1)
+C-----FIND THE SIMULATION REAL TIME TO COMPUTER TM TIME RATIO
+C>    TMRAT = STIME(1,1) / TMSI
+C>    TMRDT = TMRAT/DT
+C-----FIND THE COSTS (ONE CDC TM HOUR = 230 DOLLARS)
+C>    COSTIN = TMIN*230.00D0/3600.0D0
+C>    COSTSU = TMSU*230.00D0/3600.0D0
+C>    COSTSI = TMSI*230.00D0/3600.0D0
+C>    COSTSS = TMSS*230.00D0/3600.0D0
+C>    COSTTO = TMTO*230.00D0/3600.0D0
+C-----FIND THE COSTS (ONE IBM CPU MINUTE = 10 DOLLARS - REDUCED RATE)
+      CALL  PHEADR  ( 6 )
+      WRITE (6,601) STITLE
+      IF ( DTLAGS . GT . 0 )                     THEN
+        WRITE (6,602) DTLAGS,IDNINT( (STRTIM+SIMTIM)/DT )
+      END IF
+      WRITE (6,603) STRTIM,NUMPSU,SIMTIM,NUMPST,NVSY,ANVSY,MNVSY
+C>    WRITE (6,604) TMIN,COSTIN,TMSU,COSTSU,TMRSU,TMSI,COSTSI,TMRSI,
+C>   *              TMSS,COSTSS,TMTO,COSTTO
+C>    WRITE (6,605) TMRAT,TMRDT
+      RETURN
+      END                                                               TIMSTA

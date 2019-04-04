@@ -1,0 +1,20 @@
+3x2  4-leg intersection - 2inb/1out lanes N/S incl 1inb ltl and 1inb/1out lanes E/W
+3x3  4-leg intersection - 2inb/1out lanes N/S incl 1inb ltl and 2inb/1out lanes E/W incl 1inb ltl
+4t2  3-leg intersection - 1inb/1out lanes N and 2inb/2out lanes E/W
+4t3  3-leg intersection - 2inb/1out lanes N incl 1inb ltl and 2inb/2out lanes E/W
+4t4  3-leg intersection - 2inb/2out lanes N and 2inb/2out lanes E/W
+4x2  4-leg intersection - 2inb/2out lanes N/S and 1inb/1out lanes E/W
+4x3  4-leg intersection - 2inb/2out lanes N/S and 2inb/1out lanes E/W incl 1inb ltl
+4x4  4-leg intersection - 2inb/2out lanes N/S and 2inb/2out lanes E/W
+5x4  4-leg intersection - 3inb/2out lanes N/S incl 1inb ltl and 2inb/2out lanes E/W
+5x5  4-leg intersection - 3inb/2out lanes N/S incl 1inb ltl and 3inb/2out lanes E/W incl 1inb ltl
+6x4  4-leg intersection - 3inb/3out lanes N/S and 2inb/2out lanes E/W
+6x5  4-leg intersection - 3inb/3out lanes N/S and 3inb/2out lanes E/W incl 1inb ltl
+6x6  4-leg intersection - 3inb/3out lanes N/S and 3inb/3out lanes E/W
+7x4  4-leg intersection - 4inb/3out lanes N/S incl 1inb ltl and 2inb/2out lanes E/W
+7x5  4-leg intersection - 4inb/3out lanes N/S incl 1inb ltl and 3inb/2out lanes E/W incl 1inb ltl
+7x6  4-leg intersection - 4inb/3out lanes N/S incl 1inb ltl and 3inb/3out lanes E/W
+7x7  4-leg intersection - 4inb/3out lanes N/S incl 1inb ltl and 4inb/3out lanes E/W incl 1inb ltl
+ex1  6-leg diamond - 3inb/3out lanes N/S frontage, 3inb/2out lanes E/W, and 3inbCR/3inbCL internal lanes incl 1inb ltl
+ex2  4-leg intersection - 2inb/1out lanes N/S incl 1inb ltl and 1inb/1out lanes E/W
+ex3  5-leg diamond - 2inb/3out lanes N/S frontage incl 1out rtl, 2inb/2out lanes W incl 1inb rtl, and 3inbCR/3inbCL internal lanes incl 1inb ltl

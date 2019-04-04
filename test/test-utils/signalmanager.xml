@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<etexas:SignalManger xmlns:etexas="http://www.harmonia.com/product/etexas/">
+    <etexas:signals>
+        <etexas:listEntry>
+            <etexas:key>100</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>100</etexas:laneId>
+                <etexas:colorIndication>YELLOW</etexas:colorIndication>
+                <etexas:typeIndication>BALL</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>101</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>101</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>BALL</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>102</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>102</etexas:laneId>
+                <etexas:colorIndication>GREEN</etexas:colorIndication>
+                <etexas:typeIndication>BALL</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>103</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>103</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>BALL</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>140</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>140</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>BALL</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>141</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>141</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>BALL</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>110</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>110</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>LEFT_ARROW</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>142</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>142</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>LEFT_ARROW</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>111</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>111</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>LEFT_ARROW</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>143</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>143</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>LEFT_ARROW</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>112</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>112</etexas:laneId>
+                <etexas:colorIndication>GREEN</etexas:colorIndication>
+                <etexas:typeIndication>BALL</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>113</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>113</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>LEFT_ARROW</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>120</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>120</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>LEFT_ARROW</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>121</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>121</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>LEFT_ARROW</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>122</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>122</etexas:laneId>
+                <etexas:colorIndication>RED</etexas:colorIndication>
+                <etexas:typeIndication>LEFT_ARROW</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+        <etexas:listEntry>
+            <etexas:key>123</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:signalIndication">
+                <etexas:laneId>123</etexas:laneId>
+                <etexas:colorIndication>GREEN</etexas:colorIndication>
+                <etexas:typeIndication>BALL</etexas:typeIndication>
+                <etexas:stateIndication>STEADY</etexas:stateIndication>
+                <etexas:timeToChange>0.0</etexas:timeToChange>
+            </etexas:value>
+        </etexas:listEntry>
+    </etexas:signals>
+</etexas:SignalManger>

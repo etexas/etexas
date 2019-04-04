@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://www.DSRC-Adopted-02-00-36/NTCIP"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+    <xs:simpleType name="EssPrecipYesNo">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="precip" />
+            <xs:enumeration value="noPrecip" />
+            <xs:enumeration value="error" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="EssPrecipSituation">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="other" />
+            <xs:enumeration value="unknown" />
+            <xs:enumeration value="noPrecipitation" />
+            <xs:enumeration value="unidentifiedSlight" />
+            <xs:enumeration value="unidentifiedModerate" />
+            <xs:enumeration value="unidentifiedHeavy" />
+            <xs:enumeration value="snowSlight" />
+            <xs:enumeration value="snowModerate" />
+            <xs:enumeration value="snowHeavy" />
+            <xs:enumeration value="rainSlight" />
+            <xs:enumeration value="rainModerate" />
+            <xs:enumeration value="rainHeavy" />
+            <xs:enumeration value="frozenPrecipitationSlight" />
+            <xs:enumeration value="frozenPrecipitationModerate" />
+            <xs:enumeration value="frozenPrecipitationHeavy" />
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
+

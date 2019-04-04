@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://www.obj-sys.com/v1.0/XMLSchema"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+    <xs:import schemaLocation="new5.xsd" />
+
+    <xs:complexType name="REAL" mixed="true">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="MINUS-INFINITY">
+                    <xs:complexType>
+                        <xs:sequence />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="PLUS-INFINITY">
+                    <xs:complexType>
+                        <xs:sequence />
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RealAssociatedType">
+        <xs:sequence>
+            <xs:element name="mantissa" type="xs:integer" />
+            <xs:element name="base" type="xs:integer" />
+            <xs:element name="exponent" type="xs:integer" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BOOLEAN">
+        <xs:sequence>
+            <xs:element name="true" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="false" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="NamedBitInfo">
+        <xs:sequence>
+            <xs:element name="NamedBit" minOccurs="0"
+                maxOccurs="unbounded"
+            >
+                <xs:complexType>
+                    <xs:sequence />
+                    <xs:attribute name="name" type="xs:string" />
+                    <xs:attribute name="value" type="xs:integer" />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="EnumInfo">
+        <xs:sequence>
+            <xs:element name="EnumItem" minOccurs="0"
+                maxOccurs="unbounded"
+            >
+                <xs:complexType>
+                    <xs:sequence />
+                    <xs:attribute name="name" type="xs:string" />
+                    <xs:attribute name="value" type="xs:integer" />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="OpenType">
+        <xs:sequence>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="NULL">
+        <xs:sequence />
+    </xs:complexType>
+
+    <xs:complexType name="EmbeddedPDV">
+        <xs:sequence>
+            <xs:element name="identification">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="syntaxes"
+                            minOccurs="0"
+                        >
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="abstract"
+                                        type="xs:string" />
+                                    <xs:element name="transfer"
+                                        type="xs:string" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="syntax" type="xs:string"
+                            minOccurs="0" />
+                        <xs:element name="presentation-context-id"
+                            type="xs:integer" minOccurs="0" />
+                        <xs:element name="context-negotiation"
+                            minOccurs="0"
+                        >
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element
+                                        name="presentation-context-id"
+                                        type="xs:integer" />
+                                    <xs:element name="transfer-syntax"
+                                        type="xs:string" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="transfer-syntax"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="fixed" type="ns1:NULL"
+                            minOccurs="0"
+                            xmlns:ns1="http://www.obj-sys.com/v1.0/XMLSchema" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="data-value" type="xs:hexBinary" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="EXTERNAL">
+        <xs:sequence>
+            <xs:element name="direct-reference" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="indirect-reference" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="data-value-descriptor" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="encoding">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="single-ASN1-type"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="octet-aligned"
+                            type="xs:hexBinary" minOccurs="0" />
+                        <xs:element name="arbitrary" type="xs:string"
+                            minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
+

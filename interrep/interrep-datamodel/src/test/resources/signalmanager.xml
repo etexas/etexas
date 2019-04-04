@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SignalManger xmlns="http://www.harmonia.com/product/etexas/">
+    <signals>
+        <listEntry>
+            <key>102</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>102</laneId>
+                <colorIndication>GREEN</colorIndication>
+                <typeIndication>BALL</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>110</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>110</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>LEFT_ARROW</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>100</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>100</laneId>
+                <colorIndication>YELLOW</colorIndication>
+                <typeIndication>BALL</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>141</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>141</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>BALL</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>112</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>112</laneId>
+                <colorIndication>GREEN</colorIndication>
+                <typeIndication>BALL</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>140</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>140</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>BALL</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>120</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>120</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>LEFT_ARROW</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>113</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>113</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>LEFT_ARROW</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>121</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>121</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>LEFT_ARROW</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>123</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>123</laneId>
+                <colorIndication>GREEN</colorIndication>
+                <typeIndication>BALL</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>111</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>111</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>LEFT_ARROW</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>142</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>142</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>LEFT_ARROW</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>101</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>101</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>BALL</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>143</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>143</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>LEFT_ARROW</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>103</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>103</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>BALL</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+        <listEntry>
+            <key>122</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="signalIndication"
+            >
+                <laneId>122</laneId>
+                <colorIndication>RED</colorIndication>
+                <typeIndication>LEFT_ARROW</typeIndication>
+                <stateIndication>STEADY</stateIndication>
+                <timeToChange>0.0</timeToChange>
+            </value>
+        </listEntry>
+    </signals>
+</SignalManger>

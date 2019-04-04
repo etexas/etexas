@@ -1,0 +1,113 @@
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** *  COPYRIGHT (C) 1989 by The University of Texas at Austin   * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of The University of Texas at Austin shall not be used in  * ***
+C *** * advertising or publicity related to the distribution of    * ***
+C *** * the software without specific, written, prior permission.  * ***
+C *** * This software is provided as-delivered without expressed   * ***
+C *** * or implied warranty.  The University of Texas at Austin    * ***
+C *** * makes no representation about the suitability of this      * ***
+C *** * software for any purpose and accepts no responsibility for * ***
+C *** * its use.                                                   * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+      COMMON / PHASEC / IANDOR(NPN),ICNDSV(NPN),IDUALL(NPN),IMINOR(NPN),
+     *                  IPRCL (NPN),IPRCY (NPN),IREC  (NPN),ISKP  (NPN),
+     *                  PEDDIS(NPN)
+      CHARACTER*3       IANDOR     ,ICNDSV     ,IDUALL     ,IMINOR     ,
+     *                  IPRCL      ,IPRCY      ,IREC       ,ISKP
+      CHARACTER*7       PEDDIS
+      COMMON / PHASEL / ANYPED,ESIMGO,IDOR(NRG,NGR),MAGSAT,NEWPDA,
+     *                  NEWPSI,NEWTDA,NEWTSI   ,PDCALL(NPN),PDEXCL(NPN),
+     *                  PDTRIP(NPN),PEDS  (NPN),VOLDEN(NPN)
+      LOGICAL           ANYPED,ESIMGO,IDOR         ,MAGSAT,NEWPDA,
+     *                  NEWPSI,NEWTDA,NEWTSI   ,PDCALL     ,PDEXCL     ,
+     *                  PDTRIP     ,PEDS       ,VOLDEN
+      COMMON / PHASED / DZBTIM     ,DZETIM     ,EOM   (NRG),PEDPAR(NPN),
+     *                  PEDTIM(NPN),PEDTMN(NPN),T2S   (NPN),TAIMID(NPN),
+     *                  TAR   (NPN),TCI   (NPN),TGAPPC(NPC),TGAPPH(NPN),
+     *                  TGRMID(NPN),TII   (NPN),TIIADD(NPN),TIIMAX(NPN),
+     *                  TIIVEH(NPN),TMAXPC(NPC),TMAXPH(NPN),TMI   (NPN),
+     *                  TMX   (NPN),TM1   (NPN),TM2   (NPN),TPC   (NPN),
+     *                  TPDEXC(NPN),TRR   (NPN),TTIMPC(NPC),TTIMPH(NPN),
+     *                  TVI   (NPN),TVIBEG(NPN),TVIMIN(NPN),TVISLP(NPN),
+     *                  TVITBR(NPN),TVITTR(NPN),TWK   (NPN)
+      DOUBLE PRECISION  DZBTIM     ,DZETIM     ,EOM        ,PEDPAR     ,
+     *                  PEDTIM     ,PEDTMN     ,T2S        ,TAIMID     ,
+     *                  TAR        ,TCI        ,TGAPPC     ,TGAPPH     ,
+     *                  TGRMID     ,TII        ,TIIADD     ,TIIMAX     ,
+     *                  TIIVEH     ,TMAXPC     ,TMAXPH     ,TMI        ,
+     *                  TMX        ,TM1        ,TM2        ,TPC        ,
+     *                  TPDEXC     ,TRR        ,TTIMPC     ,TTIMPH     ,
+     *                  TVI        ,TVIBEG     ,TVIMIN     ,TVISLP     ,
+     *                  TVITBR     ,TVITTR     ,TWK
+      COMMON / PHASEI / HITLST           ,ICAMPS(NPN)      ,
+     *                  IPH   (NPC,NRG)  ,LLD   (NPL,NPN)  ,
+     *                  LPHASE(NPN)      ,LPHNXT(NPN-1,NPN),
+     *                  NAIMAX(NPN)      ,NAIMID(NPN)      ,
+     *                  NAIMIN(NPN)      ,NEXTPH           ,
+     *                  NGAPPC(NPC)      ,NGAPPH(NPN)      ,
+     *                  NGRMAX(NPN)      ,NGRMID(NPN)      ,
+     *                  NGRMIN(NPN)      ,NGROUP           ,
+     *                  NLD   (NPN)      ,NLDC  (NPN)      ,
+     *                  NLDE  (NPN)      ,NLDF  (NPN)      ,
+     *                  NMAXPC(NPC)      ,NMAXPH(NPN)      ,
+     *                  NPDEXC(NPN)      ,NPHASE           ,
+     *                  NPHNXT(NPN)      ,NPHPR (NRG)      ,
+     *                  NRING            ,NTIMPC(NPC)      ,
+     *                  NTIMPH(NPN)      ,PDL2TX(NPN)      ,
+     *                  PDSTAT(NPN)      ,PEDINT(NPN)      ,
+     *                  PEDVOL(NPN)      ,PTX2DL(NPN)      ,
+     *                  LPHRC((NPN-1),NPN)                 ,
+     *                  NPEDS            ,NPHRC(NPN)       ,
+     *                  PHGRP(NPN),           PHRNG(NPN)
+      INTEGER           HITLST           ,ICAMPS           ,
+     *                  IPH              ,LLD              ,
+     *                  LPHASE           ,LPHNXT           ,
+     *                  NAIMAX           ,NAIMID           ,
+     *                  NAIMIN           ,NEXTPH           ,
+     *                  NGAPPC           ,NGAPPH           ,
+     *                  NGRMAX           ,NGRMID           ,
+     *                  NGRMIN           ,NGROUP           ,
+     *                  NLD              ,NLDC             ,
+     *                  NLDE             ,NLDF             ,
+     *                  NMAXPC           ,NMAXPH           ,
+     *                  NPDEXC           ,NPHASE           ,
+     *                  NPHNXT           ,NPHPR            ,
+     *                  NRING            ,NTIMPC           ,
+     *                  NTIMPH           ,PDL2TX           ,
+     *                  PDSTAT           ,PEDINT           ,
+     *                  PEDVOL           ,PTX2DL           ,
+     *                  LPHRC                              ,
+     *                  NPEDS,           NPHRC             ,
+     *                  PHGRP,           PHRNG

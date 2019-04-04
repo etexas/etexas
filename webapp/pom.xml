@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>etexas</artifactId>
+        <groupId>org.etexascode</groupId>
+        <version>3.5</version>
+    </parent>
+    <groupId>org.etexascode.webapp</groupId>
+    <artifactId>webapp</artifactId>
+    <packaging>pom</packaging>
+    <name>Web App Components</name>
+    <properties>
+        <maven.etexas.buildnum>SNAPSHOT</maven.etexas.buildnum>
+        <maven.etexas.url>localhost</maven.etexas.url>
+        <maven.etexas.port>8080</maven.etexas.port>
+    </properties>
+    <profiles>
+        <profile>
+            <!--This is the default profile that builds everything. -->
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>etexas-adapter</module>
+                <module>etexas-ra-api</module>
+                <module>etexas-war</module>
+                <module>playback-adapter</module>
+                <module>generic-adapter</module>
+                <module>generic-ra</module>
+                <module>webapp-datamodel</module>
+            </modules>
+        </profile>
+        <profile>
+            <!--This is the default profile that builds everything. -->
+            <id>build-webstart</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>webstart</module>
+                <module>webstart-gdvsim</module>
+                <module>webstart-test</module>
+                <module>webstart-war</module>
+            </modules>
+        </profile>
+        <profile>
+            <!--This is the default profile that builds everything. -->
+            <id>reconfigure-webapp</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>etexas-war</module>
+                <module>webstart-war</module>
+            </modules>
+        </profile>
+    </profiles>
+</project>

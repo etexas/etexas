@@ -1,0 +1,3 @@
+signal
+lane_id:20
+signal_state:Red-notatype

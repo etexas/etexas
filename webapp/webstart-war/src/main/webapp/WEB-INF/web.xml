@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app
+    version="3.0"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <description>A Web Application which allows users execute microscopic simulations of traffic at an intersection.</description>
+    <display-name>eTEXAS Web Start App</display-name>
+    <!--The hostname and port should match what an outside user would need to access the server -->
+    <!--For your own machine: localhost, 8080 -->
+    <context-param>
+        <param-name>VisibleHostName</param-name>
+        <param-value>${maven.etexas.url}</param-value>
+    </context-param>
+    <context-param>
+        <param-name>VisibleHostPort</param-name>
+        <param-value>${maven.etexas.port}</param-value>
+    </context-param>
+    <!--For the public site: etexas.harmonia.com, 80 -->
+    <!-- <context-param>
+        <param-name>VisibleHostName</param-name>
+        <param-value>etexas.harmonia.com</param-value>
+        </context-param>
+        <context-param>
+        <param-name>VisibleHostPort</param-name>
+        <param-value>80</param-value>
+        </context-param> -->
+    <servlet>
+        <servlet-name>GDVSIM JNLP Servlet</servlet-name>
+        <servlet-class>org.etexascode.webapp.jnlp.GDVSIMJNLPServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GDVSIM JNLP Servlet</servlet-name>
+        <url-pattern>/JNLP/gdvsim-servlet/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>Test JNLP Servlet</servlet-name>
+        <servlet-class>org.etexascode.webapp.jnlp.TestJNLPServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Test JNLP Servlet</servlet-name>
+        <url-pattern>/JNLP/test-jnlp-servlet/*</url-pattern>
+    </servlet-mapping>
+    <mime-mapping>
+        <extension>jnlp</extension>
+        <mime-type>application/x-java-jnlp-file</mime-type>
+    </mime-mapping>
+</web-app>

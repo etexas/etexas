@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<!-- console appender, log to STDOUT. 
+     console -simple log
+     consoleTrace - (slow) logs time, thread, level (priority),    -->
+ <appender name="console" class="org.apache.log4j.ConsoleAppender">
+     <layout class="org.apache.log4j.PatternLayout">
+     <param name="ConversionPattern" value=" %d{dd MMM yyyy HH:mm:ss}[%t]%-5p%c-%m%n"/>
+    </layout>
+  </appender>
+  <appender name="consoleTrace" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss}[%t]%-5p(%C:%M:%L)-%m%n"/>
+		</layout>
+  </appender>
+  <appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
+    <param name="file" value="etexasLog4j.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+    <param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss}[%t]%-5p%c-%m%n"/>
+    </layout>
+  </appender>
+   <appender name="fileAppenderTrace" class="org.apache.log4j.RollingFileAppender">
+    <param name="file" value="etexasLog4j.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+    <param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss}[%t]%-5p(%C:%M:%L)-%m%n"/>
+    </layout>
+  </appender>
+  
+  <logger name="org.etexascode.interrep"
+  additivity="false">
+  <level value="debug"/>
+  <appender-ref ref="consoleTrace"/>
+  </logger>
+ 
+<root>
+<level value="info"/>
+<appender-ref ref="console"></appender-ref>
+    <appender-ref ref="fileAppender"></appender-ref>
+  </root>
+ </log4j:configuration>
+ 
+ <!-- Config for email from clients, will use later 
+  <appender name="smtp" class="org.apache.log4j.net.SMTPAppender">
+   <param name="SMTPHost" value="mail.mydomain.com" />
+    <param name="SMTPUsername" value="myuser@mydomain.com" />
+    <param name="SMTPPassword" value="password" />
+    <param name="From" value="myuser@mydomain.com" />
+    <param name="To" value="myuser@mydomain.com" />
+    <param name="Subject" value="Log of messages" />
+    <param name="BufferSize" value="1" />
+    <param name="EvaluatorClass" value="TriggerLogEvent" />
+     <layout class="org.apache.log4j.PatternLayout">
+     <param name="ConversionPattern" value=" %d[%t]%-5p%c-%m%n"/>
+    </layout>
+  </appender>
+  <logger name="com.harmonia.custom.mailer">
+    <level value="debug" />
+    <appender-ref ref="smtp"/>
+</logger> 
+   -->
+ 

@@ -1,0 +1,888 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <NonVisualComponents>
+    <Container class="javax.swing.JDialog" name="optionDialog">
+      <Properties>
+        <Property name="defaultCloseOperation" type="int" value="2"/>
+        <Property name="title" type="java.lang.String" value="Simulation Configuration"/>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[350, 390]"/>
+        </Property>
+        <Property name="modal" type="boolean" value="true"/>
+        <Property name="resizable" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="windowClosed" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="optionDialogWindowClosed"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="Dimension scrn = getToolkit().getScreenSize();&#xa;optionDialog.setLocation(((scrn.width / 2) - (optionDialog.getWidth()/2)),&#xa;         ((scrn.height / 2) - (optionDialog.getHeight()/2)));"/>
+      </AuxValues>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="optionTabbedPane" pref="326" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="optionTabbedPane" min="-2" pref="334" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JTabbedPane" name="optionTabbedPane">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="Choose Method"/>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[280, 320]"/>
+            </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[280, 320]"/>
+            </Property>
+          </Properties>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="dcsOptionPanel">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="D-CS Algorithm"/>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[239, 123]"/>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="D-CS Algorithm">
+                    <Property name="tabTitle" type="java.lang.String" value="D-CS Algorithm"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace pref="84" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="dsrcDCSLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="dsrcDCSSpinner" min="-2" max="-2" attributes="1"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="distanceOptionLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+                                          <Component id="distanceOptionSpinner" min="-2" max="-2" attributes="1"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="102" alignment="1" attributes="0">
+                                                  <Component id="stageOneOptionLabel" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                              </Group>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="stageTwoOptionLabel" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                              </Group>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="legCheckBoxLabel" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                              <Component id="stageTwoOptionSpinner" alignment="0" max="32767" attributes="1"/>
+                                              <Component id="stageOneOptionSpinner" alignment="0" max="32767" attributes="1"/>
+                                          </Group>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="leg1CheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="leg2CheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="leg3CheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="leg4CheckBox" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="startDCSSimButton" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="enableCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="hostLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="portLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="portTextField" alignment="0" pref="199" max="32767" attributes="0"/>
+                                              <Component id="hostTextField" alignment="0" pref="199" max="32767" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="dsrcDCSSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="dsrcDCSLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="stageOneOptionSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="stageOneOptionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="stageTwoOptionSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="stageTwoOptionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="distanceOptionSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="distanceOptionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="enableCheckBox" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="hostLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="hostTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="portTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="portLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace pref="16" max="32767" attributes="0"/>
+                          <Component id="legCheckBoxLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="leg4CheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="leg3CheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="leg2CheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="leg1CheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="startDCSSimButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JSpinner" name="stageOneOptionSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="10.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Stage 1 Timeout (in secionds)"/>
+                    <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="stageTwoOptionLabel"/>
+                    </Property>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                  </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="Stage 1 Timeout (in seconds)"/>
+                  </AccessibilityProperties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="stageTwoOptionSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="5.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Stage 2 Timeout (in seconds)"/>
+                    <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="leg1CheckBox"/>
+                    </Property>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="distanceOptionSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="1000" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Detector Distance (in feet)"/>
+                    <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="stageOneOptionSpinner"/>
+                    </Property>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="startDCSSimButton">
+                  <Properties>
+                    <Property name="mnemonic" type="int" value="115"/>
+                    <Property name="text" type="java.lang.String" value="Start Simulation"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Start Simulation"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startDCSSimButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="distanceOptionLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Detector Distance (in feet):"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="stageOneOptionLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Stage 1 Timeout (in seconds):"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="stageTwoOptionLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Stage 2 Timeout (in seconds):"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="leg1CheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Leg 1"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Leg 1"/>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="leg2CheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Leg 2"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Leg 2"/>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="leg3CheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Leg 3"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Leg 3"/>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="leg4CheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Leg 4"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Leg 4"/>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="dsrcDCSSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="100" maximum="100" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Percentage of DSRC vehicles"/>
+                    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="dsrcDCSLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Percentage of DSRC vehicles:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="legCheckBoxLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Apply D-CS to:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="hostTextField">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="http://localhost"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="portTextField">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="8888"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="portLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Port:"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="enableCheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Enable Web Broadcast"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enableCheckBoxActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="hostLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Host:"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="intellidriveOptionPanel">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="D-CS Intellidrive"/>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[239, 123]"/>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="D-CS Intellidrive">
+                    <Property name="tabTitle" type="java.lang.String" value="D-CS Intellidrive"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace pref="84" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="intellidriveLeg1CheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="intellidriveLeg2CheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="intellidriveLeg3CheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="intellidriveLeg4CheckBox" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="intellidriveStartDCSSimButton" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                                                  <Group type="102" alignment="1" attributes="0">
+                                                      <Component id="intellidriveStageOneOptionLabel" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Component id="intellidriveStageTwoOptionLabel" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Component id="legIntellidriveLabel" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                  </Group>
+                                              </Group>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="dsrcIntellidriveLabel" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                              <Component id="dsrcIntellidriveSpinner" alignment="0" max="32767" attributes="1"/>
+                                              <Component id="intellidriveStageTwoOptionSpinner" alignment="0" max="32767" attributes="1"/>
+                                              <Component id="intellidriveStageOneOptionSpinner" alignment="0" max="32767" attributes="1"/>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <EmptySpace min="-2" pref="86" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="enableCheckBox1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="hostLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="portLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="portTextField1" alignment="0" pref="199" max="32767" attributes="0"/>
+                                              <Component id="hostTextField1" alignment="0" pref="199" max="32767" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="dsrcIntellidriveSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="dsrcIntellidriveLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="intellidriveStageOneOptionSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="intellidriveStageOneOptionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="intellidriveStageTwoOptionSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="intellidriveStageTwoOptionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="enableCheckBox1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="hostLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="hostTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="portTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="portLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace pref="42" max="32767" attributes="0"/>
+                          <Component id="legIntellidriveLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="intellidriveLeg4CheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="intellidriveLeg3CheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="intellidriveLeg2CheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="intellidriveLeg1CheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="intellidriveStartDCSSimButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JSpinner" name="intellidriveStageOneOptionSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="10.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Stage 1 Timeout (in seconds)"/>
+                    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 60]"/>
+                    </Property>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="intellidriveStageTwoOptionSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="5.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Stage 2 Timeout (in seconds)"/>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="intellidriveStartDCSSimButton">
+                  <Properties>
+                    <Property name="mnemonic" type="int" value="115"/>
+                    <Property name="text" type="java.lang.String" value="Start Simulation"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Start Simulation"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="intellidriveStartDCSSimButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="intellidriveStageOneOptionLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Stage 1 Timeout (in seconds):"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="intellidriveStageTwoOptionLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Stage 2 Timeout (in seconds):"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="intellidriveLeg1CheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Leg 1"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Leg 1"/>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="intellidriveLeg2CheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Leg 2"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Leg 2"/>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="intellidriveLeg3CheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Leg 3"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Leg 3"/>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="intellidriveLeg4CheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Leg 4"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Leg 4"/>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="dsrcIntellidriveSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="100" maximum="100" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Percentage of DSRC vehicles"/>
+                    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[80, 20]"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="dsrcIntellidriveLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Percentage of DSRC vehicles:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="legIntellidriveLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Apply D-CS to:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="hostTextField1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="http://localhost"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="portTextField1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="8888"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="portLabel1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Port:"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="enableCheckBox1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Enable Web Broadcast"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enableCheckBox1ActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="hostLabel1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Host:"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="title" type="java.lang.String" value="D-CS Simulator - eTEXAS V7.0"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+  </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowClosed" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosed"/>
+    <EventHandler event="windowOpened" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowOpened"/>
+  </Events>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane1" alignment="1" pref="1004" max="32767" attributes="0"/>
+                  <Component id="progressBar" alignment="0" pref="1004" max="32767" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="holdSignalSpinner" min="-2" pref="56" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="holdSignalButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="changeSignalButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="586" max="32767" attributes="0"/>
+                      <Component id="timeLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="timeTextField" min="-2" pref="94" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="dtNumLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="dtNumSpinner" min="-2" pref="50" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="simDTButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="finSimButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="timeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="timeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="holdSignalSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="holdSignalButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="changeSignalButton" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane1" min="-2" pref="302" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="finSimButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="simDTButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="dtNumLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="dtNumSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="progressBar" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTable" name="vehicleTable">
+          <Properties>
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+              <Table columnCount="9" rowCount="0">
+                <Column editable="false" title="Vehicle ID" type="java.lang.String"/>
+                <Column editable="false" title="Vehicle Type" type="java.lang.String"/>
+                <Column editable="false" title="Position" type="java.lang.String"/>
+                <Column editable="false" title="Speed" type="java.lang.String"/>
+                <Column editable="false" title="Lane ID" type="java.lang.String"/>
+                <Column editable="false" title="Distance to Intersection" type="java.lang.String"/>
+                <Column editable="false" title="Time to Intersection" type="java.lang.String"/>
+                <Column editable="false" title="Signal State" type="java.lang.String"/>
+                <Column editable="false" title="Time to Signal Change" type="java.lang.String"/>
+              </Table>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Data Table"/>
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+              <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="20" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="40" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="110" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="50" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="20" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="90" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+              </TableColumnModel>
+            </Property>
+            <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="dtNumSpinner"/>
+            </Property>
+            <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
+              <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
+            </Property>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JButton" name="simDTButton">
+      <Properties>
+        <Property name="mnemonic" type="int" value="115"/>
+        <Property name="text" type="java.lang.String" value="Simulate DT"/>
+        <Property name="toolTipText" type="java.lang.String" value="Simulate DT"/>
+        <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="finSimButton"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="simDTButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="dtNumLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Number of DTs:"/>
+        <Property name="toolTipText" type="java.lang.String" value="Number of DTs:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="dtNumSpinner">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="1" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Choose Number of DTs"/>
+        <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="simDTButton"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="timeLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Current Time:"/>
+        <Property name="toolTipText" type="java.lang.String" value="Current Time"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="timeTextField">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="horizontalAlignment" type="int" value="11"/>
+        <Property name="text" type="java.lang.String" value="0.0"/>
+        <Property name="toolTipText" type="java.lang.String" value="Time"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="holdSignalSpinner">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="0.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+        </Property>
+        <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="holdSignalButton"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="holdSignalButton">
+      <Properties>
+        <Property name="mnemonic" type="int" value="104"/>
+        <Property name="text" type="java.lang.String" value="Hold Signal"/>
+        <Property name="toolTipText" type="java.lang.String" value="Hold Signal"/>
+        <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="changeSignalButton"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="holdSignalButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="changeSignalButton">
+      <Properties>
+        <Property name="mnemonic" type="int" value="99"/>
+        <Property name="text" type="java.lang.String" value="Change Signal"/>
+        <Property name="toolTipText" type="java.lang.String" value="Change Signal"/>
+        <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="vehicleTable"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="changeSignalButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="finSimButton">
+      <Properties>
+        <Property name="mnemonic" type="int" value="102"/>
+        <Property name="text" type="java.lang.String" value="Finish Simulation"/>
+        <Property name="toolTipText" type="java.lang.String" value="Finish Simulation"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="finSimButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JProgressBar" name="progressBar">
+      <Properties>
+        <Property name="toolTipText" type="java.lang.String" value="Progress"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

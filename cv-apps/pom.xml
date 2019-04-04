@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>etexas</artifactId>
+		<groupId>org.etexascode</groupId>
+		<version>3.5</version>
+	</parent>
+	<groupId>org.etexascode.apps</groupId>
+	<artifactId>apps</artifactId>
+	<packaging>pom</packaging>
+	<name>CV Apps</name>
+
+	<modules>
+		<module>cellular-apps</module>
+		<module>dcs-app</module>
+		<module>j2735-apps</module>
+		<module>j2735-apps-exp</module>
+		<module>intellifusion-apps</module>
+		<module>sim-report-app</module>
+		<module>generic-app</module>
+	</modules>
+</project>

@@ -1,0 +1,168 @@
+/*
+ * #%L
+ * eTEXAS
+ * %%
+ * Copyright (C) 2016 Harmonia Holdings Group, LLC
+ * %%
+ * All rights reserved.
+ * -
+ * SBIR DATA RIGHTS
+ * Harmonia Holdings Group, LLC
+ * 2020 Kraft Drive Suite 2400
+ * Blacksburg, VA 24060
+ * Contract No: DTRT57-16-c-10008
+ * Start Date: 01/05/2016
+ * End Date: 01/05/2018
+ * Expiration of SBIR Data Rights Period: 01/05/2022
+ * -
+ * The Government's rights to use, modify, reproduce, release, perform,
+ * display, or disclose technical data or computer software marked with
+ * this legend are restricted during the period shown as provided in
+ * paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+ * Computer Software-Small Business Innovation Research (SBIR) Program
+ * clause contained in the above identified contract. No restrictions
+ * apply after the expiration date shown above. Any reproduction of
+ * technical data, computer software, or portions thereof marked with
+ * this legend must also reproduce the markings.
+ * -
+ * Contributors:
+ * Harmonia Holdings Group LLC: Initial API and implementation.
+ * #L%
+ */
+
+/* Neptune theme border styles */
+.border-blue {
+	border-color: #157fcc;
+	border-width: 1px !important;
+	border-style: solid;
+}
+
+.border-gray {
+	border-color: silver;
+	border-width: 1px !important;
+	border-style: solid;
+}
+
+/* eTEXAS header styles */
+.etexas-header {
+	background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #8fc33a), color-stop(100%, #739b2e));
+	background-image: -webkit-linear-gradient(top, #8fc33a, #739b2e);
+	background-image: -moz-linear-gradient(top, #8fc33a, #739b2e);
+	background-image: -o-linear-gradient(top, #8fc33a, #739b2e);
+	background-image: linear-gradient(top, #8fc33a, #739b2e);
+	border-bottom: 1px solid #567422;
+}
+
+.x-ie11 .etexas-header {
+	background-image: url(/resources/images/header-bg.png);
+}
+
+.etexas-title {
+	padding: 15px 0px 15px 15px;
+	color: white;
+	font-size: 18px;
+	font-weight: bold;
+	text-shadow: 0 1px 0 #4e691f;
+}
+
+/* eTEXAS navigation styles */
+.etexas-navigation-bar {
+	background: none;
+	border: none;
+}
+
+.etexas-navigation-button, .etexas-user-button {
+	background: none !important;
+	border: none;
+}
+
+.etexas-navigation-button .x-btn-inner, .etexas-user-button .x-btn-inner {
+	color: white;
+	font-size: 16px;
+}
+
+.etexas-navigation-button.x-btn-over {
+	background: #8fc33a !important;
+}
+
+.etexas-navigation-button.x-btn-over .x-btn-inner {
+	color: black;
+}
+
+.etexas-navigation-button.x-btn-pressed .x-btn-inner {
+	color: black;
+}
+
+.etexas-user-button .x-btn-wrap-default-toolbar-small.x-btn-arrow-right:after {
+	background-image: url(/resources/images/default-toolbar-small-arrow.png);
+}
+
+/* Column header styles */
+.x-column-header-inner .x-column-header-text {
+	white-space: normal;
+}
+
+.x-column-header-inner {
+	line-height: normal;
+	padding-top: 3px !important;
+	padding-bottom: 3px !important;
+	text-align: left;
+}
+
+/* List styles */
+ul.condensed {
+	padding: 0 0 0 10px;
+	margin: 0;
+}
+
+ul.nolist {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+/* ImageButton styles */
+.img-button-hover {
+	background-color: #eee;
+	border-radius: 5px;
+}
+
+/* Icon buttons */
+.application-list-button {
+	width: 32px !important;
+	height: 32px !important;
+	background: transparent !important;
+	background-image: url(/resources/images/application_list_32.png) !important;
+	border: none !important;
+}
+
+.device-button {
+	width: 32px !important;
+	height: 32px !important;
+	background: transparent !important;
+	background-image: url(/resources/images/wireless_router_32.png) !important;
+	border: none !important;
+}
+
+.message-button {
+	width: 32px !important;
+	height: 32px !important;
+	background: transparent !important;
+	background-image: url(/resources/images/mail_32.png) !important;
+	border: none !important;
+}
+
+/* Loading mask styles */
+.mask-no-loading .x-mask-msg-text {
+	background: transparent !important;
+	padding: 5px !important;
+}
+
+/* Wrapping Tree Grids */
+.tree_wrap .x-grid-cell-inner {
+	height:    auto   !important;
+	white-space:  normal  !important;
+	text-indent: -3.3em  !important;
+	padding-left: 3.3em   !important;
+	padding-right: 1em  !important;
+ }

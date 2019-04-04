@@ -1,0 +1,45 @@
+vehicle
+vehicle_id:9
+global_time:1163031000
+x_offset_in_feet:-41.94
+y_offset_in_feet:1194.088
+latitude:2230772.2
+longitude:1376675.567
+speed_in_miles_per_hour:0.0
+acceleration_in_miles_per_hour_squared:0.0
+vehicle_length_in_feet:12.0
+vehicle_width_in_feet:6.6
+lane_id:41
+==section separator==
+detector
+id:1
+speed:1.00
+length:1.00
+==section separator==
+signal
+lane_id:43
+signal_state:Green-Ball
+==section separator==
+signal
+lane_id:44
+signal_state:Yellow-left_arrow
+==section separator==
+signal
+lane_id:38
+signal_state:Red-right_arrow
+==section separator==
+signal
+lane_id:39
+signal_state:Red-straight_arrow
+==section separator==
+signal
+lane_id:40
+signal_state:Red-uturn_arrow
+==section separator==
+signal
+lane_id:25
+signal_state:None-stop_sign
+==section separator==
+signal
+lane_id:26
+signal_state:None-yield_sign

@@ -1,0 +1,186 @@
+reference_x:0.0
+reference_y:0.0
+==section separator==
+lane_id:0
+is_egress:False
+lane_width_in_feet:12
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+==begin center points==
+x_in_feet:0
+y_in_feet:20
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:40
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:60
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:80
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:100
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:120
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:140
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:160
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:180
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:200
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:220
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:240
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:260
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:280
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:300
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:320
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:340
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:360
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:380
+width_in_feet:12
+==center point divider==
+x_in_feet:0
+y_in_feet:400
+width_in_feet:12
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:18
+is_egress:False
+lane_width_in_feet:12
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+==begin center points==
+x_in_feet:18
+y_in_feet:20
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:40
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:60
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:80
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:100
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:120
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:140
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:160
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:180
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:200
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:220
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:240
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:260
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:280
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:300
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:320
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:340
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:360
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:380
+width_in_feet:12
+==center point divider==
+x_in_feet:18
+y_in_feet:400
+width_in_feet:12
+==end center points==
+==begin lane connector list==
+==end lane connector list==

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!--
+        Ignore the TEXAS-GUI project
+    -->
+    <Match>
+        <Package name="~org\.etexascode\.gui"/>
+    </Match>
+    <!--
+        Ignore the J2735 messages
+    -->
+    <Match>
+        <Package name="~org\.etexascode\.j2735"/>
+    </Match>
+    <!--
+        Ignore the Cellular messages
+    -->
+    <Match>
+        <Package name="~org\.etexascode\.cellular"/>
+    </Match>
+    <!--
+        Ignore the nonstd messages
+    -->
+    <Match>
+        <Package name="~org\.etexascode\.nonstd"/>
+    </Match>
+    <!--
+        Ignore the ntcip1202
+    -->
+    <Match>
+        <Package name="~org\.etexascode\.ntcip1202"/>
+    </Match>
+    <!--
+        Ignore the test simdriver
+    -->
+    <Match>
+        <Class name="org.etexascode.webapp.ra.SimDriverTester"/>
+        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+    </Match>
+    <!--
+        Ignore the NTCIP 1202 messages
+    -->
+    <Match>
+        <Package name="~org\.etexascode\.ntcip1202\.parameter"/>
+    </Match>
+    <!--
+        Ignore the CDI and EJB injected fields in SessionScoped beans.
+    -->
+    <Match>
+        <Class name="org.etexascode.webapp.cdi.CurrentUser"/>
+        <Field name="userManager"/>
+        <Bug pattern="SE_BAD_FIELD"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.webapp.rest.UploadService"/>
+        <Field name="applicationManager"/>
+        <Bug pattern="SE_BAD_FIELD"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.webapp.rest.UploadService"/>
+        <Field name="simulationManager"/>
+        <Bug pattern="SE_BAD_FIELD"/>
+    </Match>
+    <!--
+        Ignore the public fields of the InterRepInfoModel.
+    -->
+    <Match>
+        <Class name="org.etexascode.interrep.datamodel.InterRepInfoModel"/>
+        <Field name="lmi"/>
+        <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.interrep.datamodel.InterRepInfoModel"/>
+        <Field name="vmi"/>
+        <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.interrep.datamodel.InterRepInfoModel"/>
+        <Field name="smi"/>
+        <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.interrep.datamodel.InterRepInfoModel"/>
+        <Field name="dmi"/>
+        <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.interrep.datamodel.InterRepInfoModel"/>
+        <Field name="rpa"/>
+        <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.interrep.datamodel.InterRepInfoModel"/>
+        <Field name="simTime"/>
+        <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+    <!--
+        Ignore the class naming warning
+    -->
+    <Match>
+        <Class name="org.etexascode.api.eTEXAS"/>
+        <Bug pattern="NM_CLASS_NAMING_CONVENTION"/>
+    </Match>
+    <!--
+        Ignore false positives where IOUtils.closeQuietly() is being called
+    -->
+    <Match>
+        <Class name="org.etexascode.interrep.datamodel.utils.UtilsArchiveOperations"/>
+        <Bug pattern="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.test.RestServicesIT"/>
+        <Bug pattern=" ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+    <Match>
+        <Class name="org.etexascode.datalayer.inmemory.SingleIntersectionDataLayer"/>
+        <Bug pattern="DMI_RANDOM_USED_ONLY_ONCE"/>
+    </Match>
+    <Match>
+        <Class name="~com.harmonia.etexas.wave.NativeAppProtobuf.*"/>
+    </Match>
+</FindBugsFilter>

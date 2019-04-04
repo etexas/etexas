@@ -1,0 +1,49 @@
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * COPYRIGHT (C) 2008 by Rioux Engineering, Austin, Texas USA * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of Rioux Engineering shall not be used in advertising or   * ***
+C *** * publicity related to the distribution of the software      * ***
+C *** * without specific, written, prior permission.  This         * ***
+C *** * software is provided as-delivered without expressed or     * ***
+C *** * implied warranty.  Rioux Engineering makes no              * ***
+C *** * representation about the suitability of this software for  * ***
+C *** * any purpose and accepts no responsibility for its use.     * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+      COMMON / CONSTN  / DEG2RD,FPS2MH,MPH2FS,ONED3 ,ONED6 ,PI    ,
+     *                   PID2  ,PIT1P5,PIT2  ,RAD2DG,SQR2D2,SQRT2P,
+     *                   SQRT3 ,TWOD3
+      DOUBLE PRECISION   DEG2RD,FPS2MH,MPH2FS,ONED3 ,ONED6 ,PI    ,
+     *                   PID2  ,PIT1P5,PIT2  ,RAD2DG,SQR2D2,SQRT2P,
+     *                   SQRT3 ,TWOD3
+

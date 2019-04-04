@@ -1,0 +1,87 @@
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * COPYRIGHT (C) 2008 by Rioux Engineering, Austin, Texas USA * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of Rioux Engineering shall not be used in advertising or   * ***
+C *** * publicity related to the distribution of the software      * ***
+C *** * without specific, written, prior permission.  This         * ***
+C *** * software is provided as-delivered without expressed or     * ***
+C *** * implied warranty.  Rioux Engineering makes no              * ***
+C *** * representation about the suitability of this software for  * ***
+C *** * any purpose and accepts no responsibility for its use.     * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+      INTEGER      NVA
+      PARAMETER  ( NVA = MLP+1 )
+      COMMON / LPD1   / AZIA  (NAP)    ,BASEAX(NAP)    ,BASEAY(NAP)    ,
+     *                  BASELX(NLA)    ,BASELY(NLA)    ,ENDLND(NLA)    ,
+     *                  ENDLNX(NLA)    ,ENDLNY(NLA)    ,VEHLEN(NVC)    ,
+     *                  VEHWID(NVC)    ,VTANG          ,XLNANG(NLA)    ,
+     *                  XT1            ,XT2
+      DOUBLE PRECISION  AZIA           ,BASEAX         ,BASEAY         ,
+     *                  BASELX         ,BASELY         ,ENDLND         ,
+     *                  ENDLNX         ,ENDLNY         ,VEHLEN         ,
+     *                  VEHWID         ,VTANG          ,XLNANG         ,
+     *                  XT1            ,XT2
+      COMMON / LPD2   / ANGPTH1(NPA),ANGPTH2(NPA),ANGPTH3(NPA),
+     *                  ANGPTH4(NPA),PATHL(NPA)  ,
+     *                  PTH1X1(NPA),PTH1Y1(NPA),PTH1X2(NPA),PTH1Y2(NPA),
+     *                  PTH1L (NPA),PTH1A (NPA),PTH2X1(NPA),PTH2Y1(NPA),
+     *                  PTH2X2(NPA),PTH2Y2(NPA),PTH2R (NPA),PTH2XC(NPA),
+     *                  PTH2YC(NPA),PTH2A1(NPA),PTH2A2(NPA),PTH2L (NPA),
+     *                  PTH2DR(NPA),PTH3X1(NPA),PTH3Y1(NPA),PTH3X2(NPA),
+     *                  PTH3Y2(NPA),PTH3R (NPA),PTH3XC(NPA),PTH3YC(NPA),
+     *                  PTH3A2(NPA),PTH3L (NPA),PTH3DR(NPA),PTH3SD(NPA),
+     *                  PTH3A1(NPA),PTH4X1(NPA),PTH4Y1(NPA),PTH4X2(NPA),
+     *                  PTH4Y2(NPA),PTH4L (NPA),PTH4A (NPA),PTH4SD(NPA)
+      DOUBLE PRECISION  ANGPTH1     ,ANGPTH2     ,ANGPTH3     ,
+     *                  ANGPTH4     ,PATHL       ,
+     *                  PTH1X1     ,PTH1Y1     ,PTH1X2     ,PTH1Y2     ,
+     *                  PTH1L      ,PTH1A      ,PTH2X1     ,PTH2Y1     ,
+     *                  PTH2X2     ,PTH2Y2     ,PTH2R      ,PTH2XC     ,
+     *                  PTH2YC     ,PTH2A1     ,PTH2A2     ,PTH2L      ,
+     *                  PTH2DR     ,PTH3X1     ,PTH3Y1     ,PTH3X2     ,
+     *                  PTH3Y2     ,PTH3R      ,PTH3XC     ,PTH3YC     ,
+     *                  PTH3A2     ,PTH3L      ,PTH3DR     ,PTH3SD     ,
+     *                  PTH3A1     ,PTH4X1     ,PTH4Y1     ,PTH4X2     ,
+     *                  PTH4Y2     ,PTH4L      ,PTH4A      ,PTH4SD
+      COMMON / LPI    / ANGNOL(NLA) ,ANGNOP1(NPA),ANGNOP4(NPA),
+     *                  ANGNOV(NVE) ,ISLOFF (NLA),IVHCLA (NVE),
+     *                  NOANGS      ,PATHFR (NPA),PATHTO (NPA)
+      INTEGER           ANGNOL      ,ANGNOP1     ,ANGNOP4     ,
+     *                  ANGNOV      ,ISLOFF      ,IVHCLA      ,
+     *                  NOANGS      ,PATHFR      ,PATHTO
+      COMMON / LPL    / GAP12(NPA),GAP23(NPA),GAP34(NPA)
+      LOGICAL           GAP12     ,GAP23     ,GAP34
+      COMMON / LPDT   / VEHCLE(NVE),VEHCLA(NVC)
+      TYPE (VEH  ),     TARGET::VEHCLE
+      TYPE (VEHCL),     TARGET::VEHCLA

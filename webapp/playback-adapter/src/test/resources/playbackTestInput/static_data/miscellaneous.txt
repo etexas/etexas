@@ -1,0 +1,12 @@
+extra data
+total_num_time_steps:9634
+first_time_step:1163031000
+time_step_length_in_milliseconds:100
+==section separator==
+detectors
+==detector separator==
+detector_id:1
+x1:10
+y1:20
+x2:30
+y2:40

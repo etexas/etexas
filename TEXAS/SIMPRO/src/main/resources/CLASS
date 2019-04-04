@@ -1,0 +1,118 @@
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** *  COPYRIGHT (C) 1989 by The University of Texas at Austin   * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of The University of Texas at Austin shall not be used in  * ***
+C *** * advertising or publicity related to the distribution of    * ***
+C *** * the software without specific, written, prior permission.  * ***
+C *** * This software is provided as-delivered without expressed   * ***
+C *** * or implied warranty.  The University of Texas at Austin    * ***
+C *** * makes no representation about the suitability of this      * ***
+C *** * software for any purpose and accepts no responsibility for * ***
+C *** * its use.                                                   * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+      COMMON / CLASSC / CLASSV(    NVC)
+      CHARACTER*8       CLASSV
+      COMMON / CLASSD / AMAX  (    NVC),AMAXAV         ,DCHAR (    NDC),
+     *                  DCHRMN         ,DCHRMX         ,DMAX  (    NVC),
+     *                  DMAXAV         ,PIJR  (    NDC),VCHAR (    NVC),
+     *                  VMAX  (    NVC)
+      DOUBLE PRECISION  AMAX           ,AMAXAV         ,DCHAR          ,
+     *                  DCHRMN         ,DCHRMX         ,DMAX           ,
+     *                  DMAXAV         ,PIJR           ,VCHAR          ,
+     *                  VMAX
+      COMMON / CLASSI / HEIGHT(    NVC),IPIJR (    NDC),IRMIN (    NVC),
+     *                  LENMAX         ,LENV  (    NVC),NDRICL         ,
+     *                  NUNITS(    NVC),NVEHAT         ,NVEHCL         ,
+     *                  UDRWSQ(MNU,NVC),UFPD  (MNU,NVC),ULEN  (MNU,NVC),
+     *                  URHPD (MNU,NVC),URPD  (MNU,NVC),UTRLEN(MNU,NVC),
+     *                  UTRWID(MNU,NVC),UWID  (MNU,NVC),WIDMAX         ,
+     *                  WIDV  (    NVC)
+      INTEGER           HEIGHT         ,IPIJR          ,IRMIN          ,
+     *                  LENMAX         ,LENV           ,NDRICL         ,
+     *                  NUNITS         ,NVEHAT         ,NVEHCL         ,
+     *                  UDRWSQ         ,UFPD           ,ULEN           ,
+     *                  URHPD          ,URPD           ,UTRLEN         ,
+     *                  UTRWID         ,UWID           ,WIDMAX         ,
+     *                  WIDV
+C
+C-----DRIVER  DEFAULT PARAMETERS
+C-----         AGGR  AVG SLOW
+C-----IDRICL =    1,   2,   3
+C-----IDCHAR =  110, 100,  85
+C-----PIJR   =  0.5, 1.0, 1.5
+C
+C-----VEHICLE DEFAULT PARAMETERS
+C----- 1 = SPORTS CAR
+C----- 2 = COMPACT CAR
+C----- 3 = MEDIUM CAR
+C----- 4 = LARGE CAR
+C----- 5 = PARTIALLY-LOADED SINGLE-UNIT GASOLINE TRUCK OR BUS
+C----- 6 = FULLY-LOADED SINGLE-UNIT GASOLINE TRUCK
+C----- 7 = PARTIALLY-LOADED SINGLE-UNIT DIESEL TRUCK OR BUS
+C----- 8 = FULLY-LOADED SINGLE-UNIT DIESEL TRUCK
+C----- 9 = PARTIALLY-LOADED TRACTOR SEMI-TRAILER GASOLINE TRUCK
+C-----10 = FULLY-LOADED TRACTOR SEMI-TRAILER GASOLINE TRUCK
+C-----11 = PARTIALLY-LOADED TRACTOR SEMI-TRAILER DIESEL TRUCK
+C-----12 = FULLY-LOADED TRACTOR SEMI-TRAILER DIESEL TRUCK
+C-----IVEHCL=   1,   2,   3,   4,  5,  6,  7,  8,   9,  10,  11,  12
+C-----IAMAX =  14,   8,   9,  11,  7,  6,  6,  5,   4,   3,   5,   4
+C-----IDMAX =  10,   9,   9,   8,  7,  5,  7,  5,   6,   4,   6,   4
+C-----IRMIN =  20,  20,  22,  24, 42, 42, 42, 42,  45,  45,  45,  45 OLD
+C-----IRMIN =  11,  11,  13,  14, 28, 28, 28, 28,  22,  22,  22,  22
+C-----IVCHAR= 115,  90, 100, 110, 85, 80, 80, 75,  70,  65,  75,  70
+C-----IVMAX = 205, 120, 135, 150,100, 85,100, 85,  95,  75, 100,  80
+C-----CLASSV=AUTO,AUTO,AUTO,AUTO,SU2,SU2,SU3,SU3,2-S1,2-S1,3-S2,3-S2
+C-----LENV  =  14,  15,  16,  18, 32, 32, 32, 32,  60,  60,  60,  60
+C-----WIDV  =   6,   6,   7,   7,  8,  8,  8,  8,   8,   8,   8,   8
+C-----HEIGHT=   4,   4,   5,   6, 12, 12, 12, 12,  13,  13,  13,  13
+C-----NUNITS=   1,   1,   1,   1,  1,  1,  1,  1,   2,   2,   2,   2
+C-----UNIT 1:
+C-----ULEN  =  14,  15,  16,  18, 32, 32, 32, 32,  16,  16,  16,  16
+C-----UWID  =   6,   6,   7,   7,  8,  8,  8,  8,   8,   8,   8,   8
+C-----UDRWSQ=   1,   1,   1,   1,  1,  1,  1,  1,   1,   1,   1,   1
+C-----UFPD  =   3,   3,   3,   3,  4,  4,  4,  4,   4,   4,   4,   4
+C-----URPD  =  10,  11,  12,  14, 24, 24, 25, 25,  10,  10,  10,  10
+C-----URHPD =   0,   0,   0,   0,  0,  0,  0,  0,   9,   9,   9,   9
+C-----UTRLEN=   0,   0,   0,   0,  0,  0,  0,  0,   0,   0,   0,   0
+C-----UTRWID=   0,   0,   0,   0,  0,  0,  0,  0,   0,   0,   0,   0
+C-----UNIT 2:
+C-----ULEN  =                                      53,  53,  53,  53
+C-----UWID  =                                       8,   8,   8,   8
+C-----UDRWSQ=                                       2,   2,   2,   2
+C-----UFPD  =                                       5,   5,   5,   5
+C-----URPD  =                                      47,  47,  47,  47
+C-----URHPD =                                       0,   0,   0,   0
+C-----UTRLEN=                                       0,   0,   0,   0
+C-----UTRWID=                                       0,   0,   0,   0
+C

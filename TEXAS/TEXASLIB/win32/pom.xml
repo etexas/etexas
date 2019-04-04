@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.etexascode.texas</groupId>
+        <artifactId>libTEXASLIB</artifactId>
+        <version>3.5</version>
+    </parent>
+    <groupId>org.etexascode.texas.win32</groupId>
+    <artifactId>libTEXASLIB</artifactId>
+    <version>3.5</version>
+    <packaging>a</packaging>
+    <name>win32</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <!-- ranlib the output of the archive to index it for 
+                        linking -->
+                    <execution>
+                        <id>ranlib</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>ranlib</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <compilerExecutable>${gfortran-binary}</compilerExecutable>
+                    <compilerStartOptions>
+                        <compilerStartOption>-fno-whole-file</compilerStartOption>
+                        <compilerStartOption>-fno-range-check</compilerStartOption>
+                        <compilerStartOption>-fno-underscoring</compilerStartOption>
+                        <compilerStartOption>-fPIC</compilerStartOption>
+                    </compilerStartOptions>
+
+                    <sources>
+                        <source>
+                            <directory>../src/main/resources</directory>
+                            <fileNames>
+                                <fileName>clfile.for</fileName>
+                                <fileName>colnum.for</fileName>
+                                <fileName>dff.for</fileName>
+                                <fileName>digref.for</fileName>
+                                <fileName>duallt.for</fileName>
+                                <fileName>edcol.for</fileName>
+                                <fileName>efv.for</fileName>
+                                <fileName>expdf.for</fileName>
+                                <fileName>ffdec.for</fileName>
+                                <fileName>gdvcon.for</fileName>
+                                <fileName>getcdt.for</fileName>
+                                <fileName>ilnb.for</fileName>
+                                <fileName>initcn.for</fileName>
+                                <fileName>listdt.for</fileName>
+                                <fileName>mkfmt.for</fileName>
+                                <fileName>newpg.for</fileName>
+                                <fileName>notf.for</fileName>
+                                <fileName>numsin.for</fileName>
+                                <fileName>onlnpa.for</fileName>
+                                <fileName>prflds.for</fileName>
+                                <fileName>prinrg.for</fileName>
+                                <fileName>ptdd.for</fileName>
+                                <fileName>rdnf.for</fileName>
+                                <fileName>readin.for</fileName>
+                                <fileName>sedfld.for</fileName>
+                                <fileName>sedmpd.for</fileName>
+                                <fileName>shonam.for</fileName>
+                                <fileName>spaced.for</fileName>
+                                <fileName>srdata.for</fileName>
+                                <fileName>stoh.for</fileName>
+                                <fileName>toupr.for</fileName>
+                                <fileName>txmisc.for</fileName>
+                                <fileName>yesno.for</fileName>
+                            </fileNames>
+                        </source>
+                    </sources>
+
+                    <!-- Create a library archive of object files -->
+                    <linkerExecutable>${ar-binary}</linkerExecutable>
+                    <linkerStartOptions>
+                        <!-- Add files to archive with verbose output -->
+                        <linkerStartOption>rv</linkerStartOption>
+                    </linkerStartOptions>
+
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

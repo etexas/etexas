@@ -1,0 +1,76 @@
+vehicle
+vehicle_id:2
+global_time:1163030700
+x_offset_in_feet:48.4
+y_offset_in_feet:222.041
+latitude:2230578.3
+longitude:1375745.631
+speed_in_miles_per_hour:0.0
+acceleration_in_miles_per_hour_squared:0.0
+vehicle_length_in_feet:14.0
+vehicle_width_in_feet:7.0
+lane_id:6
+==section separator==
+signal
+lane_id:102
+signal_state:Green-Ball
+==section separator==
+signal
+lane_id:110
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:100
+signal_state:Yellow-Ball
+==section separator==
+signal
+lane_id:141
+signal_state:Red-Ball
+==section separator==
+signal
+lane_id:112
+signal_state:Green-Ball
+==section separator==
+signal
+lane_id:140
+signal_state:Red-Ball
+==section separator==
+signal
+lane_id:120
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:113
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:121
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:123
+signal_state:Green-Ball
+==section separator==
+signal
+lane_id:111
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:142
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:101
+signal_state:Red-Ball
+==section separator==
+signal
+lane_id:143
+signal_state:Red-Left_Arrow
+==section separator==
+signal
+lane_id:103
+signal_state:Red-Ball
+==section separator==
+signal
+lane_id:122
+signal_state:Red-Left_Arrow

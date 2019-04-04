@@ -1,0 +1,2442 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0"
+    targetNamespace="http://www.DSRC-Adopted-02-00-36/DSRC" xmlns:ns2="http://www.DSRC-Adopted-02-00-36/NTCIP"
+    xmlns:ns1="http://www.DSRC-Adopted-02-00-36/ITIS" xmlns:tns="http://www.DSRC-Adopted-02-00-36/DSRC"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+    <xs:import schemaLocation="new5.xsd" />
+
+    <xs:import namespace="http://www.DSRC-Adopted-02-00-36/ITIS"
+        schemaLocation="www.DSRC-Adopted-02-00-36_ITIS.xsd" />
+
+    <xs:import namespace="http://www.DSRC-Adopted-02-00-36/NTCIP"
+        schemaLocation="www.DSRC-Adopted-02-00-36_NTCIP.xsd" />
+
+    <xs:element name="alaCarte" type="tns:AlaCarte" />
+
+    <xs:element name="basicSafetyMessage" type="tns:BasicSafetyMessage" />
+
+    <xs:element name="basicSafetyMessageVerbose" type="tns:BasicSafetyMessageVerbose" />
+
+    <xs:element name="commonSafetyRequest" type="tns:CommonSafetyRequest" />
+
+    <xs:element name="emergencyVehicleAlert" type="tns:EmergencyVehicleAlert" />
+
+    <xs:element name="intersectionCollision" type="tns:IntersectionCollision" />
+
+    <xs:element name="mapData" type="tns:MapData" />
+
+    <xs:element name="nMEA-Corrections" type="tns:NMEA-Corrections" />
+
+    <xs:element name="probeDataManagement" type="tns:ProbeDataManagement" />
+
+    <xs:element name="probeVehicleData" type="tns:ProbeVehicleData" />
+
+    <xs:element name="rTCM-Corrections" type="tns:RTCM-Corrections" />
+
+    <xs:element name="sPAT" type="tns:SPAT" />
+
+    <xs:element name="signalRequestMsg" type="tns:SignalRequestMsg" />
+
+    <xs:element name="signalStatusMessage" type="tns:SignalStatusMessage" />
+
+    <xs:element name="spat" type="tns:SPAT" />
+
+    <xs:element name="travelerInformation" type="tns:TravelerInformation" />
+
+    <xs:complexType name="CrosswalkLane">
+        <xs:sequence>
+            <xs:element name="laneNumber" type="xs:string" />
+            <xs:element name="laneWidth" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="laneAttributes" type="tns:CrosswalkLaneAttributes" />
+            <xs:element name="nodeList">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="keepOutList" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="connectsTo" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DDateTime">
+        <xs:sequence>
+            <xs:element name="year" type="xs:int" minOccurs="0" />
+            <xs:element name="month" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="day" type="xs:short" minOccurs="0" />
+            <xs:element name="hour" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="minute" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="second" type="xs:int"
+                minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Sample">
+        <xs:sequence>
+            <xs:element name="sampleStart" type="xs:short" />
+            <xs:element name="sampleEnd" type="xs:short" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DFullTime">
+        <xs:sequence>
+            <xs:element name="year" type="xs:int" />
+            <xs:element name="month" type="xs:short" />
+            <xs:element name="day" type="xs:short" />
+            <xs:element name="hour" type="xs:short" />
+            <xs:element name="minute" type="xs:short" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="FullPositionVector">
+        <xs:sequence>
+            <xs:element name="utcTime" type="tns:DDateTime"
+                minOccurs="0" />
+            <xs:element name="long" type="xs:int" />
+            <xs:element name="lat" type="xs:int" />
+            <xs:element name="elevation" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="heading" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="speed" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="posAccuracy" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="timeConfidence" type="tns:TimeConfidence"
+                minOccurs="0" />
+            <xs:element name="posConfidence" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="speedConfidence" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DDate">
+        <xs:sequence>
+            <xs:element name="year" type="xs:int" />
+            <xs:element name="month" type="xs:short" />
+            <xs:element name="day" type="xs:short" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ValidRegion">
+        <xs:sequence>
+            <xs:element name="direction" type="xs:string" />
+            <xs:element name="extent" type="tns:Extent"
+                minOccurs="0" />
+            <xs:element name="area">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="shapePointSet"
+                            type="tns:ShapePointSet" minOccurs="0" />
+                        <xs:element name="circle" type="tns:Circle"
+                            minOccurs="0" />
+                        <xs:element name="regionPointSet"
+                            type="tns:RegionPointSet" minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ShapePointSet">
+        <xs:sequence>
+            <xs:element name="anchor" type="tns:Position3D"
+                minOccurs="0" />
+            <xs:element name="laneWidth" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="directionality" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="nodeList">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Position3D">
+        <xs:sequence>
+            <xs:element name="lat" type="xs:int" />
+            <xs:element name="long" type="xs:int" />
+            <xs:element name="elevation" type="xs:string"
+                minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Circle">
+        <xs:sequence>
+            <xs:element name="center" type="tns:Position3D" />
+            <xs:element name="raduis">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="radiusSteps" type="xs:int"
+                            minOccurs="0" />
+                        <xs:element name="miles" type="xs:int"
+                            minOccurs="0" />
+                        <xs:element name="km" type="xs:int"
+                            minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RegionPointSet">
+        <xs:sequence>
+            <xs:element name="anchor" type="tns:Position3D"
+                minOccurs="0" />
+            <xs:element name="nodeList" type="tns:RegionList" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RegionList">
+        <xs:sequence>
+            <xs:element name="RegionOffsets" type="tns:RegionOffsets"
+                maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RegionOffsets">
+        <xs:sequence>
+            <xs:element name="xOffset" type="xs:short" />
+            <xs:element name="yOffset" type="xs:short" />
+            <xs:element name="zOffset" type="xs:short"
+                minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RoadSideAlert">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="msgCnt" type="xs:short" />
+            <xs:element name="typeEvent" type="xs:long" />
+            <xs:element name="description" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:long" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="priority" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="heading" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="extent" type="tns:Extent"
+                minOccurs="0" />
+            <xs:element name="positon" type="tns:FullPositionVector"
+                minOccurs="0" />
+            <xs:element name="furtherInfoID" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="crc" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PathHistoryPointType-01">
+        <xs:sequence>
+            <xs:element name="latOffset" type="xs:int" />
+            <xs:element name="longOffset" type="xs:int" />
+            <xs:element name="elevationOffset" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="timeOffset" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="posAccuracy" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="heading" type="xs:byte"
+                minOccurs="0" />
+            <xs:element name="speed" type="xs:string"
+                minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TravelerInformation">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="packetID" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="urlB" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="dataFrameCount" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="dataFrames">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="SEQUENCE"
+                            maxOccurs="unbounded"
+                        >
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="frameType"
+                                        type="xs:string" />
+                                    <xs:element name="msgId">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element
+                                                    name="furtherInfoID"
+                                                    type="xs:string"
+                                                    minOccurs="0" />
+                                                <xs:element
+                                                    name="roadSignID"
+                                                    type="tns:RoadSignID"
+                                                    minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="startYear"
+                                        type="xs:int" minOccurs="0" />
+                                    <xs:element name="startTime"
+                                        type="xs:long" />
+                                    <xs:element name="duratonTime"
+                                        type="xs:int" />
+                                    <xs:element name="priority"
+                                        type="xs:short" />
+                                    <xs:element name="commonAnchor"
+                                        type="tns:Position3D" minOccurs="0" />
+                                    <xs:element name="commonLaneWidth"
+                                        type="xs:int" minOccurs="0" />
+                                    <xs:element name="commonDirectionality"
+                                        type="xs:string" minOccurs="0" />
+                                    <xs:element name="regions">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element
+                                                    name="ValidRegion"
+                                                    type="tns:ValidRegion"
+                                                    maxOccurs="unbounded" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="content">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element
+                                                    name="advisory"
+                                                    type="ns1:ITIScodesAndText"
+                                                    minOccurs="0" />
+                                                <xs:element
+                                                    name="workZone"
+                                                    type="tns:WorkZone"
+                                                    minOccurs="0" />
+                                                <xs:element
+                                                    name="genericSign"
+                                                    type="tns:GenericSignage"
+                                                    minOccurs="0" />
+                                                <xs:element
+                                                    name="speedLimit"
+                                                    type="tns:SpeedLimit"
+                                                    minOccurs="0" />
+                                                <xs:element
+                                                    name="exitService"
+                                                    type="tns:ExitService"
+                                                    minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="url"
+                                        type="xs:string" minOccurs="0" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="crc" type="xs:string" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RoadSignID">
+        <xs:sequence>
+            <xs:element name="position" type="tns:Position3D" />
+            <xs:element name="viewAngle" type="xs:string" />
+            <xs:element name="mutcdCode" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="crc" type="xs:string"
+                minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="WorkZone">
+        <xs:sequence>
+            <xs:element name="SEQUENCE" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="item">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="itis"
+                                        type="xs:long" minOccurs="0" />
+                                    <xs:element name="text"
+                                        type="xs:string" minOccurs="0" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GenericSignage">
+        <xs:sequence>
+            <xs:element name="SEQUENCE" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="item">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="itis"
+                                        type="xs:long" minOccurs="0" />
+                                    <xs:element name="text"
+                                        type="xs:string" minOccurs="0" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SpeedLimit">
+        <xs:sequence>
+            <xs:element name="SEQUENCE" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="item">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="itis"
+                                        type="xs:long" minOccurs="0" />
+                                    <xs:element name="text"
+                                        type="xs:string" minOccurs="0" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ExitService">
+        <xs:sequence>
+            <xs:element name="SEQUENCE" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="item">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="itis"
+                                        type="xs:long" minOccurs="0" />
+                                    <xs:element name="text"
+                                        type="xs:string" minOccurs="0" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="VehicleComputedLane">
+        <xs:sequence>
+            <xs:element name="laneNumber" type="xs:string" />
+            <xs:element name="laneWidth" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="laneAttributes" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="refLaneNum" type="xs:string" />
+            <xs:element name="lineOffset" type="xs:short" />
+            <xs:element name="keepOutList" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="connectsTo" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RTCMmsg">
+        <xs:sequence>
+            <xs:element name="rev" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="rtcmID" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="payload" type="xs:string" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="IntersectionState">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="id" type="xs:string" />
+            <xs:element name="status" type="xs:string" />
+            <xs:element name="timeStamp" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="lanesCnt" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="states">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="MovementState"
+                            type="tns:MovementState" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="priority" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="preempt" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MovementState">
+        <xs:sequence>
+            <xs:element name="movementName" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="laneCnt" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="laneSet" type="xs:string" />
+            <xs:element name="currState" type="xs:long"
+                minOccurs="0" />
+            <xs:element name="pedState" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="specialState" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="timeToChange" type="xs:int" />
+            <xs:element name="stateConfidence" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="yellState" type="xs:long"
+                minOccurs="0" />
+            <xs:element name="yellPedState" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="yellTimeToChange" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="yellStateConfidence" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="vehicleCount" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="pedDetect" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="pedCount" type="xs:int"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ConfidenceSet">
+        <xs:sequence>
+            <xs:element name="accelConfidence"
+                type="tns:AccelSteerYawRateConfidence" minOccurs="0" />
+            <xs:element name="speedConfidence" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="timeConfidence" type="tns:TimeConfidence"
+                minOccurs="0" />
+            <xs:element name="posConfidence" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="steerConfidence"
+                type="tns:SteeringWheelAngleConfidence" minOccurs="0" />
+            <xs:element name="throttleConfidence" type="tns:ThrottleConfidence"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AccelSteerYawRateConfidence">
+        <xs:sequence>
+            <xs:element name="yawRate" type="tns:YawRateConfidence" />
+            <xs:element name="acceleration" type="tns:AccelerationConfidence" />
+            <xs:element name="steeringWheelAngle"
+                type="tns:SteeringWheelAngleConfidence" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SignalRequest">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string" />
+            <xs:element name="isCancel" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="requestedAction" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="inLane" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="outLane" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="type" type="xs:string" />
+            <xs:element name="codeWord" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PathPrediction">
+        <xs:sequence>
+            <xs:element name="radiusOfCurve" type="xs:short" />
+            <xs:element name="confidence" type="xs:short" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ProbeVehicleData">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="segNum" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="probeID" type="tns:VehicleIdent"
+                minOccurs="0" />
+            <xs:element name="startVector" type="tns:FullPositionVector" />
+            <xs:element name="vehicleType" type="xs:string" />
+            <xs:element name="cntSnapshots" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="snapshots">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Snapshot" type="tns:Snapshot"
+                            maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="VehicleIdent">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="vin" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="ownerCode" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="id" type="xs:string" minOccurs="0" />
+            <xs:element name="vehicleType" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="vehicleClass" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="vGroup" type="xs:string"
+                            minOccurs="0" />
+                        <xs:element name="rGroup" type="xs:string"
+                            minOccurs="0" />
+                        <xs:element name="rEquip" type="xs:string"
+                            minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Snapshot">
+        <xs:sequence>
+            <xs:element name="thePosition" type="tns:FullPositionVector" />
+            <xs:element name="safetyExt" type="tns:VehicleSafetyExtension"
+                minOccurs="0" />
+            <xs:element name="datSet" type="tns:VehicleStatus"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="VehicleSafetyExtension">
+        <xs:sequence>
+            <xs:element name="events" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="pathHistory" type="tns:PathHistory"
+                minOccurs="0" />
+            <xs:element name="pathPrediction" type="tns:PathPrediction"
+                minOccurs="0" />
+            <xs:element name="theRTCM" type="tns:RTCMPackage"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PathHistory">
+        <xs:sequence>
+            <xs:element name="initialPosition" type="tns:FullPositionVector"
+                minOccurs="0" />
+            <xs:element name="currGPSstatus" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="itemCnt" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="crumbData">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="pathHistoryPointSets-01"
+                            minOccurs="0"
+                        >
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element
+                                        name="PathHistoryPointType-01"
+                                        type="tns:PathHistoryPointType-01"
+                                        maxOccurs="unbounded" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="pathHistoryPointSets-02"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="pathHistoryPointSets-03"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="pathHistoryPointSets-04"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="pathHistoryPointSets-05"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="pathHistoryPointSets-06"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="pathHistoryPointSets-07"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="pathHistoryPointSets-08"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="pathHistoryPointSets-09"
+                            type="xs:string" minOccurs="0" />
+                        <xs:element name="pathHistoryPointSets-10"
+                            type="xs:string" minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RTCMPackage">
+        <xs:sequence>
+            <xs:element name="anchorPoint" type="tns:FullPositionVector"
+                minOccurs="0" />
+            <xs:element name="rtcmHeader" type="xs:string" />
+            <xs:element name="msg1001" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1002" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1003" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1004" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1005" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1006" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1007" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1008" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1009" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1010" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1011" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1012" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1013" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1014" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1015" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1016" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1017" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1019" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1020" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1021" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1022" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1023" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1024" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1025" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1026" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1027" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1029" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1030" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1031" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="msg1032" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="VehicleStatus">
+        <xs:sequence>
+            <xs:element name="lights" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="lightBar" type="tns:LightbarInUse"
+                minOccurs="0" />
+            <xs:element name="wipers" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="statusFront" type="xs:string" />
+                        <xs:element name="rateFront" type="xs:short" />
+                        <xs:element name="statusRear" type="xs:string"
+                            minOccurs="0" />
+                        <xs:element name="rateRear" type="xs:short"
+                            minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="brakeStatus" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="brakePressure" type="tns:BrakeAppliedPressure"
+                minOccurs="0" />
+            <xs:element name="roadFriction" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="sunData" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="rainData" type="tns:RainSensor"
+                minOccurs="0" />
+            <xs:element name="airTemp" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="airPres" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="steering" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="angle" type="xs:string" />
+                        <xs:element name="confidence"
+                            type="tns:SteeringWheelAngleConfidence"
+                            minOccurs="0" />
+                        <xs:element name="rate" type="xs:byte"
+                            minOccurs="0" />
+                        <xs:element name="wheels" type="xs:byte"
+                            minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="accelSets" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="accel4way" type="xs:string"
+                            minOccurs="0" />
+                        <xs:element name="vertAccelThres"
+                            minOccurs="0"
+                        >
+                            <xs:simpleType>
+                                <xs:list itemType="xs:string" />
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="yawRateCon"
+                            type="tns:YawRateConfidence" minOccurs="0" />
+                        <xs:element name="hozAccelCon"
+                            type="tns:AccelerationConfidence" minOccurs="0" />
+                        <xs:element name="confidenceSet"
+                            type="tns:ConfidenceSet" minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="object" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="obDist" type="xs:int" />
+                        <xs:element name="obDirect" type="xs:int" />
+                        <xs:element name="dateTime" type="tns:DDateTime" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="fullPos" type="tns:FullPositionVector"
+                minOccurs="0" />
+            <xs:element name="throttlePos" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="speedHeadC" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="speedC" type="tns:SpeedConfidence"
+                minOccurs="0" />
+            <xs:element name="vehicleData" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="height" type="xs:short" />
+                        <xs:element name="bumpers" type="tns:BumperHeights" />
+                        <xs:element name="mass" type="xs:short" />
+                        <xs:element name="trailerWeight"
+                            type="xs:int" />
+                        <xs:element name="type" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="vehicleIdent" type="tns:VehicleIdent"
+                minOccurs="0" />
+            <xs:element name="j1939data" type="tns:J1939data"
+                minOccurs="0" />
+            <xs:element name="weatherReport" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="isRaining" type="ns2:EssPrecipYesNo" />
+                        <xs:element name="rainRate" type="xs:int"
+                            minOccurs="0" />
+                        <xs:element name="precipSituation"
+                            type="ns2:EssPrecipSituation" minOccurs="0" />
+                        <xs:element name="solarRadiation"
+                            type="xs:int" minOccurs="0" />
+                        <xs:element name="friction" type="xs:short"
+                            minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="gpsStatus" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BumperHeights">
+        <xs:sequence>
+            <xs:element name="frnt" type="xs:short" />
+            <xs:element name="rear" type="xs:short" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="J1939data">
+        <xs:sequence>
+            <xs:element name="tires" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="SEQUENCE"
+                            minOccurs="0" maxOccurs="unbounded"
+                        >
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="location"
+                                        type="xs:short" minOccurs="0" />
+                                    <xs:element name="pressure"
+                                        type="xs:int" minOccurs="0" />
+                                    <xs:element name="temp"
+                                        type="xs:int" minOccurs="0" />
+                                    <xs:element name="wheelSensorStatus"
+                                        type="tns:WheelSensorStatus"
+                                        minOccurs="0" />
+                                    <xs:element name="wheelEndElectFault"
+                                        minOccurs="0"
+                                    >
+                                        <xs:simpleType>
+                                            <xs:list itemType="xs:string" />
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="leakageRate"
+                                        type="xs:int" minOccurs="0" />
+                                    <xs:element name="detection"
+                                        type="xs:string" minOccurs="0" />
+                                    <xs:any processContents="lax"
+                                        namespace="##other" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="axle" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="SEQUENCE"
+                            minOccurs="0" maxOccurs="unbounded"
+                        >
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="location"
+                                        type="xs:short" minOccurs="0" />
+                                    <xs:element name="weight"
+                                        type="xs:int" minOccurs="0" />
+                                    <xs:any processContents="lax"
+                                        namespace="##other" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="trailerWeight" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="cargoWeight" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="steeringAxleTemperature" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="driveAxleLocation" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="driveAxleLiftAirPressure" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="driveAxleTemperature" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="driveAxleLubePressure" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="steeringAxleLubePressure" type="xs:short"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SPAT">
+        <xs:complexContent>
+            <xs:extension base="message">
+                <xs:sequence>
+                    <xs:element name="msgID" type="xs:string" />
+                    <xs:element name="name" type="xs:string"
+                        minOccurs="0" />
+                    <xs:element name="intersections">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="IntersectionState"
+                                    type="tns:IntersectionState"
+                                    maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:any processContents="lax" namespace="##other" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="BasicSafetyMessage">
+        <xs:complexContent>
+            <xs:extension base="message">
+                <xs:sequence>
+                    <xs:element name="msgID" type="xs:string" />
+                    <xs:element name="blob1" type="xs:string" />
+                    <xs:element name="safetyExt"
+                        type="tns:VehicleSafetyExtension" minOccurs="0" />
+                    <xs:element name="status" type="tns:VehicleStatus"
+                        minOccurs="0" />
+                    <xs:any processContents="lax" namespace="##other" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="BasicSafetyMessageVerbose">
+        <xs:complexContent>
+            <xs:extension base="message">
+                <xs:sequence>
+                    <xs:element name="msgID" type="xs:string" />
+                    <xs:element name="msgCnt" type="xs:short" />
+                    <xs:element name="id" type="xs:string" />
+                    <xs:element name="secMark" type="xs:int" />
+                    <xs:element name="lat" type="xs:int" />
+                    <xs:element name="long" type="xs:int" />
+                    <xs:element name="elev" type="xs:string" />
+                    <xs:element name="accuracy" type="xs:string" />
+                    <xs:element name="speed" type="xs:string" />
+                    <xs:element name="heading" type="xs:int" />
+                    <xs:element name="angle" type="xs:string" />
+                    <xs:element name="accelSet" type="xs:string" />
+                    <xs:element name="brakes" type="xs:string" />
+                    <xs:element name="size" type="tns:VehicleSize" />
+                    <xs:element name="safetyExt"
+                        type="tns:VehicleSafetyExtension" minOccurs="0" />
+                    <xs:element name="status" type="tns:VehicleStatus"
+                        minOccurs="0" />
+                    <xs:any processContents="lax" namespace="##other" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="VehicleSize">
+        <xs:sequence>
+            <xs:element name="width" type="xs:int" />
+            <xs:element name="length" type="xs:int" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MapData">
+        <xs:complexContent>
+            <xs:extension base="message">
+                <xs:sequence>
+                    <xs:element name="msgID" type="xs:string" />
+                    <xs:element name="msgCnt" type="xs:short" />
+                    <xs:element name="name" type="xs:string"
+                        minOccurs="0" />
+                    <xs:element name="layerType" type="xs:string"
+                        minOccurs="0" />
+                    <xs:element name="layerID" type="xs:short"
+                        minOccurs="0" />
+                    <xs:element name="intersections"
+                        minOccurs="0"
+                    >
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="Intersection"
+                                    type="tns:Intersection" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="dataParameters" type="tns:DataParameters"
+                        minOccurs="0" />
+                    <xs:element name="crc" type="xs:string" />
+                    <xs:any processContents="lax" namespace="##other" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="Intersection">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="id" type="xs:string" />
+            <xs:element name="refPoint" type="tns:Position3D"
+                minOccurs="0" />
+            <xs:element name="refInterNum" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="orientation" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="laneWidth" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="type" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="approaches">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ApproachObject"
+                            type="tns:ApproachObject" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="preemptZones" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="SignalControlZone"
+                            type="tns:SignalControlZone" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="priorityZones" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="SignalControlZone"
+                            type="tns:SignalControlZone" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ApproachObject">
+        <xs:sequence>
+            <xs:element name="refPoint" type="tns:Position3D"
+                minOccurs="0" />
+            <xs:element name="laneWidth" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="approach" type="tns:Approach"
+                minOccurs="0" />
+            <xs:element name="egress" type="tns:Approach"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Approach">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="id" type="xs:short" minOccurs="0" />
+            <xs:element name="drivingLanes" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="VehicleReferenceLane"
+                            type="tns:VehicleReferenceLane" minOccurs="0"
+                            maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="computedLanes" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="VehicleComputedLane"
+                            type="tns:VehicleComputedLane" minOccurs="0"
+                            maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="trainsAndBuses" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="SpecialLane" type="tns:SpecialLane"
+                            minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="barriers" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="BarrierLane" type="tns:BarrierLane"
+                            minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="crosswalks" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="CrosswalkLane"
+                            type="tns:CrosswalkLane" minOccurs="0"
+                            maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="VehicleReferenceLane">
+        <xs:sequence>
+            <xs:element name="laneNumber" type="xs:string" />
+            <xs:element name="laneWidth" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="laneAttributes" type="xs:int" />
+            <xs:element name="nodeList">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="keepOutList" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="connectsTo" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SpecialLane">
+        <xs:sequence>
+            <xs:element name="laneNumber" type="xs:string" />
+            <xs:element name="laneWidth" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="laneAttributes" type="tns:SpecialLaneAttributes" />
+            <xs:element name="nodeList">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="keepOutList" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="connectsTo" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BarrierLane">
+        <xs:sequence>
+            <xs:element name="laneNumber" type="xs:string" />
+            <xs:element name="laneWidth" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="barrierAttributes" type="xs:int" />
+            <xs:element name="nodeList">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SignalControlZone">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="pValue" type="xs:string" />
+            <xs:element name="data">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="laneSet" minOccurs="0">
+                            <xs:simpleType>
+                                <xs:list itemType="xs:string" />
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="zones" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="SEQUENCE"
+                                        maxOccurs="unbounded"
+                                    >
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element
+                                                    name="enclosed"
+                                                    minOccurs="0"
+                                                >
+                                                    <xs:simpleType>
+                                                        <xs:list
+                                                            itemType="xs:string" />
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element
+                                                    name="laneWidth"
+                                                    type="xs:int"
+                                                    minOccurs="0" />
+                                                <xs:element
+                                                    name="nodeList"
+                                                >
+                                                    <xs:simpleType>
+                                                        <xs:list
+                                                            itemType="xs:string" />
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:any
+                                                    processContents="lax"
+                                                    namespace="##other" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DataParameters">
+        <xs:sequence>
+            <xs:element name="processMethod" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="processAgency" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="lastCheckedDate" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="geiodUsed" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CommonSafetyRequest">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="msgCnt" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="id" type="xs:string" minOccurs="0" />
+            <xs:element name="requests">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RTCM-Corrections">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="msgCnt" type="xs:short" />
+            <xs:element name="rev" type="xs:string" />
+            <xs:element name="anchorPoint" type="tns:FullPositionVector"
+                minOccurs="0" />
+            <xs:element name="rtcmHeader" type="xs:string" />
+            <xs:element name="rtcmSets">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="RTCMmsg" type="tns:RTCMmsg"
+                            maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DTime">
+        <xs:sequence>
+            <xs:element name="hour" type="xs:short" />
+            <xs:element name="minute" type="xs:short" />
+            <xs:element name="second" type="xs:int" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SnapshotTime">
+        <xs:sequence>
+            <xs:element name="t1" type="xs:short" />
+            <xs:element name="s1" type="xs:short" />
+            <xs:element name="t2" type="xs:short" />
+            <xs:element name="s2" type="xs:short" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SnapshotDistance">
+        <xs:sequence>
+            <xs:element name="d1" type="xs:int" />
+            <xs:element name="s1" type="xs:short" />
+            <xs:element name="d2" type="xs:int" />
+            <xs:element name="s2" type="xs:short" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ProbeDataManagement">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="sample" type="tns:Sample" />
+            <xs:element name="directions" type="xs:string" />
+            <xs:element name="term">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="termtime" type="xs:int"
+                            minOccurs="0" />
+                        <xs:element name="termDistance" type="xs:int"
+                            minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="snapshot">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="snapshotTime" type="tns:SnapshotTime"
+                            minOccurs="0" />
+                        <xs:element name="snapshotDistance"
+                            type="tns:SnapshotDistance" minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="txInterval" type="xs:short" />
+            <xs:element name="cntTthreshold" type="xs:short" />
+            <xs:element name="dataElements">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="VehicleStatusRequest"
+                            type="tns:VehicleStatusRequest" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="VehicleStatusRequest">
+        <xs:sequence>
+            <xs:element name="dataType" type="xs:string" />
+            <xs:element name="subType" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="sendOnLessThenValue" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="sendOnMoreThenValue" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="sendAll" type="xs:boolean"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SignalStatusMessage">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="msgCnt" type="xs:short" />
+            <xs:element name="id" type="xs:string" />
+            <xs:element name="status" type="xs:string" />
+            <xs:element name="priority" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="priorityCause" type="tns:VehicleIdent"
+                minOccurs="0" />
+            <xs:element name="prempt" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="preemptCause" type="tns:VehicleIdent"
+                minOccurs="0" />
+            <xs:element name="transitStatus" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AllInclusive">
+        <xs:sequence>
+            <xs:element name="item6-1" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-2"
+                type="tns:AccelSteerYawRateConfidence" minOccurs="0" />
+            <xs:element name="item6-4" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-5" type="tns:Approach"
+                minOccurs="0" />
+            <xs:element name="item6-6" type="tns:ApproachObject"
+                minOccurs="0" />
+            <xs:element name="item6-7" type="tns:BarrierLane"
+                minOccurs="0" />
+            <xs:element name="item6-8" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-9" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-10" type="tns:BumperHeights"
+                minOccurs="0" />
+            <xs:element name="item6-11" type="tns:Circle"
+                minOccurs="0" />
+            <xs:element name="item6-12" type="tns:ConfidenceSet"
+                minOccurs="0" />
+            <xs:element name="item6-13" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-14" type="tns:CrosswalkLane"
+                minOccurs="0" />
+            <xs:element name="item6-15" type="tns:DataParameters"
+                minOccurs="0" />
+            <xs:element name="item6-16" type="tns:DDate"
+                minOccurs="0" />
+            <xs:element name="item6-17" type="tns:DDateTime"
+                minOccurs="0" />
+            <xs:element name="item6-18" type="tns:DFullTime"
+                minOccurs="0" />
+            <xs:element name="item6-19" type="tns:DMonthDay"
+                minOccurs="0" />
+            <xs:element name="item6-20" type="tns:DTime"
+                minOccurs="0" />
+            <xs:element name="item6-21" type="tns:DYearMonth"
+                minOccurs="0" />
+            <xs:element name="item6-22" type="tns:FullPositionVector"
+                minOccurs="0" />
+            <xs:element name="item6-23" type="tns:Intersection"
+                minOccurs="0" />
+            <xs:element name="item6-24" type="tns:IntersectionState"
+                minOccurs="0" />
+            <xs:element name="item6-25" type="tns:ExitService"
+                minOccurs="0" />
+            <xs:element name="item6-26" type="tns:GenericSignage"
+                minOccurs="0" />
+            <xs:element name="item6-27" type="tns:SpeedLimit"
+                minOccurs="0" />
+            <xs:element name="item6-28" type="tns:WorkZone"
+                minOccurs="0" />
+            <xs:element name="item6-29" type="tns:J1939data"
+                minOccurs="0" />
+            <xs:element name="item6-30" type="tns:MovementState"
+                minOccurs="0" />
+            <xs:element name="item6-31" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="item6-32" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-33" type="tns:PathHistory"
+                minOccurs="0" />
+            <xs:element name="item6-34" type="tns:PathHistoryPointType-01"
+                minOccurs="0" />
+            <xs:element name="item6-35" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-36" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-37" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-38" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-39" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-40" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-41" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-42" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-43" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-44" type="tns:PathPrediction"
+                minOccurs="0" />
+            <xs:element name="item6-45" type="tns:Position3D"
+                minOccurs="0" />
+            <xs:element name="item6-46" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-47" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-48" type="tns:RegionList"
+                minOccurs="0" />
+            <xs:element name="item6-49" type="tns:RegionOffsets"
+                minOccurs="0" />
+            <xs:element name="item6-50" type="tns:RegionPointSet"
+                minOccurs="0" />
+            <xs:element name="item6-51" type="tns:RoadSignID"
+                minOccurs="0" />
+            <xs:element name="item6-52" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-53" type="tns:RTCMmsg"
+                minOccurs="0" />
+            <xs:element name="item6-54" type="tns:RTCMPackage"
+                minOccurs="0" />
+            <xs:element name="item6-55" type="tns:Sample"
+                minOccurs="0" />
+            <xs:element name="item6-56" type="tns:ShapePointSet"
+                minOccurs="0" />
+            <xs:element name="item6-57" type="tns:SignalControlZone"
+                minOccurs="0" />
+            <xs:element name="item6-58" type="tns:SignalRequest"
+                minOccurs="0" />
+            <xs:element name="item6-59" type="tns:SnapshotDistance"
+                minOccurs="0" />
+            <xs:element name="item6-60" type="tns:Snapshot"
+                minOccurs="0" />
+            <xs:element name="item6-61" type="tns:SnapshotTime"
+                minOccurs="0" />
+            <xs:element name="item6-62" type="tns:SpecialLane"
+                minOccurs="0" />
+            <xs:element name="item6-63" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-64" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item6-65" type="tns:ValidRegion"
+                minOccurs="0" />
+            <xs:element name="item6-66" type="tns:VehicleComputedLane"
+                minOccurs="0" />
+            <xs:element name="item6-67" type="tns:VehicleIdent"
+                minOccurs="0" />
+            <xs:element name="item6-68" type="tns:VehicleReferenceLane"
+                minOccurs="0" />
+            <xs:element name="item6-69" type="tns:VehicleSafetyExtension"
+                minOccurs="0" />
+            <xs:element name="item6-70" type="tns:VehicleSize"
+                minOccurs="0" />
+            <xs:element name="item6-71" type="tns:VehicleStatusRequest"
+                minOccurs="0" />
+            <xs:element name="item6-72" type="tns:VehicleStatus"
+                minOccurs="0" />
+            <xs:element name="item6-73" type="tns:WiperStatus"
+                minOccurs="0" />
+            <xs:element name="item7-1" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-2" type="tns:AccelerationConfidence"
+                minOccurs="0" />
+            <xs:element name="item7-3" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-4" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-5" type="tns:AntiLockBrakeStatus"
+                minOccurs="0" />
+            <xs:element name="item7-6" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-7" type="tns:AuxiliaryBrakeStatus"
+                minOccurs="0" />
+            <xs:element name="item7-8" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-9" type="tns:BrakeAppliedPressure"
+                minOccurs="0" />
+            <xs:element name="item7-10" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="item7-11" type="tns:BrakeBoostApplied"
+                minOccurs="0" />
+            <xs:element name="item7-12" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-13" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-14" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-15" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-16" type="tns:ColorState"
+                minOccurs="0" />
+            <xs:element name="item7-17" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-18" type="tns:CrosswalkLaneAttributes"
+                minOccurs="0" />
+            <xs:element name="item7-19" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-20" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-21" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-22" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-23" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-24" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-25" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-26" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-27" type="xs:byte"
+                minOccurs="0" />
+            <xs:element name="item7-28" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-29" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-30" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-31" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-32" type="tns:ElevationConfidence"
+                minOccurs="0" />
+            <xs:element name="item7-33" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-34" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-35" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-36" type="tns:Extent"
+                minOccurs="0" />
+            <xs:element name="item7-37" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-38" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-39" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="item7-40" type="tns:HeadingConfidence"
+                minOccurs="0" />
+            <xs:element name="item7-41" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-42" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-43" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-44" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-45" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-46" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-47" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-48" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-49" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-50" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-51" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-52" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-53" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-54" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-55" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-56" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-57" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-58" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-59" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-60" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="item7-61" type="tns:WheelSensorStatus"
+                minOccurs="0" />
+            <xs:element name="item7-62" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-63" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-64" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-65" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-66" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-67" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-68" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-69" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-70" type="tns:LightbarInUse"
+                minOccurs="0" />
+            <xs:element name="item7-71" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-72" type="tns:Location-quality"
+                minOccurs="0" />
+            <xs:element name="item7-73" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-74" type="xs:long"
+                minOccurs="0" />
+            <xs:element name="item7-75" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-76" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-77" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-78" type="tns:MultiVehicleResponse"
+                minOccurs="0" />
+            <xs:element name="item7-79" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-80" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-81" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-82" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-83" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-84" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-85" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-86" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-87" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-88" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-89" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-90" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-91" type="tns:PositionConfidence"
+                minOccurs="0" />
+            <xs:element name="item7-92" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-93" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-94" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-95" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-96" type="tns:RainSensor"
+                minOccurs="0" />
+            <xs:element name="item7-97" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-98" type="tns:ResponseType"
+                minOccurs="0" />
+            <xs:element name="item7-99" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-100" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-101" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-102" type="xs:long"
+                minOccurs="0" />
+            <xs:element name="item7-103" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-104" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-105" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-106" type="tns:SirenInUse"
+                minOccurs="0" />
+            <xs:element name="item7-107" type="tns:SpecialLaneAttributes"
+                minOccurs="0" />
+            <xs:element name="item7-108" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-109" type="tns:SpeedConfidence"
+                minOccurs="0" />
+            <xs:element name="item7-110" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-111" type="tns:StabilityControlStatus"
+                minOccurs="0" />
+            <xs:element name="item7-112" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-113"
+                type="tns:SteeringWheelAngleConfidence" minOccurs="0" />
+            <xs:element name="item7-114" type="xs:byte"
+                minOccurs="0" />
+            <xs:element name="item7-115" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-116" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-117" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-118" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-119" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-120" type="tns:ThrottleConfidence"
+                minOccurs="0" />
+            <xs:element name="item7-121" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-122" type="tns:TimeConfidence"
+                minOccurs="0" />
+            <xs:element name="item7-123" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-124" type="tns:TractionControlState"
+                minOccurs="0" />
+            <xs:element name="item7-125" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-126" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="item7-127" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-128" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-129" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-130" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-131" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-132" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-133" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-134" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-135" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-136" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-137" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-138" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-139" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-140" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-141" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item7-142" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="item7-143" type="xs:byte"
+                minOccurs="0" />
+            <xs:element name="item7-144" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-145" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item7-146" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-147" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item7-148" type="tns:YawRateConfidence"
+                minOccurs="0" />
+            <xs:element name="item7-149" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item8-1" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item8-2" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item8-3" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item8-4" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="item8-5" type="ns1:ITIScodesAndText"
+                minOccurs="0" />
+            <xs:element name="item8-6" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="item8-7" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item8-8" type="ns2:EssPrecipSituation"
+                minOccurs="0" />
+            <xs:element name="item8-9" type="ns2:EssPrecipYesNo"
+                minOccurs="0" />
+            <xs:element name="item8-10" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="item8-11" type="xs:long"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DMonthDay">
+        <xs:sequence>
+            <xs:element name="month" type="xs:short" />
+            <xs:element name="day" type="xs:short" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DYearMonth">
+        <xs:sequence>
+            <xs:element name="year" type="xs:int" />
+            <xs:element name="month" type="xs:short" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="WiperStatus">
+        <xs:sequence>
+            <xs:element name="statusFront" type="xs:string" />
+            <xs:element name="rateFront" type="xs:short" />
+            <xs:element name="statusRear" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="rateRear" type="xs:short"
+                minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SignalRequestMsg">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="msgCnt" type="xs:short" />
+            <xs:element name="request" type="tns:SignalRequest" />
+            <xs:element name="timeOfService" type="tns:DTime"
+                minOccurs="0" />
+            <xs:element name="endOfService" type="tns:DTime"
+                minOccurs="0" />
+            <xs:element name="transitStatus" minOccurs="0">
+                <xs:simpleType>
+                    <xs:list itemType="xs:string" />
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="vehicleVIN" type="tns:VehicleIdent"
+                minOccurs="0" />
+            <xs:element name="vehicleData" type="xs:string" />
+            <xs:element name="status" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="EmergencyVehicleAlert">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="id" type="xs:string" minOccurs="0" />
+            <xs:element name="rsaMsg" type="tns:RoadSideAlert" />
+            <xs:element name="responseType" type="tns:ResponseType"
+                minOccurs="0" />
+            <xs:element name="details" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="mass" type="xs:short"
+                minOccurs="0" />
+            <xs:element name="basicType" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="vehicleType" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="responseEquip" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="responderType" type="xs:string"
+                minOccurs="0" />
+            <xs:element name="crc" type="xs:string" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AlaCarte">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="data" type="tns:AllInclusive" />
+            <xs:element name="crc" type="xs:string"
+                minOccurs="0" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="NMEA-Corrections">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="rev" type="xs:string" />
+            <xs:element name="msg" type="xs:int" />
+            <xs:element name="wdCount" type="xs:int" />
+            <xs:element name="payload" type="xs:string" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="IntersectionCollision">
+        <xs:sequence>
+            <xs:element name="msgID" type="xs:string" />
+            <xs:element name="msgCnt" type="xs:short" />
+            <xs:element name="id" type="xs:string" />
+            <xs:element name="secMark" type="xs:int"
+                minOccurs="0" />
+            <xs:element name="path" type="tns:PathHistory" />
+            <xs:element name="intersetionID" type="xs:string" />
+            <xs:element name="laneNumber" type="xs:string" />
+            <xs:element name="eventFlag" type="xs:int" />
+            <xs:any processContents="lax" namespace="##other" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="CrosswalkLaneAttributes">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="noData" />
+            <xs:enumeration value="twoWayPath" />
+            <xs:enumeration value="pedestrianCrosswalk" />
+            <xs:enumeration value="bikeLane" />
+            <xs:enumeration value="railRoadTrackPresent" />
+            <xs:enumeration value="oneWayPathOfTravel" />
+            <xs:enumeration value="pedestrianCrosswalkTypeA" />
+            <xs:enumeration value="pedestrianCrosswalkTypeB" />
+            <xs:enumeration value="pedestrianCrosswalkTypeC" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TimeConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="time-100-000" />
+            <xs:enumeration value="time-050-000" />
+            <xs:enumeration value="time-020-000" />
+            <xs:enumeration value="time-010-000" />
+            <xs:enumeration value="time-002-000" />
+            <xs:enumeration value="time-001-000" />
+            <xs:enumeration value="time-000-500" />
+            <xs:enumeration value="time-000-200" />
+            <xs:enumeration value="time-000-100" />
+            <xs:enumeration value="time-000-050" />
+            <xs:enumeration value="time-000-020" />
+            <xs:enumeration value="time-000-010" />
+            <xs:enumeration value="time-000-005" />
+            <xs:enumeration value="time-000-002" />
+            <xs:enumeration value="time-000-001" />
+            <xs:enumeration value="time-000-000-5" />
+            <xs:enumeration value="time-000-000-2" />
+            <xs:enumeration value="time-000-000-1" />
+            <xs:enumeration value="time-000-000-05" />
+            <xs:enumeration value="time-000-000-02" />
+            <xs:enumeration value="time-000-000-01" />
+            <xs:enumeration value="time-000-000-005" />
+            <xs:enumeration value="time-000-000-002" />
+            <xs:enumeration value="time-000-000-001" />
+            <xs:enumeration value="time-000-000-000-5" />
+            <xs:enumeration value="time-000-000-000-2" />
+            <xs:enumeration value="time-000-000-000-1" />
+            <xs:enumeration value="time-000-000-000-05" />
+            <xs:enumeration value="time-000-000-000-02" />
+            <xs:enumeration value="time-000-000-000-01" />
+            <xs:enumeration value="time-000-000-000-005" />
+            <xs:enumeration value="time-000-000-000-002" />
+            <xs:enumeration value="time-000-000-000-001" />
+            <xs:enumeration value="time-000-000-000-000-5" />
+            <xs:enumeration value="time-000-000-000-000-2" />
+            <xs:enumeration value="time-000-000-000-000-1" />
+            <xs:enumeration value="time-000-000-000-000-05" />
+            <xs:enumeration value="time-000-000-000-000-02" />
+            <xs:enumeration value="time-000-000-000-000-01" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Extent">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="useInstantlyOnly" />
+            <xs:enumeration value="useFor3meters" />
+            <xs:enumeration value="useFor10meters" />
+            <xs:enumeration value="useFor50meters" />
+            <xs:enumeration value="useFor100meters" />
+            <xs:enumeration value="useFor500meters" />
+            <xs:enumeration value="useFor1000meters" />
+            <xs:enumeration value="useFor5000meters" />
+            <xs:enumeration value="useFor10000meters" />
+            <xs:enumeration value="useFor50000meters" />
+            <xs:enumeration value="useFor100000meters" />
+            <xs:enumeration value="forever" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="YawRateConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="degSec-100-00" />
+            <xs:enumeration value="degSec-010-00" />
+            <xs:enumeration value="degSec-005-00" />
+            <xs:enumeration value="degSec-001-00" />
+            <xs:enumeration value="degSec-000-10" />
+            <xs:enumeration value="degSec-000-05" />
+            <xs:enumeration value="degSec-000-01" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="AccelerationConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="accl-100-00" />
+            <xs:enumeration value="accl-010-00" />
+            <xs:enumeration value="accl-005-00" />
+            <xs:enumeration value="accl-001-00" />
+            <xs:enumeration value="accl-000-10" />
+            <xs:enumeration value="accl-000-05" />
+            <xs:enumeration value="accl-000-01" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="SteeringWheelAngleConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="prec2deg" />
+            <xs:enumeration value="prec1deg" />
+            <xs:enumeration value="prec0-02deg" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ThrottleConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="prec10percent" />
+            <xs:enumeration value="prec1percent" />
+            <xs:enumeration value="prec0-5percent" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="WheelSensorStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="off" />
+            <xs:enumeration value="on" />
+            <xs:enumeration value="notDefined" />
+            <xs:enumeration value="notSupoprted" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="LightbarInUse">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="notInUse" />
+            <xs:enumeration value="inUse" />
+            <xs:enumeration value="sirenInUse" />
+            <xs:enumeration value="yellowCautionLights" />
+            <xs:enumeration value="schooldBusLights" />
+            <xs:enumeration value="arrowSignsActive" />
+            <xs:enumeration value="slowMovingVehicle" />
+            <xs:enumeration value="freqStops" />
+            <xs:enumeration value="reserved" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="BrakeAppliedPressure">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="minPressure" />
+            <xs:enumeration value="bkLvl-2" />
+            <xs:enumeration value="bkLvl-3" />
+            <xs:enumeration value="bkLvl-4" />
+            <xs:enumeration value="bkLvl-5" />
+            <xs:enumeration value="bkLvl-6" />
+            <xs:enumeration value="bkLvl-7" />
+            <xs:enumeration value="bkLvl-8" />
+            <xs:enumeration value="bkLvl-9" />
+            <xs:enumeration value="bkLvl-10" />
+            <xs:enumeration value="bkLvl-11" />
+            <xs:enumeration value="bkLvl-12" />
+            <xs:enumeration value="bkLvl-13" />
+            <xs:enumeration value="bkLvl-14" />
+            <xs:enumeration value="maxPressure" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="RainSensor">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="none" />
+            <xs:enumeration value="lightMist" />
+            <xs:enumeration value="heavyMist" />
+            <xs:enumeration value="lightRainOrDrizzle" />
+            <xs:enumeration value="rain" />
+            <xs:enumeration value="moderateRain" />
+            <xs:enumeration value="heavyRain" />
+            <xs:enumeration value="heavyDownpour" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="SpeedConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="prec100ms" />
+            <xs:enumeration value="prec10ms" />
+            <xs:enumeration value="prec5ms" />
+            <xs:enumeration value="prec1ms" />
+            <xs:enumeration value="prec0-1ms" />
+            <xs:enumeration value="prec0-05ms" />
+            <xs:enumeration value="prec0-01ms" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="SpecialLaneAttributes">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="noData" />
+            <xs:enumeration value="egressPath" />
+            <xs:enumeration value="railRoadTrack" />
+            <xs:enumeration value="transitOnlyLane" />
+            <xs:enumeration value="hovLane" />
+            <xs:enumeration value="busOnly" />
+            <xs:enumeration value="vehiclesEntering" />
+            <xs:enumeration value="vehiclesLeaving" />
+            <xs:enumeration value="reserved" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="AntiLockBrakeStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="off" />
+            <xs:enumeration value="on" />
+            <xs:enumeration value="engaged" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="AuxiliaryBrakeStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="off" />
+            <xs:enumeration value="on" />
+            <xs:enumeration value="reserved" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="BrakeBoostApplied">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="off" />
+            <xs:enumeration value="on" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ColorState">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="dark" />
+            <xs:enumeration value="green" />
+            <xs:enumeration value="yellow" />
+            <xs:enumeration value="red" />
+            <xs:enumeration value="green-flashing" />
+            <xs:enumeration value="yellow-flashing" />
+            <xs:enumeration value="red-flashing" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ElevationConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="elev-500-00" />
+            <xs:enumeration value="elev-200-00" />
+            <xs:enumeration value="elev-100-00" />
+            <xs:enumeration value="elev-050-00" />
+            <xs:enumeration value="elev-020-00" />
+            <xs:enumeration value="elev-010-00" />
+            <xs:enumeration value="elev-005-00" />
+            <xs:enumeration value="elev-002-00" />
+            <xs:enumeration value="elev-001-00" />
+            <xs:enumeration value="elev-000-50" />
+            <xs:enumeration value="elev-000-20" />
+            <xs:enumeration value="elev-000-10" />
+            <xs:enumeration value="elev-000-05" />
+            <xs:enumeration value="elev-000-02" />
+            <xs:enumeration value="elev-000-01" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="HeadingConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="prec45deg" />
+            <xs:enumeration value="prec10deg" />
+            <xs:enumeration value="prec05deg" />
+            <xs:enumeration value="prec01deg" />
+            <xs:enumeration value="prec0-1deg" />
+            <xs:enumeration value="prec0-05deg" />
+            <xs:enumeration value="prec0-01deg" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Location-quality">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="loc-qual-bt1m" />
+            <xs:enumeration value="loc-qual-bt5m" />
+            <xs:enumeration value="loc-qual-bt12m" />
+            <xs:enumeration value="loc-qual-bt50m" />
+            <xs:enumeration value="loc-qual-bt125m" />
+            <xs:enumeration value="loc-qual-bt500m" />
+            <xs:enumeration value="loc-qual-bt1250m" />
+            <xs:enumeration value="loc-qual-unknown" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="MultiVehicleResponse">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="singleVehicle" />
+            <xs:enumeration value="multiVehicle" />
+            <xs:enumeration value="reserved" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="PositionConfidence">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="a500m" />
+            <xs:enumeration value="a200m" />
+            <xs:enumeration value="a100m" />
+            <xs:enumeration value="a50m" />
+            <xs:enumeration value="a20m" />
+            <xs:enumeration value="a10m" />
+            <xs:enumeration value="a5m" />
+            <xs:enumeration value="a2m" />
+            <xs:enumeration value="a1m" />
+            <xs:enumeration value="a50cm" />
+            <xs:enumeration value="a20cm" />
+            <xs:enumeration value="a10cm" />
+            <xs:enumeration value="a5cm" />
+            <xs:enumeration value="a2cm" />
+            <xs:enumeration value="a1cm" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ResponseType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="notInUseOrNotEquipped" />
+            <xs:enumeration value="emergency" />
+            <xs:enumeration value="nonEmergency" />
+            <xs:enumeration value="pursuit" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="SirenInUse">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="notInUse" />
+            <xs:enumeration value="inUse" />
+            <xs:enumeration value="reserved" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="StabilityControlStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="off" />
+            <xs:enumeration value="on" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TractionControlState">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="unavailable" />
+            <xs:enumeration value="off" />
+            <xs:enumeration value="on" />
+            <xs:enumeration value="engaged" />
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<connector xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/connector_1_5.xsd"
+        version="1.5">
+    <description>Resource adapter that connects to eTEXAS</description>
+    <display-name>eTEXAS Resource Adapter</display-name>
+    <vendor-name>Harmonia Holdings Group, LLC</vendor-name>
+    <eis-type>Simulator</eis-type>
+    <resourceadapter-version>1.0</resourceadapter-version>        
+    <resourceadapter>
+    	<resourceadapter-class>org.etexascode.webapp.genericadapter.SimResourceAdapterImpl</resourceadapter-class>
+        <outbound-resourceadapter>
+            <connection-definition>
+                <managedconnectionfactory-class>
+                                        org.etexascode.webapp.genericadapter.GenericManagedConnectionFactory
+                </managedconnectionfactory-class>
+                <connectionfactory-interface>
+                                        org.etexascode.webapp.ra.api.SimFactory
+                </connectionfactory-interface>
+                <connectionfactory-impl-class>
+                                        org.etexascode.webapp.genericadapter.GenericFactoryImpl
+                </connectionfactory-impl-class>
+                <connection-interface>
+                                        org.etexascode.interrep.datamodel.SimulatorInterface
+                </connection-interface>
+                <connection-impl-class>
+                                        org.etexascode.webapp.genericadapter.GenericSimulator
+                </connection-impl-class>
+            </connection-definition>
+            
+            <transaction-support>NoTransaction</transaction-support>
+            <reauthentication-support>false</reauthentication-support>
+        </outbound-resourceadapter>
+        
+    </resourceadapter>
+</connector>

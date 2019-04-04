@@ -1,0 +1,76 @@
+/*
+ * #%L
+ * eTEXAS
+ * %%
+ * Copyright (C) 2016 Harmonia Holdings Group, LLC
+ * %%
+ * All rights reserved.
+ * -
+ * SBIR DATA RIGHTS
+ * Harmonia Holdings Group, LLC
+ * 2020 Kraft Drive Suite 2400
+ * Blacksburg, VA 24060
+ * Contract No: DTRT57-16-c-10008
+ * Start Date: 01/05/2016
+ * End Date: 01/05/2018
+ * Expiration of SBIR Data Rights Period: 01/05/2022
+ * -
+ * The Government's rights to use, modify, reproduce, release, perform,
+ * display, or disclose technical data or computer software marked with
+ * this legend are restricted during the period shown as provided in
+ * paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+ * Computer Software-Small Business Innovation Research (SBIR) Program
+ * clause contained in the above identified contract. No restrictions
+ * apply after the expiration date shown above. Any reproduction of
+ * technical data, computer software, or portions thereof marked with
+ * this legend must also reproduce the markings.
+ * -
+ * Contributors:
+ * Harmonia Holdings Group LLC: Initial API and implementation.
+ * #L%
+ */
+
+package org.etexascode.interrep.datamodel.interfaces;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Interface for merging the mutable and immutable models.
+ * 
+ * @author jrutherford
+ */
+// public interface IDetectorManager<T extends IDetector> extends Iterable<T>
+public interface IDetectorManager extends Iterable<IDetector> {
+
+    /**
+     * Gets the detector with the given ID..
+     * 
+     * @param id The ID.
+     * @return The detector.
+     */
+    public IDetector getDetector(Integer id);
+
+    /**
+     * Gets all the detectors.
+     * 
+     * @return The collection of detectors.
+     */
+    public Collection<? extends IDetector> getDetectorCollection();
+
+    /**
+     * Gets the keys.
+     * 
+     * @return The list of keys.
+     */
+    public Set<Integer> getKeys();
+
+    /**
+     * Gets the detectors that are in lane with Id id.
+     * 
+     * @param id The id of the lane we are looking for detectors in.
+     * @return The detectors in lane id.
+     */
+    public List<? extends IDetector> getDetectorFromLaneId(int id);
+}

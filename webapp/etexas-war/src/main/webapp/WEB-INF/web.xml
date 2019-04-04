@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<description>A Web Application which allows users execute microscopic simulations of traffic at an intersection.</description>
+	<display-name>eTEXAS Web App</display-name>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<!--The hostname and port should match what an outside user would need to 
+		access the server -->
+	<context-param>
+		<param-name>VisibleHostName</param-name>
+		<param-value>${maven.etexas.url}</param-value>
+	</context-param>
+	<context-param>
+		<param-name>VisibleHostPort</param-name>
+		<param-value>${maven.etexas.port}</param-value>
+	</context-param>
+	<servlet>
+		<servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>File Upload</servlet-name>
+		<servlet-class>org.etexascode.webapp.rest.UploadService</servlet-class>
+		<load-on-startup>1</load-on-startup>
+		<multipart-config>
+			<!--<location>c:\tmp</location> -->
+			<max-file-size>35000000</max-file-size>
+			<max-request-size>218018841</max-request-size>
+			<file-size-threshold>0</file-size-threshold>
+		</multipart-config>
+	</servlet>
+    <filter>
+        <filter-name>AdminAuthFilter</filter-name>
+        <filter-class>org.etexascode.webapp.rest.AdminAuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AdminAuthFilter</filter-name>
+        <url-pattern>/rest/admin/*</url-pattern>
+    </filter-mapping>
+	<filter>
+		<filter-name>ApiAuthFilter</filter-name>
+		<filter-class>org.etexascode.webapp.rest.ApiAuthFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>ApiAuthFilter</filter-name>
+		<url-pattern>/rest/api/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>UploadExceptionFilter</filter-name>
+		<filter-class>org.etexascode.webapp.exception.UploadExceptionFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>UploadExceptionFilter</filter-name>
+		<url-pattern>/rest/api/upload</url-pattern>
+	</filter-mapping>
+	<servlet-mapping>
+		<servlet-name>File Upload</servlet-name>
+		<url-pattern>/rest/api/upload</url-pattern>
+	</servlet-mapping>
+
+	<resource-ref>
+		<description>Generic Adapter</description>
+		<res-ref-name>genericAdapter</res-ref-name>
+		<res-type>org.etexascode.webapp.ra.api.SimFactory</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+
+	<security-role>
+		<role-name>ETEXAS_USER</role-name>
+	</security-role>
+	<security-role>
+		<role-name>ETEXAS_ADMIN</role-name>
+	</security-role>
+
+	<!-- Define security for main application -->
+	<security-constraint>
+		<display-name>Security for REST services</display-name>
+		<web-resource-collection>
+			<web-resource-name>REST Services</web-resource-name>
+			<url-pattern>/rest/api/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ETEXAS_USER</role-name>
+			<role-name>ETEXAS_ADMIN</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<!-- Define security for admin application -->
+	<security-constraint>
+		<display-name>Security for administration</display-name>
+		<web-resource-collection>
+			<web-resource-name>Admin Space</web-resource-name>
+			<url-pattern>/rest/admin/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ETEXAS_ADMIN</role-name>
+		</auth-constraint>
+	</security-constraint>
+	
+	<!-- Login configuration -->
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>file</realm-name>
+	</login-config>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	<mime-mapping>
+		<extension>jnlp</extension>
+		<mime-type>application/x-java-jnlp-file</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>htc</extension>
+		<mime-type>text/x-component</mime-type>
+	</mime-mapping>
+</web-app>

@@ -1,0 +1,31 @@
+
+The Playback Parser is designed to help a user parse the playback data into a form which can be used by the eTEXAS webapp to play the data back as a simulation.
+
+Requirements:
+The playback parser relies upon Python and has been tested with Python 2.7.3. You may find Python on the official site: http://www.python.org/
+
+Setup:
+The playback parser is designed to minimize the amount of code you will need to write to parse your specific data into the playback data format used by eTEXAS.
+Parsing your data will generally be done in the parser code. You can find a template for your parser code under parser_template.py. 
+You can find an example code under peach_tree_parser.py. To execute your parser you will need to change all occurances of "peach_tree_parser"
+in utility_functions_playback_parser.py to whatever you call your parser.
+
+Executing:
+For instructions on what flags you can use, execute playback_parser.py with no arguments.
+
+====
+
+The playback test generator is a small python package designed to generate integration tests and/or unit tests for eTEXAS. Here are the important parts:
+
+1) I would strongly recommend copying this directory out of SVN before using any of its contents
+
+2) Execute the generator by moving into the playback parser folder and executing playback_generator.py
+
+3) To create a test, you should only need to edit gen_functions.py
+
+4) The system takes care of creating the playback directory structures and generating detector events on its own
+
+5) All the relevant data structures are located in playback_data_model.py
+
+6) If you are interested, the write out process is in playback_write_out.py
+

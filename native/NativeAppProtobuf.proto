@@ -1,0 +1,259 @@
+package etexas;
+option java_package = "com.harmonia.etexas.wave";
+
+message BundleWrapper {
+  required int64 execId = 1;
+  optional InitBundle initBundle = 2;
+  optional InputBundle inputBundle = 3;
+  repeated OutputBundle outputBundle = 4;
+  optional ShutdownBundle shutdownBundle = 5;
+}
+
+message InitBundle {
+  repeated AppInitConfig  appInitConfig = 2;
+}
+
+message ShutdownBundle {
+}
+
+message AppInitConfig {
+  required string appId = 1;
+  required int64 devId = 2;
+  required string commandLine = 3;
+}
+
+message OutputBundle {
+  required string appId = 1;
+  required int64 devId = 2;
+  required double x = 3;
+  required double y = 4;
+  required double z = 5;
+  repeated VehicleCommandData vehComs = 6;
+  repeated SignalCommandData sigComs = 7;
+  repeated WSMIndication messages = 8;
+  repeated LogData logs = 9;
+}
+
+message VehicleCommandData {
+  enum VehicleCommandClass {
+	DESTINATION = 0;
+	LANE_CHANGE = 1;
+	SPEED = 2;
+  }
+  required VehicleCommandClass commandClass = 1;
+  required int32 command = 2;
+  required int32 vehicleId = 3;
+  optional double speed = 4;
+}
+
+message SignalCommandData {
+  required int32 command = 1;
+  optional double time = 2;
+}
+
+message LogData {
+  required double simTime = 1;
+  required string key = 2;
+  required string message = 3;
+}
+
+message InputBundle {
+  required double simTime = 1;
+  
+  optional RseModelData rseData = 2;
+  repeated RseDevice rses = 3;
+  repeated ObuDevice obus = 4;
+  repeated Tx messages = 5;
+  repeated AppDevMap appDevMap = 6;
+}
+
+message RseDevice {
+  required int64 devId = 1;
+  required double latitude = 2;
+  required double longitude = 3;
+  required double elevation = 4;
+  repeated int64 messIds = 5;
+}
+
+message ObuDevice {
+  required int64 devId = 1;
+  required VehicleData vehicle = 2;
+  repeated int64 messIds = 3;
+}
+
+message VehicleData {
+  required int32 vehicleId = 1;
+  required double speed = 2;
+  required double acceleration = 3;
+  required double length = 4;
+  required double width = 5;
+  required int32 laneId = 6;
+  required double heading = 7;
+  required double height = 8;
+  
+  enum VehicleType {
+	CAR = 0;
+	BUS = 1;
+	TRACTOR_TRAILER = 2;
+  }
+  
+  optional VehicleType type = 9;
+  required bool brakePressed = 10;
+  required double latitude = 11;
+  required double longitude = 12;
+  required double elevation = 13;
+  required double x = 14;
+  required double y = 15;
+  required double z = 16;
+}
+
+message Tx {
+  required int64 messId = 1;
+  required WSMIndication mess = 2;
+}
+
+message WSMIndication {
+  required bytes data = 1;
+  required int32 size = 2;
+  required int64 dest = 3;
+  required int64 src = 4;
+}
+
+message AppDevMap {
+  required string appId = 1;
+  repeated int64 devIds = 2;
+}
+
+message RseModelData {
+	repeated SignalManagerEntry signalMap = 1;
+	repeated DetectorManagerEntry detectorMap = 2;
+	repeated LaneManagerEntry laneMap = 3;
+}
+
+message SignalManagerEntry {
+	optional int32 key = 1;
+	optional SignalManagerData value = 2;
+}
+
+message SignalManagerData {
+	repeated SignalIndicationData signalIndications = 1;
+
+	message SignalIndicationData {
+		enum Color {
+			GREEN = 0;
+			RED = 1;
+			YELLOW = 2;
+			NONE = 3;
+		}
+		
+		enum Type {
+			BALL = 0;
+			LEFT_ARROW = 1;
+			RIGHT_ARROW = 2;
+			STRAIGHT_ARROW = 3;
+			UTURN_ARROW = 4;
+			STOP_SIGN = 5;
+			YIELD_SIGN = 6;
+			UNCONTROLLED = 7;
+			UNKNOWN = 8;
+		}
+		
+		enum State {
+			STEADY = 0;
+			FLASHING = 1;
+			SOFT = 2;
+		}
+		
+		required int32 laneId = 1;
+		optional double timeToChange = 2;
+		optional Color color = 3;
+		optional Type type = 4;
+		optional State state = 5;
+	}
+}
+
+message DetectorManagerData {
+	repeated DetectorData detectors = 1;
+
+	message DetectorData {
+		required int32 detectorId = 1;
+		repeated int32 laneIds = 2;
+		optional bool presenceDetectCap = 3;
+		optional bool pulseDetectCap = 4;
+		optional bool speedDetectCap = 5;
+		optional bool lengthDetectCap = 6;
+		optional DetectorEventData detEvent = 7;
+		optional PolygonData area = 8;
+		
+		message DetectorEventData {
+			required int32 detectorId = 1;
+			optional int32 pulse = 2;
+			optional bool presence = 3;
+			optional double speed = 4;
+			optional double length = 5;
+		}
+		
+		message PolygonData {
+			required int32 npoints = 1;
+			repeated int32 xpoints = 2;
+			repeated int32 ypoints = 3;
+		}
+	}
+}
+
+message DetectorManagerEntry {
+	optional int32 key = 1;
+	optional DetectorManagerData value = 2;
+}
+
+message LaneManagerData {
+	optional double latitude = 1;
+	optional double longitude = 2;
+	optional double elevation = 3;
+	optional int32 intersectionId = 4;
+	optional int32 geoCalculatorType = 5;
+	
+	repeated LaneData lanes = 6;
+	
+	message LaneData {
+		enum Type {
+			UNSET = 0;
+			OUTBOUND = 1;
+			INBOUND = 2;
+		}
+		
+		required int32 laneId = 1;
+		optional Type type = 2;
+		optional int32 approachId = 3;
+		optional double speedLimit = 4;
+		
+		repeated LaneNode laneGeomList = 5;
+		repeated LaneMovement laneMovements = 6;
+		
+		message LaneNode {
+			required double x = 1;
+			required double y = 2;
+			optional double z = 3;
+			optional double width = 4 [default = 1];
+		}
+		
+		message LaneMovement {
+			enum Movement {
+				LEFT_TURN = 0;
+				RIGHT_TURN = 1;
+				STRAIGHT = 2;
+				RIGHT_TURN_ON_RED = 3;
+				LEFT_TURN_ON_RED = 4;
+				U_TURN = 5;
+			}
+			
+			required Movement movement = 1 [default = STRAIGHT];
+			required int32 movementId = 2;
+		}
+	}
+}
+
+message LaneManagerEntry {
+	optional int32 key = 1;
+	optional LaneManagerData value = 2;
+}

@@ -1,0 +1,169 @@
+/*
+ * #%L
+ * eTEXAS
+ * %%
+ * Copyright (C) 2016 Harmonia Holdings Group, LLC
+ * %%
+ * All rights reserved.
+ * -
+ * SBIR DATA RIGHTS
+ * Harmonia Holdings Group, LLC
+ * 2020 Kraft Drive Suite 2400
+ * Blacksburg, VA 24060
+ * Contract No: DTRT57-16-c-10008
+ * Start Date: 01/05/2016
+ * End Date: 01/05/2018
+ * Expiration of SBIR Data Rights Period: 01/05/2022
+ * -
+ * The Government's rights to use, modify, reproduce, release, perform,
+ * display, or disclose technical data or computer software marked with
+ * this legend are restricted during the period shown as provided in
+ * paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+ * Computer Software-Small Business Innovation Research (SBIR) Program
+ * clause contained in the above identified contract. No restrictions
+ * apply after the expiration date shown above. Any reproduction of
+ * technical data, computer software, or portions thereof marked with
+ * this legend must also reproduce the markings.
+ * -
+ * Contributors:
+ * Harmonia Holdings Group LLC: Initial API and implementation.
+ * #L%
+ */
+body, .x-body {
+	font-family: 'Roboto', arial, helvetica, verdana, sans-serif;
+	font-size: 14px;
+	font-style: normal;
+	line-height: 1.25em;
+	background-color: #FFF;
+}
+
+h4 {
+	font-size: 1.1em;
+	font-weight: bold;
+	margin: 1em 0 .5em 0;
+}
+
+a:link, a:visited {
+	color: #000;
+}
+
+a:hover {
+	color: #157fcc;
+}
+
+
+/** Utility Styles */
+.center {
+	text-align: center;
+}
+
+.left {
+	text-align: left;
+}
+
+.right {
+	text-align: right;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.italic {
+	font-style: italic;
+}
+
+#header {
+	padding: .5em 1em .5em 1em;
+	background-color: #dfeaf2;
+	background-color: #157fcc;
+}
+
+#content {
+}
+
+#leftCol {
+	margin-right: 350px;
+	padding : 1em 2em;
+}
+
+#rightCol {
+	width: 330px;
+	float: right;
+	margin : 1em 2em 0 0;
+}
+
+.box {
+	padding : 1em;
+	border : 1px solid #157fcc;
+	box-shadow: 3px 3px 8px #888888;
+	background-color: #F0F5F9;
+	background-color: #dfeaf2;
+	margin-bottom: 1em;
+}
+
+.box h4 {
+		margin: .5em 0 .5em 0;
+}
+
+#blog h5 {
+	margin: .25em 0 .5em 0;
+}
+#blog p {
+	margin : .5em 0 1em 0;
+	font-size: .9em;
+}
+#blog .date {
+	color: #666;
+	font-size: .9em;
+}
+
+#footer {
+	padding: 1em;
+	background-color: #dfeaf2;
+	background-color: #157fcc;
+	color : #FFF;
+	font-size : .8em;
+	clear: both;
+}
+
+#footer a:link, #footer a:visited {
+	color: #FFF;
+}
+
+#footer a:hover {
+	color: #000;
+}
+
+/**
+ * Login error page styles
+ */
+#errorMsg {
+	padding: 2em;
+	margin: 3em 0;
+}
+#footer.fixed {
+	position: absolute;
+	bottom: 0;
+	margin : auto;
+	width: 100%;
+	padding : 0;
+	
+}
+#footer.fixed div {
+		padding: 1em;
+	background-color: #dfeaf2;
+	background-color: #157fcc;
+	color : #FFF;
+	font-size : .8em;
+}
+
+.login-form .x-panel-body-default {
+	border-color: #157fcc;
+	border-width: 1px !important;
+	border-style: solid;
+}
+
+label.red {
+	color: #ff0000;
+}

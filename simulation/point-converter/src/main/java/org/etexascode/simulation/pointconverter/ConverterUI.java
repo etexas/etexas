@@ -1,0 +1,369 @@
+/*
+ * #%L
+ * eTEXAS
+ * %%
+ * Copyright (C) 2016 Harmonia Holdings Group, LLC
+ * %%
+ * All rights reserved.
+ * -
+ * SBIR DATA RIGHTS
+ * Harmonia Holdings Group, LLC
+ * 2020 Kraft Drive Suite 2400
+ * Blacksburg, VA 24060
+ * Contract No: DTRT57-16-c-10008
+ * Start Date: 01/05/2016
+ * End Date: 01/05/2018
+ * Expiration of SBIR Data Rights Period: 01/05/2022
+ * -
+ * The Government's rights to use, modify, reproduce, release, perform,
+ * display, or disclose technical data or computer software marked with
+ * this legend are restricted during the period shown as provided in
+ * paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+ * Computer Software-Small Business Innovation Research (SBIR) Program
+ * clause contained in the above identified contract. No restrictions
+ * apply after the expiration date shown above. Any reproduction of
+ * technical data, computer software, or portions thereof marked with
+ * this legend must also reproduce the markings.
+ * -
+ * Contributors:
+ * Harmonia Holdings Group LLC: Initial API and implementation.
+ * #L%
+ */
+
+package org.etexascode.simulation.pointconverter;
+
+import javax.swing.JOptionPane;
+
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Main UI screen that allows users to open up another dialog to create a transformation matrix or
+ * use a transformation matrix to transform points.
+ * 
+ * @author bbadillo
+ */
+public class ConverterUI extends javax.swing.JFrame {
+
+    /**
+     * Static logger
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConverterUI.class);
+
+    /**
+     * The main method.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /*
+         * Set the Nimbus look and feel
+         */
+        // <editor-fold defaultstate="collapsed"
+        // desc=" Look and feel setting code (optional) ">
+        /*
+         * If Nimbus (introduced in Java SE 6) is not available, stay with the default look and
+         * feel. For details see http://download.oracle.com/javase
+         * /tutorial/uiswing/lookandfeel/plaf.html
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        }
+        catch (ClassNotFoundException ex) {
+            LOGGER.debug(ex.toString());
+        }
+        catch (InstantiationException ex) {
+            LOGGER.debug(ex.toString());
+
+        }
+        catch (IllegalAccessException ex) {
+            LOGGER.debug(ex.toString());
+
+        }
+        catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            LOGGER.debug(ex.toString());
+
+        }
+        // </editor-fold>
+
+        /*
+         * Create and display the form
+         */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                ConverterUI converterUI = new ConverterUI();
+                converterUI.setLocationRelativeTo(null);
+                converterUI.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private org.etexascode.simulation.pointconverter.EnterTransformPanel enterTransformPanel;
+
+    private javax.swing.JButton jButtonCreateTransform;
+
+    private javax.swing.JButton jButtonTransform;
+
+    private javax.swing.JDialog jDialog;
+
+    private javax.swing.JLabel jLabel1;
+
+    private javax.swing.JLabel jLabel2;
+
+    private javax.swing.JLabel jLabel3;
+
+    private javax.swing.JLabel jLabel4;
+
+    private javax.swing.JPanel jPanel;
+
+    private javax.swing.JTextField jTextField_Lat;
+
+    private javax.swing.JTextField jTextField_Lon;
+
+    private javax.swing.JTextField jTextField_X;
+
+    private javax.swing.JTextField jTextField_Y;
+
+    // End of variables declaration//GEN-END:variables
+    /**
+     * Creates new form ConverterUI
+     */
+    public ConverterUI() {
+        initComponents();
+    }
+
+    /**
+     * Get a text field property as a double.
+     * 
+     * @param text The text to extract as a property.
+     * @return The double value of the text.
+     * @throws InvalidInputException
+     */
+    private double getProperty(String text) throws InvalidInputException {
+        if (text == null) {
+            throw new InvalidInputException();
+        }
+
+        try {
+            return Double.parseDouble(text);
+        }
+        catch (NumberFormatException e) {
+            throw new InvalidInputException();
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed"
+    // desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jDialog = new javax.swing.JDialog();
+        enterTransformPanel = new EnterTransformPanel(this);
+        jButtonCreateTransform = new javax.swing.JButton();
+        jPanel = new javax.swing.JPanel();
+        jTextField_X = new javax.swing.JTextField();
+        jTextField_Y = new javax.swing.JTextField();
+        jButtonTransform = new javax.swing.JButton();
+        jTextField_Lon = new javax.swing.JTextField();
+        jTextField_Lat = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+
+        jDialog.setTitle("Calculate Transform Using Points");
+        jDialog.setModal(true);
+
+        javax.swing.GroupLayout jDialogLayout = new javax.swing.GroupLayout(jDialog.getContentPane());
+        jDialog.getContentPane().setLayout(jDialogLayout);
+        jDialogLayout.setHorizontalGroup(jDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(enterTransformPanel, javax.swing.GroupLayout.DEFAULT_SIZE,
+                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+        jDialogLayout.setVerticalGroup(jDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(enterTransformPanel, javax.swing.GroupLayout.Alignment.TRAILING,
+                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Affine Transformer Tool");
+
+        jButtonCreateTransform.setText("Calculate Transform");
+        jButtonCreateTransform.addActionListener(new java.awt.event.ActionListener() {
+
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCreateTransformActionPerformed(evt);
+            }
+        });
+
+        jPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Transform Points"));
+        jPanel.setEnabled(false);
+
+        jTextField_X.setEnabled(false);
+
+        jTextField_Y.setEnabled(false);
+
+        jButtonTransform.setText("Transform");
+        jButtonTransform.setEnabled(false);
+        jButtonTransform.addActionListener(new java.awt.event.ActionListener() {
+
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonTransformActionPerformed(evt);
+            }
+        });
+
+        jTextField_Lon.setEditable(false);
+        jTextField_Lon.setEnabled(false);
+
+        jTextField_Lat.setEditable(false);
+        jTextField_Lat.setEnabled(false);
+
+        jLabel1.setText("X Coord:");
+        jLabel1.setEnabled(false);
+
+        jLabel2.setText("Y Coord:");
+        jLabel2.setEnabled(false);
+
+        jLabel3.setText("Longitude:");
+        jLabel3.setEnabled(false);
+
+        jLabel4.setText("Latitude:");
+        jLabel4.setEnabled(false);
+
+        javax.swing.GroupLayout jPanelLayout = new javax.swing.GroupLayout(jPanel);
+        jPanel.setLayout(jPanelLayout);
+        jPanelLayout.setHorizontalGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(
+                        jPanelLayout
+                                .createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(
+                                        jPanelLayout
+                                                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(
+                                                        jPanelLayout.createSequentialGroup().addComponent(jLabel1).addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(jTextField_X, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE).addComponent(jLabel3))
+                                                .addGroup(
+                                                        jPanelLayout
+                                                                .createSequentialGroup()
+                                                                .addGroup(
+                                                                        jPanelLayout
+                                                                                .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                                .addComponent(jButtonTransform)
+                                                                                .addGroup(
+                                                                                        jPanelLayout
+                                                                                                .createSequentialGroup()
+                                                                                                .addComponent(jLabel2)
+                                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                                .addComponent(jTextField_Y, javax.swing.GroupLayout.PREFERRED_SIZE, 121,
+                                                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(jLabel4)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(
+                                        jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(jTextField_Lat, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE).addComponent(jTextField_Lon))
+                                .addContainerGap()));
+        jPanelLayout.setVerticalGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
+                jPanelLayout
+                        .createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(
+                                jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jTextField_X, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextField_Lon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel1).addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(
+                                jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jTextField_Y, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextField_Lat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel2).addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(jButtonTransform).addContainerGap()));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
+                layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(
+                                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup().addComponent(jButtonCreateTransform).addGap(0, 0, Short.MAX_VALUE))
+                                        .addComponent(jPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap()));
+        layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
+                layout.createSequentialGroup().addContainerGap().addComponent(jButtonCreateTransform).addGap(18, 18, 18)
+                        .addComponent(jPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addContainerGap()));
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * Button event to create transformations.
+     * 
+     * @param evt The action event.
+     */
+    private void jButtonCreateTransformActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonCreateTransformActionPerformed
+
+        jDialog.setLocationRelativeTo(this);
+        jDialog.pack();
+        jDialog.setVisible(true);
+
+    }// GEN-LAST:event_jButtonCreateTransformActionPerformed
+
+    /**
+     * Button event to transform points.
+     * 
+     * @param evt The action event.
+     */
+    private void jButtonTransformActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonTransformActionPerformed
+        try {
+            double x = getProperty(jTextField_X.getText());
+            double y = getProperty(jTextField_Y.getText());
+
+            RealMatrix point = MatrixUtils.createRealMatrix(3, 1);
+            point.setColumn(0, new double[] { x, y, 1.0 });
+            RealMatrix result = enterTransformPanel.getTransform().multiply(point);
+
+            jTextField_Lon.setText(Double.toString(result.getEntry(0, 0)));
+            jTextField_Lat.setText(Double.toString(result.getEntry(1, 0)));
+
+        }
+        catch (InvalidInputException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input. Please try other values.", "Error", JOptionPane.ERROR_MESSAGE);
+            LOGGER.debug(ex.toString());
+        }
+
+    }// GEN-LAST:event_jButtonTransformActionPerformed
+
+    /**
+     * Set the enabled state of components.
+     * 
+     * @param enabled The state to set components.
+     */
+    public void setEnabledPanel(boolean enabled) {
+        jPanel.setEnabled(enabled);
+        jLabel1.setEnabled(enabled);
+        jLabel2.setEnabled(enabled);
+        jLabel3.setEnabled(enabled);
+        jLabel4.setEnabled(enabled);
+        jTextField_X.setEnabled(enabled);
+        jTextField_Y.setEnabled(enabled);
+        jTextField_Lon.setEnabled(enabled);
+        jTextField_Lat.setEnabled(enabled);
+        jButtonTransform.setEnabled(enabled);
+    }
+}

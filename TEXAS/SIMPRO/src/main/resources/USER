@@ -1,0 +1,106 @@
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** *  COPYRIGHT (C) 1989 by The University of Texas at Austin   * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of The University of Texas at Austin shall not be used in  * ***
+C *** * advertising or publicity related to the distribution of    * ***
+C *** * the software without specific, written, prior permission.  * ***
+C *** * This software is provided as-delivered without expressed   * ***
+C *** * or implied warranty.  The University of Texas at Austin    * ***
+C *** * makes no representation about the suitability of this      * ***
+C *** * software for any purpose and accepts no responsibility for * ***
+C *** * its use.                                                   * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+      COMMON / USERC  / ERRMSG,ESC   ,FMT   ,IMAGL1,IMAGL2,IMAGOP,
+     *                  IPAP  ,IPOLL ,IPTC  ,IPUNCH,ISSAM ,IWNOUT,
+     *                  PAR(PARNSP)  ,PARVAL(PARNSP)      ,WRNMSG
+      CHARACTER*1       ESC,IWNOUT
+      CHARACTER*3       FMT,IMAGOP,IPAP,IPOLL,IPTC,IPUNCH,ISSAM
+      CHARACTER*10      PAR
+      CHARACTER*80      IMAGL1,IMAGL2
+      CHARACTER*120     PARVAL,
+     *                              IFILE  ,            LFILE  ,
+     *                              STAFIL ,            T8FILE ,
+     *                              T9FILE ,            PVAFIL ,
+     *                              ERRFIL ,            SYSDAT ,
+     *                              REPRUN ,            SSAM   ,
+     *                              WRKDIR ,            PAUSND ,
+     *                              VEHDAT
+      CHARACTER*200     ERRMSG,WRNMSG
+      EQUIVALENCE       (PARVAL( 1),IFILE ),(PARVAL( 2),LFILE ),
+     *                  (PARVAL( 3),STAFIL),(PARVAL( 4),T8FILE),
+     *                  (PARVAL( 5),T9FILE),(PARVAL( 6),PVAFIL),
+     *                  (PARVAL( 7),ERRFIL),(PARVAL( 8),SYSDAT),
+     *                  (PARVAL( 9),REPRUN),(PARVAL(10),SSAM  ),
+     *                  (PARVAL(11),WRKDIR),(PARVAL(12),PAUSND),
+     *                  (PARVAL(13),VEHDAT)
+      COMMON / USERL  / FIRSTM,LTPOUT,MAJCBP,MAJCLC,RESPEV,STOPMC
+      LOGICAL           FIRSTM,LTPOUT,MAJCBP,MAJCLC,RESPEV,STOPMC
+      COMMON / USERD  / ABTPMN,ABTPSD,APIJR ,AUTOL ,BEGT20,CAREQA,
+     *                  CAREQL,CAREQM,DT    ,DTCU  ,DTMAX ,DTSQ  ,
+     *                  DUTOL ,ENDT20,HESFAC,PDSCOL,SIMTIM,STRTIM,
+     *                  TIME  ,TLAG  ,TLEAD ,TPRINT,TSTATS
+      DOUBLE PRECISION  ABTPMN,ABTPSD,APIJR ,AUTOL ,BEGT20,CAREQA,
+     *                  CAREQL,CAREQM,DT    ,DTCU  ,DTMAX ,DTSQ  ,
+     *                  DUTOL ,ENDT20,HESFAC,PDSCOL,SIMTIM,STRTIM,
+     *                  TIME  ,TLAG  ,TLEAD ,TPRINT,TSTATS
+      COMMON / USERI  / DET   ,IBLATR,ICS   ,IDH   ,IGEOP ,INPUT ,
+     *                  IPA   ,IPP   ,IPV   ,IQD   ,ISS   ,IVEHP ,
+     *                  IVMSMB,MPRTM ,NCERR ,NCIF  ,NCLF  ,NCOLS ,
+     *                  NCPVA ,NCSSAM,NCSTA ,NCT8  ,NCT9  ,NCVD  ,
+     *                  NDV   ,NER   ,NFRTS ,NGD   ,NGP   ,NIO   ,
+     *                  NPD   ,NPRCNT,NRNS  ,NROWS ,NRTS  ,NRTSM1,
+     *                  NSP   ,NVD   ,NWR   ,NWV   ,PPP   ,SER   ,
+     *                  TC3   ,TC6
+      INTEGER           DET   ,IBLATR,ICS   ,IDH   ,IGEOP ,INPUT ,
+     *                  IPA   ,IPP   ,IPV   ,IQD   ,ISS   ,IVEHP ,
+     *                  IVMSMB,MPRTM ,NCERR ,NCIF  ,NCLF  ,NCOLS ,
+     *                  NCPVA ,NCSSAM,NCSTA ,NCT8  ,NCT9  ,NCVD  ,
+     *                  NDV   ,NER   ,NFRTS ,NGD   ,NGP   ,NIO   ,
+     *                  NPD   ,NPRCNT,NRNS  ,NROWS ,NRTS  ,NRTSM1,
+     *                  NSP   ,NVD   ,NWR   ,NWV   ,PPP   ,SER   ,
+     *                  TC3   ,TC6
+      COMMON / VMSMC  / CVMSDN(NVMSMM)
+      CHARACTER*7       CVMSDN
+      COMMON / VMSMD  / DVMSAT(NVMSMM),DVMSDM(NVMSMM),DVMSDP(NVMSMM),
+     *                  DVMSMP(NVMSMM),DVMSPB(NVMSMM),DVMSPE(NVMSMM),
+     *                  DVMSST(NVMSMM)
+      DOUBLE PRECISION  DVMSAT        ,DVMSDM        ,DVMSDP        ,
+     *                  DVMSMP        ,DVMSPB        ,DVMSPE        ,
+     *                  DVMSST
+      COMMON / VMSMI  / IVMSAP(NVMSMM),IVMSLB(NVMSMM),IVMSLE(NVMSMM),
+     *                  IVMSMC(NVMSMM),IVMSMG(NVMSMM),IVMSMT(NVMSMM),
+     *                  IVMSPR(NVMSMV),IVMSVN(NVMSMM)
+      INTEGER           IVMSAP        ,IVMSLB        ,IVMSLE        ,
+     *                  IVMSMC        ,IVMSMG        ,IVMSMT        ,
+     *                  IVMSPR        ,IVMSVN

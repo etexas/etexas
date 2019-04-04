@@ -1,0 +1,933 @@
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * COPYRIGHT (C) 2008 by Rioux Engineering, Austin, Texas USA * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of Rioux Engineering shall not be used in advertising or   * ***
+C *** * publicity related to the distribution of the software      * ***
+C *** * without specific, written, prior permission.  This         * ***
+C *** * software is provided as-delivered without expressed or     * ***
+C *** * implied warranty.  Rioux Engineering makes no              * ***
+C *** * representation about the suitability of this software for  * ***
+C *** * any purpose and accepts no responsibility for its use.     * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+C-----CONSTANT DEFINITIONS
+C
+C-----DECCOL   966 VEHICLE MESSAGE SYSTEM COLLISION DECELERATION MAXIMUM
+      DOUBLE PRECISION  DECCOL
+      PARAMETER       ( DECCOL =       966.0D0       )
+C-----DIA        7 MAXIMUM NUMBER OF TEXAS DIAMOND CONTROLLER FIGURES
+      INTEGER           DIA
+      PARAMETER       ( DIA    =         7           )
+C-----DISCON   200 DISTANCE TO START REDUCING DESIRED SPEED FOR
+C-----             COLLISION
+      DOUBLE PRECISION  DISCON
+      PARAMETER       ( DISCON =       200.0D0       )
+C-----EMPROY  1975 EMPRO MINIMUM MODEL YEAR
+      INTEGER           EMPROY
+      PARAMETER       ( EMPROY =      1975           )
+C-----EVEHFZ  15.0 EMERGENCY VEHICLE FRONT ZONE IN SECONDS
+      DOUBLE PRECISION  EVEHFZ
+      PARAMETER       ( EVEHFZ =        15.0D0       )
+C-----EVEHRZ   7.5 EMERGENCY VEHICLE REAR  ZONE IN SECONDS
+      DOUBLE PRECISION  EVEHRZ
+      PARAMETER       ( EVEHRZ =         7.5D0       )
+C-----HDTMAX  0.10 HARDWARE-IN-THE-LOOP DT MAXIMUM
+      DOUBLE PRECISION  HDTMAX
+      PARAMETER       ( HDTMAX =         0.10D0      )
+C-----HDTMIN  0.02 HARDWARE-IN-THE-LOOP DT MINIMUM
+      DOUBLE PRECISION  HDTMIN
+      PARAMETER       ( HDTMIN =         0.02D0      )
+C-----HOV        4 NUMBER OF OVERLAPS FOR HARDWARE-IN-THE-LOOP SIGNAL
+      INTEGER           HOV
+      PARAMETER       ( HOV    =         4           )
+C-----HPH        8 NUMBER OF PHASES FOR HARDWARE-IN-THE-LOOP SIGNAL
+      INTEGER           HPH
+      PARAMETER       ( HPH    =         8           )
+C-----IACC00       ACCELERATION/DECELERATION ZERO VALUE
+      DOUBLE PRECISION  IACC00
+      PARAMETER       ( IACC00 =         0.0000001D0 )
+C-----IACCFR       ACCELERATION/DECELERATION FACTOR
+      DOUBLE PRECISION  IACCFR
+      PARAMETER       ( IACCFR =  20000000.0D0       )
+C-----IACCSH       ACCELERATION/DECELERATION SHIFT
+      DOUBLE PRECISION  IACCSH
+      PARAMETER       ( IACCSH =        40.0D0       )
+C-----ICBL         1 BLANK CHARACTER
+      CHARACTER*1       ICBL
+      PARAMETER       ( ICBL   = ' '                 )
+C-----IPOSFR       POSITION FACTOR
+      DOUBLE PRECISION  IPOSFR
+      PARAMETER       ( IPOSFR =    400000.0D0       )
+C-----ISLP00       SLOPE ZERO VALUE
+      DOUBLE PRECISION  ISLP00
+      PARAMETER       ( ISLP00 =         0.0000001D0 )
+C-----ISLPFR       SLOPE FACTOR
+      DOUBLE PRECISION  ISLPFR
+      PARAMETER       ( ISLPFR =  50000000.0D0       )
+C-----ISLPSH       SLOPE SHIFT
+      DOUBLE PRECISION  ISLPSH
+      PARAMETER       ( ISLPSH =        15.0D0       )
+C-----IVELFR       VELOCITY FACTOR
+      DOUBLE PRECISION  IVELFR
+      PARAMETER       ( IVELFR =  10000000.0D0       )
+C-----LATCLR     3 LATERAL CLEARANCE FOR A LANE CHANGE
+      DOUBLE PRECISION  LATCLR
+      PARAMETER       ( LATCLR =         3.0D0       )
+C-----LATPFR       LANE CHANGE FACTOR
+      DOUBLE PRECISION  LATPFR
+      PARAMETER       ( LATPFR =      1000.0D0       )
+C-----LATPSH       LANE CHANGE SHIFT
+      DOUBLE PRECISION  LATPSH
+      PARAMETER       ( LATPSH =        15.0D0       )
+C-----LCSPER  0.95 PERCENT OF DESIRED SPEED TO CHECK SLOW VEHICLE LANE
+C-----CHANGE
+      DOUBLE PRECISION  LCSPER
+      PARAMETER       ( LCSPER =         0.95D0      )
+C-----LCSTIM  15.0 TIME FROM STOP LINE TO CHECK SLOW VEHICLE LANE CHANGE
+      DOUBLE PRECISION  LCSTIM
+      PARAMETER       ( LCSTIM =        15.0D0       )
+C-----LDC       13 NUMBER OF CLASSIFY DETECTOR VEHICLE CLASSES
+      INTEGER           LDC
+      PARAMETER       ( LDC    =        13           )
+C-----LNCHMX    10 MAXIMUM NUMBER OF LANE CHANGES PER APPROACH
+      INTEGER           LNCHMX
+      PARAMETER       ( LNCHMX =        10           )
+C-----LPGAP    0.0 ALLOWANCE FOR POSSIBLE LANE PATH GAP
+      DOUBLE PRECISION  LPGAP
+      PARAMETER       ( LPGAP  =         0.0D0       )
+C-----LWBMAX     7 LANE WIDTH FOR BICYCLES MAXIMUM (FEET)
+      INTEGER           LWBMAX
+      PARAMETER       ( LWBMAX =         7           )
+C-----LWBMIN     3 LANE WIDTH FOR BICYCLES MINIMUM (FEET)
+      INTEGER           LWBMIN
+      PARAMETER       ( LWBMIN =         3           )
+C-----LWVMAX    15 LANE WIDTH FOR VEHICLES MAXIMUM (FEET)
+      INTEGER           LWVMAX
+      PARAMETER       ( LWVMAX =        15           )
+C-----LWVMIN     8 LANE WIDTH FOR VEHICLES MINIMUM (FEET)
+      INTEGER           LWVMIN
+      PARAMETER       ( LWVMIN =         8           )
+C-----MAXFIL    60 MAXIMUM LENGTH OF GDVDATA AND SIMDATA FULL FILE NAME
+      INTEGER           MAXFIL
+      PARAMETER       ( MAXFIL =        60           )
+C-----MAXHIG    14 MAXIMUM VEHICLE HEIGHT (FEET)
+      INTEGER           MAXHIG
+      PARAMETER       ( MAXHIG =        14           )
+C-----MAXLEN   400 MAXIMUM VEHICLE LENGTH (FEET)
+      INTEGER           MAXLEN
+      PARAMETER       ( MAXLEN =       400           )
+C-----MAXTOL    50 MAXIMUM TOLERANCE FOR REPTOL
+      INTEGER           MAXTOL
+      PARAMETER       ( MAXTOL =        50           )
+C-----MAXWID    12 MAXIMUM VEHICLE WIDTH (FEET)
+      INTEGER           MAXWID
+      PARAMETER       ( MAXWID =        12           )
+C-----MDS      161 MAXIMUM DESIRED SPEED (FEET PER SECOND)
+      INTEGER           MDS
+      PARAMETER       ( MDS    =       161           )
+C-----MINHIG     3 MINIMUM VEHICLE HEIGHT (FEET)
+      INTEGER           MINHIG
+      PARAMETER       ( MINHIG =         3           )
+C-----MINLEN     4 MINIMUM VEHICLE LENGTH (FEET)
+      INTEGER           MINLEN
+      PARAMETER       ( MINLEN =         4           )
+C-----MINNPH     2 MINIMUM NUMBER OF SIGNAL PHASES
+      INTEGER           MINNPH
+      PARAMETER       ( MINNPH =         2           )
+C-----MINPCL    40 MINIMUM PRETIMED CYCLE LENGTH (SECONDS)
+      INTEGER           MINPCL
+      PARAMETER       ( MINPCL =        40           )
+C-----MINWID     2 MINIMUM VEHICLE WIDTH (FEET)
+      INTEGER           MINWID
+      PARAMETER       ( MINWID =         2           )
+C-----MLP        5 NUMBER OF LINKS PRESENT AND PREVIOUS
+      INTEGER           MLP
+      PARAMETER       ( MLP    =         5           )
+C-----MNU        8 MAXIMUM NUMBER OF UNITS FOR A VEHICLE
+      INTEGER           MNU
+      PARAMETER       ( MNU    =         8           )
+C-----MSTMIN   166 MAXIMUM SIMULATION TIME (MINUTES) (9960.00 SECONDS)
+      INTEGER           MSTMIN
+      PARAMETER       ( MSTMIN =       166           )
+C-----MTABR     65 NUMBER OF ROWS IN SUMMARY STATISTICS TABLE
+      INTEGER           MTABR
+      PARAMETER       ( MTABR  =        65           )
+C-----MUL      100 MAXIMUM UNIT LENGTH (FEET)
+      INTEGER           MUL
+      PARAMETER       ( MUL    =       100           )
+C-----MVL        4 MAXIMUM VEHICLES CONCURRENTLY OCCUPYING A LOOP
+      INTEGER           MVL
+      PARAMETER       ( MVL    =         4           )
+C-----MVMCOL     9 NUMBER OF VEHICLES INVOLVED IN A MAJOR COLLISION
+C-----COLLISION
+      INTEGER           MVMCOL
+      PARAMETER       ( MVMCOL =         9           )
+C-----MXPVOL  4000 MAXIMUM PEDESTRIAN VOLUME PER PHASE
+      INTEGER           MXPVOL
+      PARAMETER       ( MXPVOL =      4000           )
+C-----MXTVOL  8000 MAXIMUM TRAFFIC VOLUME PER LEG
+      INTEGER           MXTVOL
+      PARAMETER       ( MXTVOL =      8000           )
+C-----NAL        6 NUMBER OF LANES PER APPROACH
+      INTEGER           NAL
+      PARAMETER       ( NAL    =         6           )
+C-----NAR       20 NUMBER OF ARCS
+      INTEGER           NAR
+      PARAMETER       ( NAR    =        20           )
+C-----NAS        4 NUMBER OF SIGHT DISTANCE RESTRICTIONS PER APPROACH
+      INTEGER           NAS
+      PARAMETER       ( NAS    =         4           )
+C-----NBU       20 NUMBER OF BUCKETS FOR EMPRO
+      INTEGER           NBU
+      PARAMETER       ( NBU    =        20           )
+C-----NCO      999 NUMBER OF INTERSECTION CONFLICTS
+      INTEGER           NCO
+      PARAMETER       ( NCO    =       999           )
+C-----NCP       99 NUMBER OF INTERSECTION CONFLICTS PER INTERSECTION
+C-----             PATH
+      INTEGER           NCP
+      PARAMETER       ( NCP    =        99           )
+C-----NDC        9 NUMBER OF DRIVER CLASSES 
+      INTEGER           NDC
+      PARAMETER       ( NDC    =         9           )
+C-----NDCD       3 NUMBER OF DRIVER CLASSES FOR DEFAULT (FIXED CHARACTERISTICS)
+      INTEGER           NDCD
+      PARAMETER       ( NDCD   =         3           )
+C-----NFU        2 NUMBER OF FREE U-TURNS AT A DIAMOND INTERCHANGE
+      INTEGER           NFU
+      PARAMETER       ( NFU    =         2           )
+C-----NGR        4 NUMBER OF GROUPS IN NEMA ACTUATED SIGNAL
+      INTEGER           NGR
+      PARAMETER       ( NGR    =         4           )
+C-----NIA        8 NUMBER OF INBOUND APPROACHES
+      INTEGER           NIA
+      PARAMETER       ( NIA    =         8           )
+C-----NIL       25 NUMBER OF INBOUND LANES
+      INTEGER           NIL
+      PARAMETER       ( NIL    =        25           )
+C-----NLG        6 NUMBER OF LEGS
+      INTEGER           NLG
+      PARAMETER       ( NLG    =         6           )
+C-----NLI       20 NUMBER OF LINES
+      INTEGER           NLI
+      PARAMETER       ( NLI    =        20           )
+C-----NLO        6 NUMBER OF LOOP DETECTORS PER LANE
+      INTEGER           NLO
+      PARAMETER       ( NLO    =         6           )
+C-----NLP        9 NUMBER OF INTERSECTION PATHS PER LANE
+      INTEGER           NLP
+      PARAMETER       ( NLP    =         9           )
+C-----NLS       30 NUMBER OF LOOP DETECTORS TOTAL FOR THE INTERSECTION
+      INTEGER           NLS
+      PARAMETER       ( NLS    =        30           )
+C-----NMP        8 NUMBER OF NEMA/HARDWARE MOVEMENTS PER PHASE
+      INTEGER           NMP
+      PARAMETER       ( NMP    =         8           )
+C-----NND       37 NUMBER OF NOTES FOR DVPRO
+      INTEGER           NND
+      PARAMETER       ( NND    =        37           )
+C-----NON       16 NUMBER OF OVERLAPS FOR NEMA SIGNAL
+      INTEGER           NON
+      PARAMETER       ( NON    =        16           )
+C-----NOP       12 NUMBER OF OPTIONS FOR TEXAS DIAMOND SIGNAL
+      INTEGER           NOP
+      PARAMETER       ( NOP    =        12           )
+C-----NOT        2 NUMBER OF OVERLAPS FOR TEXAS DIAMOND SIGNAL
+      INTEGER           NOT
+      PARAMETER       ( NOT    =         2           )
+C-----NOV        4 NUMBER OF OVERLAPS FOR PRETIMED/SEMI-FULL-ACT/TEX-DIA
+      INTEGER           NOV
+      PARAMETER       ( NOV    =         4           )
+C-----NPA       99 NUMBER OF INTERSECTION PATHS
+      INTEGER           NPA
+      PARAMETER       ( NPA    =        99           )
+C-----NPC        9 NUMBER OF PHASE COMBINATIONS FOR TEXAS DIAMOND SIGNAL
+      INTEGER           NPC
+      PARAMETER       ( NPC    =         9           )
+C-----NPH        8 NUMBER OF PHASES FOR NON-NEMA SIGNAL
+      INTEGER           NPH
+      PARAMETER       ( NPH    =         8           )
+C-----NPL       10 NUMBER OF LOOP DETECTORS PER SIGNAL PHASE
+      INTEGER           NPL
+      PARAMETER       ( NPL    =        10           )
+C-----NPN       16 NUMBER OF PHASES FOR NEMA SIGNAL
+      INTEGER           NPN
+      PARAMETER       ( NPN    =        16           )
+C-----NRC        2 NUMBER OF RINGS FOR CONTROLLER INTERFACE DEVICE
+      INTEGER           NRC
+      PARAMETER       ( NRC    =         2           )
+C-----NRG        4 NUMBER OF RINGS FOR NEMA SIGNAL
+      INTEGER           NRG
+      PARAMETER       ( NRG    =         4           )
+C-----NRGP      16 NUMBER OF PHASES IN A RING-GROUP FOR NEMA SIGNAL
+      INTEGER           NRGP
+      PARAMETER       ( NRGP   =        16           )
+C-----Texas Removed------------------------------------------Harmonia B.A. Mauldon 10/1/2013      
+C-----NRP       99 NUMBER OF REPLICATE RUNS
+C      INTEGER           NRP
+C      PARAMETER       ( NRP    =        99           )
+C-----End Removed-------------------------------------------------------------------------------
+C-----Harmonia Mod------------------------------------------Harmonia B.A. Mauldon 10/1/2013      
+C-----NRP       1000 NUMBER OF REPLICATE RUNS
+       INTEGER           NRP
+       PARAMETER       ( NRP    =        1000           )
+C-----End Harmonia Mod-------------------------------------------------------------------------------
+
+C-----NRZERO 0.005 NEAR ZERO
+      DOUBLE PRECISION  NRZERO
+      PARAMETER       ( NRZERO =         0.005D0     )
+C-----NSR       10 NUMBER OF SIGHT DISTANCE RESTRICTION POINTS
+      INTEGER           NSR
+      PARAMETER       ( NSR    =        10           )
+C-----NSS      160 NUMBER OF 25-FT SECTIONS FOR SIGHT DISTANCE
+C-----             RESTRICTIONS
+      INTEGER           NSS
+      PARAMETER       ( NSS    =       160           )
+C-----NSV       50 NUMBER OF SPECIAL VEHICLES
+      INTEGER           NSV
+      PARAMETER       ( NSV    =        50           )
+C-----NTC        6 NUMBER OF TURN CODES
+      INTEGER           NTC
+      PARAMETER       ( NTC    =         6           )
+C-----NTM       12 NUMBER OF TIMERS FOR TEXAS DIAMOND SIGNAL
+      INTEGER           NTM
+      PARAMETER       ( NTM    =        12           )
+C-----NVC       99 NUMBER OF VEHICLE CLASSES
+      INTEGER           NVC
+      PARAMETER       ( NVC    =        99           )
+C-----NVCD      12 NUMBER OF VEHICLE CLASSES FOR DEFAULT (FIXED CHARACTERISTICS)
+      INTEGER           NVCD
+      PARAMETER       ( NVCD   =        12           )
+C-----NVE      500 NUMBER OF VEHICLES IN THE SYSTEM AT ONE TIME
+      INTEGER           NVE
+      PARAMETER       ( NVE    =       500           )
+C-----NVMSMM   100 NUMBER OF VMS MESSAGES MAXIMUM
+      INTEGER           NVMSMM
+      PARAMETER       ( NVMSMM =       100           )
+C-----NVMSMV    11 NUMBER OF VMS MESSAGES FOR VEHICLE
+      INTEGER           NVMSMV
+      PARAMETER       ( NVMSMV =        11           )
+C-----NVP    15000 NUMBER OF VEHICLES GENERATED PER APPROACH
+      INTEGER           NVP
+      PARAMETER       ( NVP    =     15000           )
+C-----NVT       12 NUMBER OF VARYING TRAFFIC PERIODS PER APPROACH
+      INTEGER           NVT
+      PARAMETER       ( NVT    =        12           )
+C-----PARNDF     4 NUMBER OF COMMAND LINE PARAMETERS FOR DISFIT
+      INTEGER           PARNDF
+      PARAMETER       ( PARNDF =         4           )
+C-----PARNDP     8 NUMBER OF COMMAND LINE PARAMETERS FOR DISPRE
+      INTEGER           PARNDP
+      PARAMETER       ( PARNDP =         8           )
+C-----PARNDV    14 NUMBER OF COMMAND LINE PARAMETERS FOR DVPRO
+      INTEGER           PARNDV
+      PARAMETER       ( PARNDV =        14           )
+C-----PARNEP    11 NUMBER OF COMMAND LINE PARAMETERS FOR EMPRO
+      INTEGER           PARNEP
+      PARAMETER       ( PARNEP =        11           )
+C-----PARNGP    13 NUMBER OF COMMAND LINE PARAMETERS FOR GEOPRO
+      INTEGER           PARNGP
+      PARAMETER       ( PARNGP =        13           )
+C-----PARNSP    12 NUMBER OF COMMAND LINE PARAMETERS FOR SIMPRO
+      INTEGER           PARNSP
+      PARAMETER       ( PARNSP =        12           )
+C-----PARNSS     7 NUMBER OF COMMAND LINE PARAMETERS FOR SIMSTA
+      INTEGER           PARNSS
+      PARAMETER       ( PARNSS =         7           )
+C-----PARNSV     5 NUMBER OF COMMAND LINE PARAMETERS FOR SIMCONV
+      INTEGER           PARNSV
+      PARAMETER       ( PARNSV =         5           )
+C-----POSMAX  4000 MAXIMUM POSITION IN FEET
+      DOUBLE PRECISION  POSMAX
+      PARAMETER       ( POSMAX =      4000.0D0       )
+C-----POSRMX   -10 POSREL MAXIMUM FOR DEFINING A MAJOR COLLISION
+      DOUBLE PRECISION  POSRMX
+      PARAMETER       ( POSRMX =       -10.0D0       )
+C-----PSMALL   0.2 SMALL POSITION
+      DOUBLE PRECISION  PSMALL
+      PARAMETER       ( PSMALL =         0.2D0       )
+C-----SAFCON    10 FACTOR   FOR SAF FOR COLLISION
+      DOUBLE PRECISION  SAFCON
+      PARAMETER       ( SAFCON =        10.0D0       )
+C-----SAFDIS  1.75 DISTANCE FOR SAF FOR COLLISION
+      DOUBLE PRECISION  SAFDIS
+      PARAMETER       ( SAFDIS =         1.75D0      )
+C-----SAFSPD    44 SPEED    FOR SAF FOR COLLISION
+      DOUBLE PRECISION  SAFSPD
+      PARAMETER       ( SAFSPD =        44.0D0       )
+C-----SLPCOL  9660 SLOPE FOR COLLISIONS IN FT/SEC/SEC/SEC
+      DOUBLE PRECISION  SLPCOL
+      PARAMETER       ( SLPCOL =      9660.0D0       )
+C-----TIMELC   3.5 TIME TO LANE CHANGE IN SECONDS
+      DOUBLE PRECISION  TIMELC
+      PARAMETER       ( TIMELC =         3.5D0       )
+C-----TIMERR  1D99 TIME ERROR
+      DOUBLE PRECISION  TIMERR
+      PARAMETER       ( TIMERR =         1.0D99      )
+C-----TIMOIP   300 TIME TO STOP CHECKING OTHER INTERSECTION PATHS (SECS)
+      DOUBLE PRECISION  TIMOIP
+      PARAMETER       ( TIMOIP =       300.0D0       )
+C-----VELMAX   120 VELOCITY MAXIMUM IN MPH
+      DOUBLE PRECISION  VELMAX
+      PARAMETER       ( VELMAX =       120.0D0       )
+C-----VELRMX    18 VELREL MAXIMUM FOR DEFINING A MAJOR COLLISION
+      DOUBLE PRECISION  VELRMX
+      PARAMETER       ( VELRMX =        18.0D0       )
+C-----VELSTP   0.1 VELOCITY CONSIDERED STOPPED
+      DOUBLE PRECISION  VELSTP
+      PARAMETER       ( VELSTP =         0.1D0       )
+C-----VSMALL     1 SMALL VELOCITY
+      DOUBLE PRECISION  VSMALL
+      PARAMETER       ( VSMALL =         1.0D0       )
+C-----XYCNTR  5000 INTERSECTION X/Y CENTER COORDINATE LOCATION
+      INTEGER           XYCNTR
+      PARAMETER       ( XYCNTR =      5000           )
+C
+C-----CONSTANTS CALCULATED FROM OTHER CONSTANTS
+C
+C-----MSTSEC  9960 MAXIMUM SIMULATION TIME (SECONDS) (166 MINUTES)
+      INTEGER           MSTSEC
+      PARAMETER       ( MSTSEC = MSTMIN*60           )
+C-----NGI       32 NUMBER OF GREEN INTERVAL SEQUENCE ITEMS
+      INTEGER           NGI
+      PARAMETER       ( NGI    = NPN + NON           )
+C-----NIS       10 NUMBER OF APPROACHES FOR STATISTICS
+      INTEGER           NIS
+      PARAMETER       ( NIS    = NIA + 2             )
+C-----NLGP1      7 NUMBER OF LEGS PLUS 1
+      INTEGER           NLGP1
+      PARAMETER       ( NLGP1  = NLG + 1             )
+C-----NLGP2      8 NUMBER OF LEGS PLUS 2
+      INTEGER           NLGP2
+      PARAMETER       ( NLGP2  = NLG + 2             )
+C-----NOA        8 NUMBER OF OUTBOUND APPROACHES
+      INTEGER           NOA
+      PARAMETER       ( NOA    = NIA                 )
+C-----NOL       25 NUMBER OF OUTBOUND LANES
+      INTEGER           NOL
+      PARAMETER       ( NOL    = NIL                 )
+C-----NTS        7 NUMBER OF TURN CODES FOR STATISTICS
+      INTEGER           NTS
+      PARAMETER       ( NTS    = NTC + 1             )
+C-----NVEP1    501 NUMBER OF VEHICLES IN THE SYSTEM AT ONE TIME PLUS 1
+      INTEGER           NVEP1
+      PARAMETER       ( NVEP1  = NVE + 1             )
+C-----POSBIG  5000 POSITION THAT WILL NEVER BE POSSIBLE
+      DOUBLE PRECISION  POSBIG
+      PARAMETER       ( POSBIG = 4.0D0*POSMAX        )
+C
+C-----CONSTANTS CALCULATED FROM OTHER CALCULATED CONSTANTS
+C
+C-----NAP       16 NUMBER OF APPROACHES
+      INTEGER           NAP
+      PARAMETER       ( NAP    = NIA + NOA           )
+C-----NLA       50 NUMBER OF LANES
+      INTEGER           NLA
+      PARAMETER       ( NLA    = NIL + NOL           )
+C-----NCM       72 NUMBER OF CAM STACK ENTRIES
+      INTEGER           NCM
+      PARAMETER       ( NCM    = MAX(72,NGI*2)       )
+C
+C-----CONTROLLER INTERVALS
+C
+C-----INTERG     1 CONTROLLER INTERVAL GREEN
+      INTEGER           INTERG
+      PARAMETER       ( INTERG =         1           )
+C-----INTERY     2 CONTROLLER INTERVAL YELLOW
+      INTEGER           INTERY
+      PARAMETER       ( INTERY =         2           )
+C-----INTERR     3 CONTROLLER INTERVAL RED
+      INTEGER           INTERR
+      PARAMETER       ( INTERR =         3           )
+C
+C-----VMS SYSTEM PARAMETERS
+C
+C-----VMSPOS    10 POSITION BEHIND FRONT BUMPER THAT VMS MESSAGES CAN BE DETECTED
+      DOUBLE PRECISION  VMSPOS
+      PARAMETER       ( VMSPOS =        10.0D0       )
+
+C-----VMSTDD     1 VMS MESSAGE TYPE DRIVER  DMS
+      INTEGER           VMSTDD
+      PARAMETER       ( VMSTDD =         1           )
+C-----VMSTDI     2 VMS MESSAGE TYPE DRIVER  IVDMS
+      INTEGER           VMSTDI
+      PARAMETER       ( VMSTDI =         2           )
+C-----VMSTVI     3 VMS MESSAGE TYPE VEHICLE IVDMS
+      INTEGER           VMSTVI
+      PARAMETER       ( VMSTVI =         3           )
+
+C-----VMSMAN     1 VMS MESSAGE
+C-----             ACCELERATE OR DECELERATE TO SPEED XX USING NORMAL
+C-----             ACCELERATION OR DECELERATION
+      INTEGER           VMSMAN
+      PARAMETER       ( VMSMAN =         1           )
+C-----VMSMAM     2 VMS MESSAGE
+C-----             ACCELERATE OR DECELERATE TO SPEED XX USING MAXIMUM
+C-----             VEHICLE ACCELERATION OR DECELERATION
+      INTEGER           VMSMAM
+      PARAMETER       ( VMSMAM =         2           )
+C-----VMSMSI     3 VMS MESSAGE
+C-----             STOP AT THE INTERSECTION STOP LINE
+      INTEGER           VMSMSI
+      PARAMETER       ( VMSMSI =         3           )
+C-----VMSMSL     4 VMS MESSAGE
+C-----             STOP AT LOCATION XX
+      INTEGER           VMSMSL
+      PARAMETER       ( VMSMSL =         4           )
+C-----VMSMSM     5 VMS MESSAGE
+C-----             STOP IMMEDIATELY USING MAXIMUM VEHICLE DECELERATION
+      INTEGER           VMSMSM
+      PARAMETER       ( VMSMSM =         5           )
+C-----VMSMSC     6 VMS MESSAGE
+C-----             STOP IMMEDIATELY USING COLLISION DECELERATION XX
+      INTEGER           VMSMSC
+      PARAMETER       ( VMSMSC =         6           )
+C-----VMSMCL     7 VMS MESSAGE
+C-----             CHANGE LANES TO THE LEFT
+      INTEGER           VMSMCL
+      PARAMETER       ( VMSMCL =         7           )
+C-----VMSMCR     8 VMS MESSAGE
+C-----             CHANGE LANES TO THE RIGHT
+      INTEGER           VMSMCR
+      PARAMETER       ( VMSMCR =         8           )
+C-----VMSMGO     9 VMS MESSAGE
+C-----             FORCED GO
+      INTEGER           VMSMGO
+      PARAMETER       ( VMSMGO =         9           )
+C-----VMSMRR    10 VMS MESSAGE
+C-----             FORCED RUN THE RED SIGNAL
+      INTEGER           VMSMRR
+      PARAMETER       ( VMSMRR =        10           )
+C-----VMSMDD    11 VMS MESSAGE
+C-----             DISTRACTED DRIVER
+      INTEGER           VMSMDD
+      PARAMETER       ( VMSMDD =        11           )
+
+C-----VMSPSC     1 VMS PRIORITY FOR MESSAGE
+C-----             STOP IMMEDIATELY USING COLLISION DECELERATION
+      INTEGER           VMSPSC
+      PARAMETER       ( VMSPSC =         1           )
+C-----VMSPDD     2 VMS PRIORITY FOR MESSAGE
+C-----             DISTRACTED DRIVER
+      INTEGER           VMSPDD
+      PARAMETER       ( VMSPDD =         2           )
+C-----VMSPSM     3 VMS PRIORITY FOR MESSAGE
+C-----             STOP IMMEDIATELY USING MAXIMUM VEHICLE DECELERATION
+      INTEGER           VMSPSM
+      PARAMETER       ( VMSPSM =         3           )
+C-----VMSPSL     4 VMS PRIORITY FOR MESSAGE
+C-----             STOP AT LOCATION XX
+      INTEGER           VMSPSL
+      PARAMETER       ( VMSPSL =         4           )
+C-----VMSPSI     5 VMS PRIORITY FOR MESSAGE
+C-----             STOP AT THE INTERSECTION STOP LINE
+      INTEGER           VMSPSI
+      PARAMETER       ( VMSPSI =         5           )
+C-----VMSPRR     6 VMS PRIORITY FOR MESSAGE
+C-----             FORCED RUN THE RED SIGNAL
+      INTEGER           VMSPRR
+      PARAMETER       ( VMSPRR =         6           )
+C-----VMSPGO     7 VMS PRIORITY FOR MESSAGE
+C-----             FORCED GO
+      INTEGER           VMSPGO
+      PARAMETER       ( VMSPGO =         7           )
+C-----VMSPAM     8 VMS PRIORITY FOR MESSAGE
+C-----             ACCELERATE OR DECELERATE TO SPEED XX USING MAXIMUM
+C-----             VEHICLE ACCELERATION OR DECELERATION
+      INTEGER           VMSPAM
+      PARAMETER       ( VMSPAM =         8           )
+C-----VMSPAN     9 VMS PRIORITY FOR MESSAGE
+C-----             ACCELERATE OR DECELERATE TO SPEED XX USING NORMAL
+C-----             ACCELERATION OR DECELERATION
+      INTEGER           VMSPAN
+      PARAMETER       ( VMSPAN =         9           )
+C-----VMSPCL    10 VMS PRIORITY FOR MESSAGE
+C-----             CHANGE LANES TO THE LEFT
+      INTEGER           VMSPCL
+      PARAMETER       ( VMSPCL =        10           )
+C-----VMSPCR    11 VMS PRIORITY FOR MESSAGE
+C-----             CHANGE LANES TO THE RIGHT
+      INTEGER           VMSPCR
+      PARAMETER       ( VMSPCR =        11           )
+
+C-----VMSMCC     1 VMS MESSAGE CATEGORY CHANGE LANES
+      INTEGER           VMSMCC
+      PARAMETER       ( VMSMCC =         1           )
+C-----VMSMCS     2 VMS MESSAGE CATEGORY SPEED
+      INTEGER           VMSMCS
+      PARAMETER       ( VMSMCS =         2           )
+
+C-----VMSCSC     2 VMS CATEGORY FOR MESSAGE
+C-----             STOP IMMEDIATELY USING COLLISION DECELERATION
+      INTEGER           VMSCSC
+      PARAMETER       ( VMSCSC = VMSMCS              )
+C-----VMSCDD     2 VMS CATEGORY FOR MESSAGE
+C-----             DISTRACTED DRIVER
+      INTEGER           VMSCDD
+      PARAMETER       ( VMSCDD = VMSMCS              )
+C-----VMSCSM     2 VMS CATEGORY FOR MESSAGE
+C-----             STOP IMMEDIATELY USING MAXIMUM VEHICLE DECELERATION
+      INTEGER           VMSCSM
+      PARAMETER       ( VMSCSM = VMSMCS              )
+C-----VMSCSL     2 VMS CATEGORY FOR MESSAGE
+C-----             STOP AT LOCATION XX
+      INTEGER           VMSCSL
+      PARAMETER       ( VMSCSL = VMSMCS              )
+C-----VMSCSI     2 VMS CATEGORY FOR MESSAGE
+C-----             STOP AT THE INTERSECTION STOP LINE
+      INTEGER           VMSCSI
+      PARAMETER       ( VMSCSI = VMSMCS              )
+C-----VMSCRR     2 VMS CATEGORY FOR MESSAGE
+C-----             FORCED RUN THE RED SIGNAL
+      INTEGER           VMSCRR
+      PARAMETER       ( VMSCRR = VMSMCS              )
+C-----VMSCGO     2 VMS CATEGORY FOR MESSAGE
+C-----             FORCED GO
+      INTEGER           VMSCGO
+      PARAMETER       ( VMSCGO = VMSMCS              )
+C-----VMSCAM     2 VMS CATEGORY FOR MESSAGE
+C-----             ACCELERATE OR DECELERATE TO SPEED XX USING MAXIMUM
+C-----             VEHICLE ACCELERATION OR DECELERATION
+      INTEGER           VMSCAM
+      PARAMETER       ( VMSCAM = VMSMCS              )
+C-----VMSCAN     2 VMS CATEGORY FOR MESSAGE
+C-----             ACCELERATE OR DECELERATE TO SPEED XX USING NORMAL
+C-----             ACCELERATION OR DECELERATION
+      INTEGER           VMSCAN
+      PARAMETER       ( VMSCAN = VMSMCS              )
+C-----VMSCCL     1 VMS CATEGORY FOR MESSAGE
+C-----             CHANGE LANES TO THE LEFT
+      INTEGER           VMSCCL
+      PARAMETER       ( VMSCCL = VMSMCC              )
+C-----VMSCCR     1 VMS CATEGORY FOR MESSAGE
+C-----             CHANGE LANES TO THE RIGHT
+      INTEGER           VMSCCR
+      PARAMETER       ( VMSCCR = VMSMCC              )
+C
+C-----LEG/LANE DESIGNATIONS
+C
+C-----INBNDL     1 INBOUND LEG/LANE
+      INTEGER           INBNDL
+      PARAMETER       ( INBNDL =         1           )
+C-----DINBDL     2 DIAMOND INTERNAL INBOUND LEG/LANE
+      INTEGER           DINBDL
+      PARAMETER       ( DINBDL =         2           )
+C-----OUTBDL     3 OUTBOUND LEG/LANE
+      INTEGER           OUTBDL
+      PARAMETER       ( OUTBDL =         3           )
+C
+C-----INTERSECTION CONTROLS
+C
+C-----ICUNCT     1 INTERSECTION CONTROL - UNCONTROLLED
+      INTEGER           ICUNCT
+      PARAMETER       ( ICUNCT =         1           )
+C-----ICYELD     2 INTERSECTION CONTROL - YIELD SIGN
+      INTEGER           ICYELD
+      PARAMETER       ( ICYELD =         2           )
+C-----ICLTAS     3 INTERSECTION CONTROL - LESS-THAN-ALL-WAY STOP SIGN
+      INTEGER           ICLTAS
+      PARAMETER       ( ICLTAS =         3           )
+C-----ICAWST     4 INTERSECTION CONTROL - ALL-WAY STOP SIGN
+      INTEGER           ICAWST
+      PARAMETER       ( ICAWST =         4           )
+C-----ICPSIG     5 INTERSECTION CONTROL - PRE-TIMED SIGNAL
+      INTEGER           ICPSIG
+      PARAMETER       ( ICPSIG =         5           )
+C-----ICSACT     6 INTERSECTION CONTROL - SEMI-ACTUATED SIGNAL
+      INTEGER           ICSACT
+      PARAMETER       ( ICSACT =         6           )
+C-----ICFACT     7 INTERSECTION CONTROL - FULL-ACTUATED SIGNAL
+      INTEGER           ICFACT
+      PARAMETER       ( ICFACT =         7           )
+C-----ICTDF3     8 INTERSECTION CONTROL - TEXAS  DIAMOND FIG 3 SIGNAL
+      INTEGER           ICTDF3
+      PARAMETER       ( ICTDF3 =         8           )
+C-----ICTDF4     9 INTERSECTION CONTROL - TEXAS  DIAMOND FIG 4 SIGNAL
+      INTEGER           ICTDF4
+      PARAMETER       ( ICTDF4 =         9           )
+C-----ICTDF6    10 INTERSECTION CONTROL - TEXAS  DIAMOND FIG 6 SIGNAL
+      INTEGER           ICTDF6
+      PARAMETER       ( ICTDF6 =        10           )
+C-----ICTDF7    11 INTERSECTION CONTROL - TEXAS  DIAMOND FIG 7 SIGNAL
+      INTEGER           ICTDF7
+      PARAMETER       ( ICTDF7 =        11           )
+C-----ICDDF3    12 INTERSECTION CONTROL - DALLAS DIAMOND FIG 3 SIGNAL
+      INTEGER           ICDDF3
+      PARAMETER       ( ICDDF3 =        12           )
+C-----ICDDF4    13 INTERSECTION CONTROL - DALLAS DIAMOND FIG 4 SIGNAL
+      INTEGER           ICDDF4
+      PARAMETER       ( ICDDF4 =        13           )
+C-----ICDDF6    14 INTERSECTION CONTROL - DALLAS DIAMOND FIG 6 SIGNAL
+      INTEGER           ICDDF6
+      PARAMETER       ( ICDDF6 =        14           )
+C-----ICDDF7    15 INTERSECTION CONTROL - DALLAS DIAMOND FIG 7 SIGNAL
+      INTEGER           ICDDF7
+      PARAMETER       ( ICDDF7 =        15           )
+C-----ICNEMA    16 INTERSECTION CONTROL - NEMA SIGNAL
+      INTEGER           ICNEMA
+      PARAMETER       ( ICNEMA =        16           )
+C-----ICNEMV    17 INTERSECTION CONTROL - NEMA VOLUME DENSITY SIGNAL
+      INTEGER           ICNEMV
+      PARAMETER       ( ICNEMV =        17           )
+C-----ICHDWR    18 INTERSECTION CONTROL - HARDWARE-IN-THE-LOOP
+      INTEGER           ICHDWR
+      PARAMETER       ( ICHDWR =        18           )
+C
+C-----LANE CONTROLS
+C
+C-----LCOUTB     1 LANE CONTROL - OUTBOUND (OR BLOCKED INBOUND) LANE
+      INTEGER           LCOUTB
+      PARAMETER       ( LCOUTB =         1           )
+C-----LCUNCT     2 LANE CONTROL - UNCONTROLLED
+      INTEGER           LCUNCT
+      PARAMETER       ( LCUNCT =         2           )
+C-----LCYELD     3 LANE CONTROL - YIELD SIGN
+      INTEGER           LCYELD
+      PARAMETER       ( LCYELD =         3           )
+C-----LCSTOP     4 LANE CONTROL - STOP SIGN
+      INTEGER           LCSTOP
+      PARAMETER       ( LCSTOP =         4           )
+C-----LCSIGX     5 LANE CONTROL - SIGNAL WITHOUT LEFT OR RIGHT TURN ON
+C-----                            RED
+      INTEGER           LCSIGX
+      PARAMETER       ( LCSIGX =         5           )
+C-----LCSLTR     6 LANE CONTROL - SIGNAL WITH LEFT  TURN ON RED
+      INTEGER           LCSLTR
+      PARAMETER       ( LCSLTR =         6           )
+C-----LCSRTR     7 LANE CONTROL - SIGNAL WITH RIGHT TURN ON RED
+      INTEGER           LCSRTR
+      PARAMETER       ( LCSRTR =         7           )
+C
+C-----VEHICLE CODES
+C
+C-----DECBRK    -2 DECELERATION RATE FOR BRAKE LIGHTS
+      DOUBLE PRECISION  DECBRK
+      PARAMETER       ( DECBRK =        -2.0D0       )
+C-----ICNONE     0 VEHICLE CODE - NONE
+      INTEGER           ICNONE
+      PARAMETER       ( ICNONE =         0           )
+C-----ICYLTS     1 VEHICLE CODE - YELLOW LEFT  TURN SIGNALS FRONT & REAR
+      INTEGER           ICYLTS
+      PARAMETER       ( ICYLTS =         1           )
+C-----ICYRTS     2 VEHICLE CODE - YELLOW RIGHT TURN SIGNALS FRONT & REAR
+      INTEGER           ICYRTS
+      PARAMETER       ( ICYRTS =         2           )
+C-----ICRBRK     4 VEHICLE CODE - RED BRAKE LIGHTS IN REAR
+      INTEGER           ICRBRK
+      PARAMETER       ( ICRBRK =         4           )
+C-----ICVBMC     8 VEHICLE CODE - VEHICLE BLOCKED BY A MAJOR COLLISION
+      INTEGER           ICVBMC
+      PARAMETER       ( ICVBMC =         8           )
+C-----ICVIMC    16 VEHICLE CODE - VEHICLE INVOLVED IN A MAJOR COLLISION
+      INTEGER           ICVIMC
+      PARAMETER       ( ICVIMC =        16           )
+C-----ICEVRC    32 VEHICLE CODE - EMERGENCY VEHICLE RUNNING A CALL
+      INTEGER           ICEVRC
+      PARAMETER       ( ICEVRC =        32           )
+C-----ICVREV    64 VEHICLE CODE - VEHICLE REACTING TO EMERGENCY VEHICLE
+C-----                            RUNNING A CALL
+      INTEGER           ICVREV
+      PARAMETER       ( ICVREV =        64           )
+C-----ICRVMS   128 VEHICLE CODE - VEHICLE REACTING TO VMS MESSAGE
+      INTEGER           ICRVMS
+      PARAMETER       ( ICRVMS =       128           )
+C
+C-----VEHICLE/PEDESTRIAN DETECTOR CODES
+C
+C-----TDNONE     0 VEHICLE/PEDESTRIAN DETECTOR CODE - NONE
+      INTEGER           TDNONE
+      PARAMETER       ( TDNONE =         0           )
+C-----TDCROS     1 VEHICLE/PEDESTRIAN DETECTOR CODE - FRONT BUMPER
+C-----                                                CROSSED
+      INTEGER           TDCROS
+      PARAMETER       ( TDCROS =         1           )
+C-----TDTRIP     2 VEHICLE/PEDESTRIAN DETECTOR CODE - TRIPPED
+      INTEGER           TDTRIP
+      PARAMETER       ( TDTRIP =         2           )
+C-----TDCLER     4 VEHICLE/PEDESTRIAN DETECTOR CODE - REAR BUMPER
+C-----                                                CLEARED
+      INTEGER           TDCLER
+      PARAMETER       ( TDCLER =         4           )
+C-----TDLOCK     8 VEHICLE/PEDESTRIAN DETECTOR CODE - DETECTOR LOCKED
+      INTEGER           TDLOCK
+      PARAMETER       ( TDLOCK =         8           )
+C
+C-----POSDAT CODES
+C
+C-----POSNON     0 POSDAT CODE - NONE
+      INTEGER           POSNON
+      PARAMETER       ( POSNON =         0           )
+C-----POSTIM     1 POSDAT CODE - TIME
+      INTEGER           POSTIM
+      PARAMETER       ( POSTIM =         1           )
+C-----POSTSI     2 POSDAT CODE - TRAFFIC SIGNAL INDICATIONS
+      INTEGER           POSTSI
+      PARAMETER       ( POSTSI =         2           )
+C-----POSPSI     4 POSDAT CODE - PEDESTRIAN SIGNAL INDICATIONS
+      INTEGER           POSPSI
+      PARAMETER       ( POSPSI =         4           )
+C-----POSTDA     8 POSDAT CODE - TRAFFIC DETECTOR ACTUATIONS
+      INTEGER           POSTDA
+      PARAMETER       ( POSTDA =         8           )
+C-----POSPDA    16 POSDAT CODE - PEDESTRIAN DETECTOR ACTUATIONS
+      INTEGER           POSPDA
+      PARAMETER       ( POSPDA =        16           )
+C
+C-----PATH TYPE PRIORITIES
+C
+C-----LPTP01     1 PATH TYPE PRIORITY -  1
+      INTEGER           LPTP01
+      PARAMETER       ( LPTP01 =         1           )
+C-----LPTP02     2 PATH TYPE PRIORITY -  2
+      INTEGER           LPTP02
+      PARAMETER       ( LPTP02 =         2           )
+C-----LPTP03     3 PATH TYPE PRIORITY -  3
+      INTEGER           LPTP03
+      PARAMETER       ( LPTP03 =         3           )
+C-----LPTP04     4 PATH TYPE PRIORITY -  4
+      INTEGER           LPTP04
+      PARAMETER       ( LPTP04 =         4           )
+C-----LPTP05     5 PATH TYPE PRIORITY -  5
+      INTEGER           LPTP05
+      PARAMETER       ( LPTP05 =         5           )
+C-----LPTP06     6 PATH TYPE PRIORITY -  6
+      INTEGER           LPTP06
+      PARAMETER       ( LPTP06 =         6           )
+C-----LPTP07     7 PATH TYPE PRIORITY -  7
+      INTEGER           LPTP07
+      PARAMETER       ( LPTP07 =         7           )
+C-----LPTP08     8 PATH TYPE PRIORITY -  8
+      INTEGER           LPTP08
+      PARAMETER       ( LPTP08 =         8           )
+C-----LPTP09     9 PATH TYPE PRIORITY -  9
+      INTEGER           LPTP09
+      PARAMETER       ( LPTP09 =         9           )
+C-----LPTP10    10 PATH TYPE PRIORITY - 10
+      INTEGER           LPTP10
+      PARAMETER       ( LPTP10 =        10           )
+C-----LPTP11    11 PATH TYPE PRIORITY - 11
+      INTEGER           LPTP11
+      PARAMETER       ( LPTP11 =        11           )
+C-----LPTP12    12 PATH TYPE PRIORITY - 12
+      INTEGER           LPTP12
+      PARAMETER       ( LPTP12 =        12           )
+C-----LPTPNS    13 PATH TYPE PRIORITY - 13 (NOT SET)
+      INTEGER           LPTPNS
+      PARAMETER       ( LPTPNS =        13           )
+C
+C-----LAVT CODES
+C
+C-----LAVTV      1 LAVT CODE - NORMAL VEHICLES
+      INTEGER           LAVTV
+      PARAMETER       ( LAVTV =         1           )
+C-----LAVTR      2 LAVT CODE - RAIL VEHICLES
+      INTEGER           LAVTR
+      PARAMETER       ( LAVTR =         2           )
+C-----LAVTE      4 LAVT CODE - EMERGENCY VEHICLES
+      INTEGER           LAVTE
+      PARAMETER       ( LAVTE =         4           )
+C-----LAVTB      8 LAVT CODE - BICYCLES
+      INTEGER           LAVTB
+      PARAMETER       ( LAVTB =         8           )
+C
+C-----SIMPRO ITURN CODES
+C
+C-----ITURNU     1 ITURN CODE - U-TURN
+      INTEGER           ITURNU
+      PARAMETER       ( ITURNU =         1           )
+C-----ITURNL     2 ITURN CODE - LEFT TURN
+      INTEGER           ITURNL
+      PARAMETER       ( ITURNL =         2           )
+C-----ITURNS     3 ITURN CODE - STRAIGHT
+      INTEGER           ITURNS
+      PARAMETER       ( ITURNS =         3           )
+C-----ITURNR     4 ITURN CODE - RIGHT TURN
+      INTEGER           ITURNR
+      PARAMETER       ( ITURNR =         4           )
+C
+C-----LTURN, IPT, AND IPTURN CODES
+C
+C-----LTURNR     1 LTURN, IPT, AND IPTURN CODE - RIGHT TURN
+      INTEGER           LTURNR
+      PARAMETER       ( LTURNR =         1           )
+C-----LTURNS     2 LTURN, IPT, AND IPTURN CODE - STRAIGHT
+      INTEGER           LTURNS
+      PARAMETER       ( LTURNS =         2           )
+C-----LTURNL     4 LTURN, IPT, AND IPTURN CODE - LEFT TURN
+      INTEGER           LTURNL
+      PARAMETER       ( LTURNL =         4           )
+C-----LTURNU     8 LTURN, IPT, AND IPTURN CODE - U-TURN
+      INTEGER           LTURNU
+      PARAMETER       ( LTURNU =         8           )
+C
+C-----DVPRO ITURN CODES
+C
+C-----DTURNL     1 DVPRO ITURN CODE - LEFT TURN AND U-TURN
+      INTEGER           DTURNL
+      PARAMETER       ( DTURNL =         1           )
+C-----DTURNS     2 DVPRO ITURN CODE - STRAIGHT
+      INTEGER           DTURNS
+      PARAMETER       ( DTURNS =         2           )
+C-----DTURNR     3 DVPRO ITURN CODE - RIGHT TURN
+      INTEGER           DTURNR
+      PARAMETER       ( DTURNR =         3           )
+C
+C-----IBUF CODES
+C
+C-----IBUFVC     1 IBUF CODE - IVEHCL - VEHICLE CLASS
+      INTEGER           IBUFVC
+      PARAMETER       ( IBUFVC =         1           )
+C-----IBUFDC     2 IBUF CODE - IDRICL - DRIVER CLASS
+      INTEGER           IBUFDC
+      PARAMETER       ( IBUFDC =         2           )
+C-----IBUFDV     3 IBUF CODE - DESVEL - DESIRED SPEED
+      INTEGER           IBUFDV
+      PARAMETER       ( IBUFDV =         3           )
+C-----IBUFDO     4 IBUF CODE - NOBAPD - DESIRED OUTBOUND APPROACH
+      INTEGER           IBUFDO
+      PARAMETER       ( IBUFDO =         4           )
+C-----IBUFIA     5 IBUF CODE - IA     - INBOUND APPROACH
+      INTEGER           IBUFIA
+      PARAMETER       ( IBUFIA =         5           )
+C-----IBUFLN     6 IBUF CODE - ILN    - INBOUND LANE
+      INTEGER           IBUFLN
+      PARAMETER       ( IBUFLN =         6           )
+C-----IBUFPL     7 IBUF CODE - IPRTLO - PRINT VEHICLE ON LOGOUT
+      INTEGER           IBUFPL
+      PARAMETER       ( IBUFPL =         7           )
+C-----IBUFVN     8 IBUF CODE - IVN    - VEHICLE NUMBER
+      INTEGER           IBUFVN
+      PARAMETER       ( IBUFVN =         8           )
+C-----IBUFFS     9 IBUF CODE - FSTPIA - FORCED STOP +=APPROACH OR -=PATH
+      INTEGER           IBUFFS
+      PARAMETER       ( IBUFFS =         9           )

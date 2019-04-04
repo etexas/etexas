@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.harmonia.etexas</groupId>
+        <artifactId>native</artifactId>
+        <version>3.5</version>
+    </parent>
+    <artifactId>libnative-lib</artifactId>
+    <packaging>so</packaging>
+    <name>Native API Library</name>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>libnative-protobuf</artifactId>
+            <version>${project.version}</version>
+            <type>inczip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>libnative-protobuf</artifactId>
+            <version>${project.version}</version>
+            <type>a</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <compilerStartOptions>
+                        <!-- remove the comment around -D ENABLE_DEBUG to print log messages -->
+                        <compilerStartOption>
+                            -fPIC <!-- -D ENABLE_DEBUG -->
+                        </compilerStartOption>
+                    </compilerStartOptions>
+                    <sources>
+                        <source>
+                            <directory>src/main/source</directory>
+                            <includes>
+                                <include>*.c</include>
+                                <include>*.cpp</include>
+                            </includes>
+                        </source>
+                        <source>
+                            <deployable>true</deployable>
+                            <directory>src/main/include</directory>
+                        </source>
+                    </sources>
+
+                    <linkerExecutable>gcc</linkerExecutable>
+                    <linkerStartOptions>
+                        <linkerStartOption>-shared -lprotobuf -lnanomsg</linkerStartOption>
+                    </linkerStartOptions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://localhost:8080/etexas-war/JNLP" href="display-servlet/display.jnlp">
+    <information>
+        <title>$project.properties.webstartName</title>
+        <vendor>$project.Organization.Name</vendor>
+        <homepage>$project.Organization.Url</homepage>
+        <description kind="one-line">$project.properties.webstartDescription</description>
+    </information>
+    <security>
+        <all-permissions />
+    </security>
+    
+    <resources>
+        <j2se href="http://java.sun.com/products/autodl/j2se" version="1.6+"/>
+        <property name="sun.java2d.noddraw" value="true"/>
+        $dependencies
+        <extension name="jogl-all-awt" href="http://jogamp.org/deployment/jogamp-current/jogl-all-awt.jnlp" />
+    </resources>
+    
+    <application-desc main-class="$mainClass">
+    </application-desc>
+</jnlp>

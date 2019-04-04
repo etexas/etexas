@@ -1,0 +1,811 @@
+/*-
+ * #%L
+ * eTEXAS
+ * %%
+ * Copyright (C) 2016 - 2018 Harmonia Holdings Group, LLC
+ * %%
+ * All rights reserved.
+-
+SBIR DATA RIGHTS
+Harmonia Holdings Group, LLC
+2020 Kraft Drive Suite 2400
+Blacksburg, VA 24060
+Contract No: DTRT57-16-c-10008
+Start Date: 01/05/2016
+End Date: 01/05/2018
+Expiration of SBIR Data Rights Period: 01/05/2022
+-
+The Government's rights to use, modify, reproduce, release, perform,
+display, or disclose technical data or computer software marked with
+this legend are restricted during the period shown as provided in
+paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+Computer Software-Small Business Innovation Research (SBIR) Program
+clause contained in the above identified contract. No restrictions
+apply after the expiration date shown above. Any reproduction of
+technical data, computer software, or portions thereof marked with
+this legend must also reproduce the markings.
+-
+Contributors:
+Harmonia Holdings Group LLC: Initial API and implementation.
+ * #L%
+ */
+/* MadCap Table Style: */
+
+/*<meta Version="9" />*/
+
+mcTableStyle
+{
+	name: Blue_segoe_font;
+	border-collapse: collapse;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-left-color: #000000;
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-top-style: solid;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	max-id: 4;
+	cell-padding-left: 1px;
+	cell-padding-right: 1px;
+	cell-padding-top: 1px;
+	cell-padding-bottom: 1px;
+}
+
+mcTableColumnStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 0px;
+	separator-color: #000000;
+	name: Column1;
+	id: 0;
+}
+
+mcTableHeadStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Header1;
+	id: 2;
+	background-color: #4682b4;
+	font-family: 'Segoe UI';
+	color: #ffffff;
+	font-weight: bold;
+	size: 20pt;
+	vertical-align: middle;
+	text-align: left;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 0px;
+	separator-color: #000000;
+	name: Body1;
+	id: 1;
+	vertical-align: top;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	id: 4;
+	name: Body2;
+	background-color: #c8d6e8;
+	separator-style: solid;
+	separator-width: 0px;
+	cell-content-style-class: celltext;
+	vertical-align: top;
+}
+
+mcTableFootStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Footer1;
+	id: 3;
+	font-family: Calibri;
+}
+
+
+/* Cell Styles: */
+ 
+.TableStyle-Blue_segoe_font
+{
+	border-collapse: collapse;
+	border-left-style: solid;
+	border-left-color: #000000;
+	border-left-width: 1px;
+	border-right-style: solid;
+	border-right-color: #000000;
+	border-right-width: 1px;
+	border-top-style: solid;
+	border-top-color: #000000;
+	border-top-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #000000;
+	border-bottom-width: 1px;
+	border-spacing: 0px 0px;
+}
+
+.TableStyle-Blue_segoe_font-Column-Column1
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-Head-Header1
+{
+	height: 20pt;
+}
+
+.TableStyle-Blue_segoe_font-HeadI-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+}
+
+.TableStyle-Blue_segoe_font-HeadI-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-HeadE-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-HeadE-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-HeadF-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-HeadF-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-HeadH-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+}
+
+.TableStyle-Blue_segoe_font-HeadH-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-HeadD-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-HeadD-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-HeadC-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+}
+
+.TableStyle-Blue_segoe_font-HeadC-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-HeadB-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+}
+
+.TableStyle-Blue_segoe_font-HeadB-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-HeadA-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+}
+
+.TableStyle-Blue_segoe_font-HeadA-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-HeadG-Column1-Header1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: #4682b4;
+}
+
+.TableStyle-Blue_segoe_font-HeadG-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: 'Segoe UI';
+	font-weight: bold;
+}
+
+.TableStyle-Blue_segoe_font-Foot-Footer1
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-FootI-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootI-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootE-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	font-family: Calibri;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-FootE-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootF-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	font-family: Calibri;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-FootF-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootH-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootH-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootD-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	font-family: Calibri;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-FootD-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootC-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootC-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootB-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootB-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootA-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootA-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootG-Column1-Footer1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-FootG-Column1-Footer1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-Blue_segoe_font-Body-Body1
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyI-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+}
+
+.TableStyle-Blue_segoe_font-BodyI-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyE-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyE-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyF-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyF-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyH-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyH-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyD-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyD-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyC-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+}
+
+.TableStyle-Blue_segoe_font-BodyC-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyB-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyB-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyA-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+}
+
+.TableStyle-Blue_segoe_font-BodyA-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyG-Column1-Body1
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+}
+
+.TableStyle-Blue_segoe_font-BodyG-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-Body-Body2
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyI-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+}
+
+.TableStyle-Blue_segoe_font-BodyI-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyE-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+	border-bottom-width: 0px;
+	border-bottom-style: solid;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyE-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyF-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+	border-bottom-width: 0px;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyF-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyH-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyH-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyD-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+	border-bottom-width: 0px;
+	border-bottom-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyD-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyC-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+}
+
+.TableStyle-Blue_segoe_font-BodyC-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyB-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+	border-right-width: 0px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-Blue_segoe_font-BodyB-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyA-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+}
+
+.TableStyle-Blue_segoe_font-BodyA-Column1-Body2 p
+{
+	
+}
+
+.TableStyle-Blue_segoe_font-BodyG-Column1-Body2
+{
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	vertical-align: top;
+	background-color: #c8d6e8;
+}
+
+.TableStyle-Blue_segoe_font-BodyG-Column1-Body2 p
+{
+	
+}
+
+

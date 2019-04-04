@@ -1,0 +1,636 @@
+/*-
+ * #%L
+ * eTEXAS
+ * %%
+ * Copyright (C) 2016 - 2018 Harmonia Holdings Group, LLC
+ * %%
+ * All rights reserved.
+-
+SBIR DATA RIGHTS
+Harmonia Holdings Group, LLC
+2020 Kraft Drive Suite 2400
+Blacksburg, VA 24060
+Contract No: DTRT57-16-c-10008
+Start Date: 01/05/2016
+End Date: 01/05/2018
+Expiration of SBIR Data Rights Period: 01/05/2022
+-
+The Government's rights to use, modify, reproduce, release, perform,
+display, or disclose technical data or computer software marked with
+this legend are restricted during the period shown as provided in
+paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+Computer Software-Small Business Innovation Research (SBIR) Program
+clause contained in the above identified contract. No restrictions
+apply after the expiration date shown above. Any reproduction of
+technical data, computer software, or portions thereof marked with
+this legend must also reproduce the markings.
+-
+Contributors:
+Harmonia Holdings Group LLC: Initial API and implementation.
+ * #L%
+ */
+/* MadCap Table Style: */
+
+/*<meta Version="7" />*/
+
+mcTableStyle
+{
+	name: GrayAltRows;
+	border-collapse: collapse;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-left-color: #000000;
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-top-style: solid;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	max-id: 4;
+}
+
+mcTableColumnStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Column1;
+	id: 0;
+}
+
+mcTableHeadStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 2px;
+	separator-color: #000000;
+	background-color: #696969;
+	color: #ffffff;
+	name: Header1;
+	id: 3;
+	font-family: Calibri;
+	text-align: left;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	background-color: #d3d3d3;
+	name: Body1;
+	id: 1;
+	font-family: Calibri;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Body2;
+	id: 2;
+	font-family: Calibri;
+}
+
+mcTableFootStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 2px;
+	separator-color: #000000;
+	background-color: #c0c0c0;
+	name: Footer1;
+	id: 4;
+}
+
+
+/* Cell Styles: */
+ 
+.TableStyle-GrayAltRows
+{
+	border-collapse: collapse;
+	border-left-style: solid;
+	border-left-color: #000000;
+	border-left-width: 1px;
+	border-right-style: solid;
+	border-right-color: #000000;
+	border-right-width: 1px;
+	border-top-style: solid;
+	border-top-color: #000000;
+	border-top-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #000000;
+	border-bottom-width: 1px;
+	border-spacing: 0px 0px;
+}
+
+.TableStyle-GrayAltRows .Column-Column1
+{
+	
+}
+
+.TableStyle-GrayAltRows .Head-Header1
+{
+	
+}
+
+.TableStyle-GrayAltRows .HeadI-Column1-Header1
+{
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+}
+
+.TableStyle-GrayAltRows .HeadI-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .HeadE-Column1-Header1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+	border-bottom-width: 2px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-GrayAltRows .HeadE-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .HeadF-Column1-Header1
+{
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+	border-bottom-width: 2px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-GrayAltRows .HeadF-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .HeadH-Column1-Header1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+}
+
+.TableStyle-GrayAltRows .HeadH-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .HeadD-Column1-Header1
+{
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+	border-bottom-width: 2px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-GrayAltRows .HeadD-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .HeadC-Column1-Header1
+{
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+}
+
+.TableStyle-GrayAltRows .HeadC-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .HeadB-Column1-Header1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+}
+
+.TableStyle-GrayAltRows .HeadB-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .HeadA-Column1-Header1
+{
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+}
+
+.TableStyle-GrayAltRows .HeadA-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .HeadG-Column1-Header1
+{
+	color: #ffffff;
+	font-family: Calibri;
+	text-align: left;
+	background-color: #696969;
+}
+
+.TableStyle-GrayAltRows .HeadG-Column1-Header1 p
+{
+	color: #ffffff;
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .Foot-Footer1
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootI-Column1-Footer1
+{
+	background-color: #c0c0c0;
+}
+
+.TableStyle-GrayAltRows .FootI-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootE-Column1-Footer1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	background-color: #c0c0c0;
+	border-top-width: 2px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-GrayAltRows .FootE-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootF-Column1-Footer1
+{
+	background-color: #c0c0c0;
+	border-top-width: 2px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-GrayAltRows .FootF-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootH-Column1-Footer1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	background-color: #c0c0c0;
+}
+
+.TableStyle-GrayAltRows .FootH-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootD-Column1-Footer1
+{
+	background-color: #c0c0c0;
+	border-top-width: 2px;
+	border-top-color: #000000;
+	border-top-style: solid;
+}
+
+.TableStyle-GrayAltRows .FootD-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootC-Column1-Footer1
+{
+	background-color: #c0c0c0;
+}
+
+.TableStyle-GrayAltRows .FootC-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootB-Column1-Footer1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+	background-color: #c0c0c0;
+}
+
+.TableStyle-GrayAltRows .FootB-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootA-Column1-Footer1
+{
+	background-color: #c0c0c0;
+}
+
+.TableStyle-GrayAltRows .FootA-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .FootG-Column1-Footer1
+{
+	background-color: #c0c0c0;
+}
+
+.TableStyle-GrayAltRows .FootG-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-GrayAltRows .Body-Body1
+{
+	
+}
+
+.TableStyle-GrayAltRows .BodyI-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+}
+
+.TableStyle-GrayAltRows .BodyI-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyE-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyE-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyF-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyF-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyH-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyH-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyD-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyD-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyC-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+}
+
+.TableStyle-GrayAltRows .BodyC-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyB-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyB-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyA-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+}
+
+.TableStyle-GrayAltRows .BodyA-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyG-Column1-Body1
+{
+	font-family: Calibri;
+	background-color: #d3d3d3;
+}
+
+.TableStyle-GrayAltRows .BodyG-Column1-Body1 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .Body-Body2
+{
+	
+}
+
+.TableStyle-GrayAltRows .BodyI-Column1-Body2
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyI-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyE-Column1-Body2
+{
+	font-family: Calibri;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyE-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyF-Column1-Body2
+{
+	font-family: Calibri;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyF-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyH-Column1-Body2
+{
+	font-family: Calibri;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyH-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyD-Column1-Body2
+{
+	font-family: Calibri;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyD-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyC-Column1-Body2
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyC-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyB-Column1-Body2
+{
+	font-family: Calibri;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: solid;
+}
+
+.TableStyle-GrayAltRows .BodyB-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyA-Column1-Body2
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyA-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyG-Column1-Body2
+{
+	font-family: Calibri;
+}
+
+.TableStyle-GrayAltRows .BodyG-Column1-Body2 p
+{
+	font-family: Calibri;
+}
+
+

@@ -1,0 +1,88 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.etexascode.texas</groupId>
+        <artifactId>libSIMPRO</artifactId>
+        <version>3.5</version>
+    </parent>
+    <groupId>org.etexascode.texas.linux32</groupId>
+    <artifactId>libSIMPRO</artifactId>
+    <version>3.5</version>
+    <packaging>so</packaging>
+    <name>linux32</name>
+    <dependencies>
+        <!-- ORDER MATTERS HERE for libTEXASLIB -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>libTEXASLIB</artifactId>
+            <version>${project.version}</version>
+            <type>a</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <!--This managed plugin is defined in parent project -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>unbind-initialize</id>
+                        <phase></phase>
+                        <goals>
+                            <goal>initialize</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <compilerExecutable>gfortran</compilerExecutable>
+                    <compilerStartOptions>
+                        <compilerStartOption>-m32</compilerStartOption>
+                        <compilerStartOption>-fno-range-check</compilerStartOption>
+                        <compilerStartOption>-fno-underscoring</compilerStartOption>
+                        <compilerStartOption>-fPIC</compilerStartOption>
+                    </compilerStartOptions>
+
+                    <sources>
+                        <source>
+                            <directory>target/generated-sources</directory>
+                            <fileNames>
+                                <fileName>simpro1.for</fileName>
+                                <fileName>simpro2.for</fileName>
+                                <fileName>simpro2b.for</fileName>
+                                <fileName>simpro3a.for</fileName>
+                                <fileName>simpro3b.for</fileName>
+                                <fileName>simpro3c.for</fileName>
+                                <fileName>simpro4.for</fileName>
+                                <fileName>simpro5.for</fileName>
+                            </fileNames>
+                        </source>
+                    </sources>
+
+                    <!-- Create a library archive of object files -->
+                    <linkerExecutable>gfortran</linkerExecutable>
+                    <linkerStartOptions>
+                        <linkerStartOption>-shared</linkerStartOption>
+                        <linkerStartOption>-m32</linkerStartOption>
+                        <!-- The gfortran libraries must be statically linked 
+                            to the dynamic library. However, currently there is a limitation because 
+                            the libgfortran.a library on the build system is not PIC. -->
+                        <!-- Statically link the gfortran libs so that users 
+                            don't have to install the gfortran package on their own. However, leave the 
+                            gcc runtime libs as dynamic because these are normally already on linux systems -->
+                        <!-- <linkerStartOption>-static-libgfortran</linkerStartOption> -->
+                    </linkerStartOptions>
+
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

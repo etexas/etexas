@@ -1,0 +1,148 @@
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** *  COPYRIGHT (C) 1989 by The University of Texas at Austin   * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of The University of Texas at Austin shall not be used in  * ***
+C *** * advertising or publicity related to the distribution of    * ***
+C *** * the software without specific, written, prior permission.  * ***
+C *** * This software is provided as-delivered without expressed   * ***
+C *** * or implied warranty.  The University of Texas at Austin    * ***
+C *** * makes no representation about the suitability of this      * ***
+C *** * software for any purpose and accepts no responsibility for * ***
+C *** * its use.                                                   * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+      COMMON / VEHDL  / IACDS (NVE),IACLDS(NVE),ICDFS (NVE),IFVA  (NVE),
+     *                  IRSTOP(NVE),ISDEC (NVE),ISTMO (NVE),
+     *                  MBLOCK(NVE),MFGOF (NVE),MFINL (NVE),MFSTPF(NVE),
+     *                  MLAG  (NVE),MOASF (NVE),MPOBS (NVE),MPRO  (NVE),
+     *                  MSAOR (NVE),MSFLG (NVE),MSTPF (NVE),MTCARS(NVE),
+     *                  CKINTB(NVE),FSTACT(NVE),IDISPD(NVE),IUPDAT(NVE),
+     *                  MAJCLB(NVE),MAJCLL(NVE),MAJCOL(NVE),MAJCON(NVE),
+     *                  MAJRLC(NVE),MAJSIG(NVE),MININT(NVE),SIGRGO(NVE)
+      LOGICAL           IACDS      ,IACLDS     ,ICDFS      ,IFVA       ,
+     *                  IRSTOP     ,ISDEC      ,ISTMO      ,
+     *                  MBLOCK     ,MFGOF      ,MFINL      ,MFSTPF     ,
+     *                  MLAG       ,MOASF      ,MPOBS      ,MPRO       ,
+     *                  MSAOR      ,MSFLG      ,MSTPF      ,MTCARS     ,
+     *                  CKINTB     ,FSTACT     ,IDISPD     ,IUPDAT     ,
+     *                  MAJCLB     ,MAJCLL     ,MAJCOL     ,MAJCON     ,
+     *                  MAJRLC     ,MAJSIG     ,MININT     ,SIGRGO
+      COMMON / VEHDI  / ABTPTI(NVE),ABTPTM(NVE),FSTPIA(NVE),GACTIM(NVE),
+     *                  IDVS  (NVE),IDVSI (NVE),IPRC(2,NVE),IPRTM (NVE),
+     *                  IQDS  (NVE),IQDSI (NVE),ISDS  (NVE),ISDSI (NVE),
+     *                  ISET  (NVE),ISPDP (NVE),ISTCON(NVE),ITIMV (NVE),
+     *                  ITIMVI(NVE),IVCNOF(NVE),IVCNOR(NVE),IVMAXA(NVE),
+     *                  IVMAXD(NVE),IVMCOL(MVMCOL,NVE)     ,IVMXAI(NVE),
+     *                  IVMXDI(NVE),JVCNOF(NVE),JVCNOR(NVE),LALT  (NVE),
+     *                  LALTPL(NVE),LALTPR(NVE),LCHGE (NVE),LCONTV(NVE),
+     *                  LEGAL (NVE),LOGFLG(NVE),NORC(2,NVE),NVMCOL(NVE),
+     *                  SDWELL(NVE),VMSACM(NVE),VMSACN(NVE),VMSACT(NVE),
+     *                  VMSASM(NVE),VMSASN(NVE),VMSAST(NVE)
+      INTEGER           ABTPTI     ,ABTPTM     ,FSTPIA     ,GACTIM     ,
+     *                  IDVS       ,IDVSI      ,IPRC       ,IPRTM      ,
+     *                  IQDS       ,IQDSI      ,ISDS       ,ISDSI      ,
+     *                  ISET       ,ISPDP      ,ISTCON     ,ITIMV      ,
+     *                  ITIMVI     ,IVCNOF     ,IVCNOR     ,IVMAXA     ,
+     *                  IVMAXD     ,IVMCOL                 ,IVMXAI     ,
+     *                  IVMXDI     ,JVCNOF     ,JVCNOR     ,LALT       ,
+     *                  LALTPL     ,LALTPR     ,LCHGE      ,LCONTV     ,
+     *                  LEGAL      ,LOGFLG     ,NORC       ,NVMCOL     ,
+     *                  SDWELL     ,VMSACM     ,VMSACN     ,VMSACT     ,
+     *                  VMSASM     ,VMSASN     ,VMSAST
+      COMMON / VEHDD  / FGOATM(NVE),FGOTIM(NVE),FRRATM(NVE),FRRTIM(NVE),
+     *                  FSTDTM(NVE),FSTPOS(NVE),FSTTIM(NVE),IACC  (NVE),
+     *                  IDTS  (NVE),IDTSI (NVE),IPOS  (NVE),ISLP  (NVE),
+     *                  ISPDS (NVE),ISPDSI(NVE),IVEL  (NVE),LATPOS(NVE),
+     *                  LVAP  (NVE),POSCLB(NVE),POSCLL(NVE),POSCON(NVE),
+     *                  VMSPST(NVE),
+     *                  HEADNG(NVE),STEERA(NVE)
+      DOUBLE PRECISION  FGOATM     ,FGOTIM     ,FRRATM     ,FRRTIM     ,
+     *                  FSTDTM     ,FSTPOS     ,FSTTIM     ,IACC       ,
+     *                  IDTS       ,IDTSI      ,IPOS       ,ISLP       ,
+     *                  ISPDS      ,ISPDSI     ,IVEL       ,LATPOS     ,
+     *                  LVAP       ,POSCLB     ,POSCLL     ,POSCON     ,
+     *                  VMSPST,
+     *                  HEADNG     ,STEERA
+C-----ISET   LANE CHANGE DECISION FLAG
+C-----       1=ACCEPT GAP, CHANGE LANE (CURRENTLY CHANGING LANES)
+C-----       2=REJECT GAP, SLOW DOWN, CAR FOLLOW NOSF VEHICLE, POSSIBLE
+C-----         ACCEPTANCE NEXT DT
+C-----       3=REJECT GAP, SPEED UP, FLAG THE NOSR VEHICLE TO DECELERATE
+C-----         TO FOLLOW A LANE CHANGING VEHICLE (SET MLAG(NOSR) TRUE),
+C-----         POSSIBLE ACCEPTANCE NEXT DT
+C-----       4=REJECT GAP, SLOW DOWN, LOOK AT NEXT GAP
+C-----       5=REJECT GAP, CONTINUE AS BEFORE, CONTINUE CHECKING FOR A
+C-----         LANE CHANGE, LANE CHANGE COMPLETED
+C-----       6=DO NOT CHECK FOR A LANE CHANGE (LOGIN)
+C-----       7=NO LONGER USED (VEHICLE IN ADJACENT LANE IS MOVING)
+C-----LALT   LANE ALTERNATIVES
+C-----       1=THERE ARE NO ALTERNATIVES, THE PRESENT LANE IS THE ONLY
+C-----         POSSIBLE ONE
+C-----       2=THE RIGHT LANE IS THE ONLY ALTERNATIVE
+C-----       3=THE LEFT  LANE IS THE ONLY ALTERNATIVE
+C-----       4=BOTH RIGHT AND LEFT LANES ARE ALTERNATIVES
+C-----       5=LANE ALTERNATIVES HAVE NOT BEEN CHECKED,(LOGIN)
+C-----       6=STARTING LANE CHANGE TO THE RIGHT THIS DT
+C-----LCHGE  LANE CHANGE INFORMATION FLAG
+C-----       1=VEHICLE IS NOT CHANGING LANES, LANE CHANGE ENDED (LOGIN)
+C-----       2=VEHICLE IS     CHANGING LANES
+C-----       3=VEHICLE AHEAD IS CHANGING LANES
+C-----LEGAL  LANE CHANGE DESIRABILITY FLAG
+C-----       1=TURN IS LEGAL FROM LEG BUT NOT FROM LANE, FORCED LANE
+C-----         CHANGE TO THE LEFT
+C-----       2=TURN IS LEGAL FROM LEG AND LANE, CONSIDER OPTIONAL LANE
+C-----         CHANGE
+C-----       3=TURN IS LEGAL FROM LEG BUT NOT FROM LANE, FORCED LANE
+C-----         CHANGE TO THE RIGHT
+C-----       4=DESIRABILITY OF A LANE CHANGE HAS NOT BEEN CHECKED, LANE
+C-----         CHANGE ENDED (LOGIN)
+C-----       5=NO LONGER USED (TURN IS NOT LEGAL FROM LEG)
+C-----       WHILE LCHGE=2, TOTAL LATERAL DISTANCE FOR THE LANE CHANGE
+C-----       (BIASED BY 2) (LEGAL = LWID(NEW LANE) + LWID(CURRENT LANE))
+C-----LOGFLG FLAG TO CONTROL THE CALLING OF GENERAL INTERSECTION LOGIC
+C-----       0=DO NOT CALL LOGIC, DO NOT CALL INTLOG, AND DO NOT CALL
+C-----         CONFLT
+C-----       1=CALL LOGIC, CALL INTLOG, AND POSSIBLY CALL CONFLT
+C-----       2-N=DO NOT CALL LOGIC, DO NOT CALL INTLOG, AND DO NOT CALL
+C-----         CONFLT (LOGIN) (WHILE LOGFLG>1 DECREMENT LOGFLG BY 1)
+C-----ITURN  TURN CODE FOR VEHICLE (VEHF)
+C-----       1=U
+C-----       2=LEFT
+C-----       3=STRAIGHT
+C-----       4=RIGHT
+C-----IPT    PATH TURN CODE (PATH)
+C-----       1=RIGHT
+C-----       2=STRAIGHT
+C-----       4=LEFT
+C-----       8=U
+

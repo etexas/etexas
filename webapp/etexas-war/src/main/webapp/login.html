@@ -1,0 +1,118 @@
+<!--
+  #%L
+  eTEXAS
+  %%
+  Copyright (C) 2016 Harmonia Holdings Group, LLC
+  %%
+  All rights reserved.
+  -
+  SBIR DATA RIGHTS
+  Harmonia Holdings Group, LLC
+  2020 Kraft Drive Suite 2400
+  Blacksburg, VA 24060
+  Contract No: DTRT57-16-c-10008
+  Start Date: 01/05/2016
+  End Date: 01/05/2018
+  Expiration of SBIR Data Rights Period: 01/05/2022
+  -
+  The Government's rights to use, modify, reproduce, release, perform,
+  display, or disclose technical data or computer software marked with
+  this legend are restricted during the period shown as provided in
+  paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+  Computer Software-Small Business Innovation Research (SBIR) Program
+  clause contained in the above identified contract. No restrictions
+  apply after the expiration date shown above. Any reproduction of
+  technical data, computer software, or portions thereof marked with
+  this legend must also reproduce the markings.
+  -
+  Contributors:
+  Harmonia Holdings Group LLC: Initial API and implementation.
+  #L%
+  -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>eTEXAS</title>
+
+<!-- Ext JS styles -->
+<link rel="stylesheet" type="text/css" href="/webjars/extjs/6.2.0/build/classic/theme-neptune/resources/theme-neptune-all.css" />
+<link rel="stylesheet" href="/resources/css/default/app.css">
+
+<!-- Landing page styles -->
+<link rel="stylesheet" type="text/css" href="/resources/css/default/reset.css" />
+<link rel="stylesheet" type="text/css" href="/resources/css/default/landing.css" />
+
+<!-- Ext JS -->
+<script type="text/javascript" src="/webjars/extjs/6.2.0/build/ext-all-debug.js"></script>
+<script type="text/javascript" src="/webjars/extjs/6.2.0/build/classic/theme-neptune/theme-neptune.js"></script>
+
+<!-- Custom font -->
+<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+</head>
+<body style="">
+
+    <div id="header">
+        <img src="/resources/images/go_64.png" style="float: left" />
+        <p style="font-size: 1.6em; color: #FFF; margin: .5em 0 0 0">eTEXAS</p>
+        <p style="color: #CCC; margin: .35em 0 0 0">Enhanced Traffic EXperimental Analytical Simulation</p>
+        <p style="clear: both"></p>
+    </div>
+    <div id="content">
+
+        <div id="rightCol">
+            <div class="box">
+                <div id="loginForm"></div>
+            </div>
+            <div class="box">
+                <div id="blog"></div>
+            </div>
+            <div class="box">
+                <div id="links"></div>
+            </div>
+
+        </div>
+        <div id="leftCol">
+            <p>
+                <span class="bold">eTEXAS</span> is a platform for connected vehicle application simulation. This empowers researchers and accelerates the maturity of Connected Vehicle Program
+                applications. We accomplish this by leveraging the modeling detail in simulation models, naturalistic vehicle trajectory datasets and message transmission modeling. We then provide
+                this to researchers and organizations building Connected Vehicle Program applications for a variety of objectives including safety, mobility, and ecological concerns.
+            </p>
+
+            <p class="center">
+                <img src="/resources/images/etexas-overview.png" />
+            </p>
+
+            <h4>eTEXAS follows Connected Vehicle standards such as SAE J2735 messages, which includes:</h4>
+            <ul>
+                <li>SPAT (signal phase and timing) messages that report traffic signal status</li>
+                <li>MapData messages that define intersection geometry</li>
+                <li>BSM part 1 and 2 (basic safety messages) messages that report vehicle movement</li>
+                <li>CSR (common safety request) messages that request additional vehicle information</li>
+            </ul>
+            <h4>eTEXAS allows Connected Vehicle Apps to:</h4>
+            <ul>
+                <li>Send and receive DSRC/WAVE messages (e.g., J2735)</li>
+                <li>Access data that would be available to them through DSRC units installed on either vehicles or road-side units (i.e., simulated vehicle CAN-bus data, simulated traffic signal
+                    data, simulated lane geometry, etc.)</li>
+                <li>Influence the simulation on-the-fly through a command interface (i.e., vehicle commands that allow apps to change a simulated vehicle&#8217;s speed or signal commands that
+                    allow apps to change a simulated signal&#8217;s phase or timing)</li>
+            </ul>
+
+            <h4>eTEXAS adds a wireless network simulation model to traditional traffic simulation models for the following modeling advantages:</h4>
+            <ul>
+                <li>Broadcast/multicast/unicast message routing</li>
+                <li>Transmission latency</li>
+                <li>Propagation/fading</li>
+                <li>Message collision</li>
+            </ul>
+        </div>
+
+    </div>
+    <div id="footer">
+        &copy; 2017. <a href="http://harmonia.com">Harmonia Holdings Group, LLC</a>. <span id="webapp-info" style="float: right"> <span id="webapp-title">eTEXAS</span> <span id="webapp-version">Version</span>
+            <span id="webapp-build">Build</span>
+        </span>
+    </div>
+</body>
+</html>

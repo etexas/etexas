@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.harmonia.etexas</groupId>
+		<artifactId>native</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+	<groupId>com.harmonia.etexas</groupId>
+	<artifactId>intellifusion-test</artifactId>
+	<packaging>uexe</packaging>
+	<name>Intellifusion Test</name>
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>libnative-intellifusion</artifactId>
+			<version>${project.version}</version>
+			<type>inczip</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>libnative-intellifusion</artifactId>
+			<version>${project.version}</version>
+			<type>so</type>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>native-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<sources>
+						<source>
+							<directory>src/main/source</directory>
+							<includes>
+								<include>*.c</include>
+							</includes>
+						</source>
+						<source>
+							<directory>src/main/include</directory>
+						</source>
+					</sources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

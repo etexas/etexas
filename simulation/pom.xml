@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>etexas</artifactId>
+        <groupId>org.etexascode</groupId>
+        <version>3.5</version>
+    </parent>
+    <groupId>org.etexascode.simulation</groupId>
+    <artifactId>simulation</artifactId>
+    <packaging>pom</packaging>
+    <name>Simulation</name>
+
+    <modules>
+        <!-- <module>dcs-sim</module> -->
+        <!-- <module>dt-sim</module> -->
+        <!-- <module>ann-data-gen</module> -->
+        <!-- <module>xls-data-gen</module> -->
+        <module>point-converter</module>
+        <!-- <module>scope-interface</module> -->
+    	<module>recap</module>
+  </modules>
+</project>

@@ -1,0 +1,10 @@
+<jboss-deployment-structure>
+	<deployment>
+	    <exclusions>
+            <module name="org.apache.log4j" />
+        </exclusions>
+        <dependencies>
+        	<module name="org.etexascode" />
+		</dependencies>
+	</deployment>
+</jboss-deployment-structure>

@@ -1,0 +1,17 @@
+extra data
+total_num_time_steps:98
+first_time_step:0
+time_step_length_in_milliseconds:1000
+==section separator==
+detector list
+detector_number:0
+bottom_left_x:-3.0
+bottom_left_y:-3.0
+top_right_x:3.0
+top_right_y:3.0
+==detector separator==
+detector_number:18
+bottom_left_x:15.0
+bottom_left_y:15.0
+top_right_x:21.0
+top_right_y:21.0

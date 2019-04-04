@@ -1,0 +1,131 @@
+extra data
+total_num_time_steps:10327
+first_time_step:1163030500
+time_step_length_in_milliseconds:100
+==section separator==
+detector list
+detector_number:6
+bottom_left_x:55.2348
+bottom_left_y:217.936961
+top_right_x:65.2348
+top_right_y:227.936961
+==detector separator==
+detector_number:5
+bottom_left_x:55.2348
+bottom_left_y:207.3923
+top_right_x:65.2348
+top_right_y:217.3923
+==detector separator==
+detector_number:21
+bottom_left_x:-23.72
+bottom_left_y:171.0
+top_right_x:-13.72
+top_right_y:181.0
+==detector separator==
+detector_number:4
+bottom_left_x:55.2348
+bottom_left_y:196.9001
+top_right_x:65.2348
+top_right_y:206.9001
+==detector separator==
+detector_number:22
+bottom_left_x:-11.24
+bottom_left_y:171.0
+top_right_x:-1.24
+top_right_y:181.0
+==detector separator==
+detector_number:2
+bottom_left_x:5.8
+bottom_left_y:171.0
+top_right_x:15.8
+top_right_y:181.0
+==detector separator==
+detector_number:1
+bottom_left_x:-0.4342
+bottom_left_y:171.0
+top_right_x:9.5658
+top_right_y:181.0
+==detector separator==
+detector_number:7
+bottom_left_x:55.2348
+bottom_left_y:227.61715
+top_right_x:65.2348
+top_right_y:237.61715
+==detector separator==
+detector_number:20
+bottom_left_x:-83.2
+bottom_left_y:187.99
+top_right_x:-73.2
+top_right_y:197.99
+==detector separator==
+detector_number:8
+bottom_left_x:55.2348
+bottom_left_y:236.74665
+top_right_x:65.2348
+top_right_y:246.74665
+==detector separator==
+detector_number:11
+bottom_left_x:0.174925
+bottom_left_y:680.0
+top_right_x:10.174925
+top_right_y:690.0
+==detector separator==
+detector_number:3
+bottom_left_x:19.9
+bottom_left_y:171.0
+top_right_x:29.9
+top_right_y:181.0
+==detector separator==
+detector_number:10
+bottom_left_x:10.524775
+bottom_left_y:680.0
+top_right_x:20.524775
+top_right_y:690.0
+==detector separator==
+detector_number:13
+bottom_left_x:-21.861425
+bottom_left_y:680.0
+top_right_x:-11.861425
+top_right_y:690.0
+==detector separator==
+detector_number:12
+bottom_left_x:-9.89775
+bottom_left_y:680.0
+top_right_x:0.10225
+top_right_y:690.0
+==detector separator==
+detector_number:14
+bottom_left_x:-31.656925
+bottom_left_y:680.0
+top_right_x:-21.656925
+top_right_y:690.0
+==detector separator==
+detector_number:16
+bottom_left_x:-83.2
+bottom_left_y:233.04
+top_right_x:-73.2
+top_right_y:243.04
+==detector separator==
+detector_number:17
+bottom_left_x:-83.2
+bottom_left_y:222.025
+top_right_x:-73.2
+top_right_y:232.025
+==detector separator==
+detector_number:18
+bottom_left_x:-83.2
+bottom_left_y:221.06
+top_right_x:-73.2
+top_right_y:231.06
+==detector separator==
+detector_number:19
+bottom_left_x:-83.2
+bottom_left_y:199.125
+top_right_x:-73.2
+top_right_y:209.125
+==detector separator==
+detector_number:15
+bottom_left_x:-83.2
+bottom_left_y:244.15
+top_right_x:-73.2
+top_right_y:254.15

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>etexas</artifactId>
+        <groupId>org.etexascode</groupId>
+        <version>3.5</version>
+    </parent>
+    <groupId>org.etexascode.texas</groupId>
+    <artifactId>TEXAS</artifactId>
+    <packaging>pom</packaging>
+    <name>TEXAS</name>
+
+    <properties>
+        <ar-binary>ar</ar-binary>
+        <gfortran-binary>gfortran</gfortran-binary>
+        <sonar.skip>true</sonar.skip>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>none</id>
+            <activation>
+                <property>
+                    <name>platform</name>
+                    <value>none</value>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>SIMPRO</module>
+                <module>TEXASLIB</module>
+                <module>GDVSIM</module>
+                <module>SIMCONV</module>
+                <module>GDVCONV</module>
+                <module>GEOPRO</module>
+                <module>DVPRO</module>
+            </modules>
+            <!-- To define the plugin version in your parent POM -->
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>license-maven-plugin</artifactId>
+                            <version>1.12</version>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.etexascode</groupId>
+                                    <artifactId>build-tools</artifactId>
+                                    <version>${project.version}</version>
+                                </dependency>
+                            </dependencies>
+                            <configuration>
+                                <organizationName>Harmonia Holdings Group, LLC</organizationName>
+                                <projectName>eTEXAS</projectName>
+                                <verbose>false</verbose>
+                                <licenseName>texas_v1</licenseName>
+                                <licenseResolver>classpath://license</licenseResolver>
+                                <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                                <skipUpdateLicense>true</skipUpdateLicense>
+                                <ignoreNoFileToScan>true</ignoreNoFileToScan>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>primary</id>
+                                    <goals>
+                                        <goal>update-file-header</goal>
+                                        <goal>update-project-license</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <excludes>
+                                            <exclude>**/libs/*.js</exclude>
+                                            <exclude>**/*.json</exclude>
+                                        </excludes>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <version>1.7</version>
+                            <executions>
+                                <execution>
+                                    <id>convert-fortran-source</id>
+                                    <phase>generate-sources</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target>
+                                            <mkdir dir="target"/>
+                                            <exec
+                                                executable="python"
+                                                failonerror="true">
+                                                <arg value="../../alter_c_codes.py"/>
+                                                <arg value="--SRC=../src/main/resources"/>
+                                                <arg value="--DEST=target/generated-sources"/>
+                                                <arg value="--linux"/>
+                                            </exec>
+                                        </target>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
+</project>

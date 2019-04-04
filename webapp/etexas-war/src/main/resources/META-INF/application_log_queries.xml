@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
+
+    <!-- APPLICATION_LOG_APPLICATIONS_FROM_EXECUTION_ID -->
+    <named-query name="getApplicationLogApplications(executionId)">
+        <query>
+            SELECT DISTINCT l.applicationName FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_APPLICATIONS_FROM_EXECUTION_ID_DEVICE_LIST -->
+    <named-query name="getApplicationLogApplications(executionId, deviceList)">
+        <query>
+            SELECT DISTINCT l.applicationName FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_COUNT_FROM_EXECUTION_ID_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogCount(executionId, minTime, maxTime)">
+        <query>
+            SELECT COUNT(*) FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_COUNT_FROM_EXECUTION_ID_DEVICE_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogCount(executionId, deviceList, minTime, maxTime)">
+        <query>
+            SELECT COUNT(*) FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_COUNT_FROM_EXECUTION_ID_APPLICATION_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogCount(executionId, applicationList, minTime, maxTime)">
+        <query>
+            SELECT COUNT(*) FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.applicationName IN (:applicationList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_COUNT_FROM_EXECUTION_ID_KEY_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogCount(executionId, keyList, minTime, maxTime)">
+        <query>
+            SELECT COUNT(*) FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.applicationKey IN (:keyList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_COUNT_FROM_EXECUTION_ID_DEVICE_LIST_APPLICATION_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogCount(executionId, deviceList, applicationList, minTime, maxTime)">
+        <query>
+            SELECT COUNT(*) FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.applicationName IN (:applicationList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_COUNT_FROM_EXECUTION_ID_DEVICE_LIST_KEY_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogCount(executionId, deviceList, keyList, minTime, maxTime)">
+        <query>
+            SELECT COUNT(*) FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.applicationKey IN (:keyList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_COUNT_FROM_EXECUTION_ID_APPLICATION_LIST_KEY_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogCount(executionId, applicationList, keyList, minTime, maxTime)">
+        <query>
+            SELECT COUNT(*) FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.applicationName IN (:applicationList)
+                    AND l.applicationKey IN (:keyList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_COUNT_FROM_EXECUTION_ID_DEVICE_LIST_APPLICATION_LIST_KEY_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogCount(executionId, deviceList, applicationList, keyList, minTime, maxTime)">
+        <query>
+            SELECT COUNT(*) FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.applicationName IN (:applicationList)
+                    AND l.applicationKey IN (:keyList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_DEVICES_FROM_EXECUTION_ID -->
+    <named-query name="getApplicationLogDevices(executionId)">
+        <query>
+            SELECT DISTINCT l.deviceId FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_KEYS_FROM_EXECUTION_ID -->
+    <named-query name="getApplicationLogKeys(executionId)">
+        <query>
+            SELECT DISTINCT l.applicationKey FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_KEYS_FROM_EXECUTION_ID_DEVICE_LIST -->
+    <named-query name="getApplicationLogKeys(executionId, deviceList)">
+        <query>
+            SELECT DISTINCT l.applicationKey FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_KEYS_FROM_EXECUTION_ID_APPLICATION_LIST -->
+    <named-query name="getApplicationLogKeys(executionId, applicationList)">
+        <query>
+            SELECT DISTINCT l.applicationKey FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.applicationName IN (:applicationList)
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOG_KEYS_FROM_EXECUTION_ID_DEVICE_LIST_APPLICATION_LIST -->
+    <named-query name="getApplicationLogKeys(executionId, deviceList, applicationList)">
+        <query>
+            SELECT DISTINCT l.applicationKey FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.applicationName IN (:applicationList)
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOGS_FROM_EXECUTION_ID_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogs(executionId, minTime, maxTime)">
+        <query>
+            SELECT l FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOGS_FROM_EXECUTION_ID_DEVICE_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogs(executionId, deviceList, minTime, maxTime)">
+        <query>
+            SELECT l FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOGS_FROM_EXECUTION_ID_APPLICATION_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogs(executionId, applicationList, minTime, maxTime)">
+        <query>
+            SELECT l FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.applicationName IN (:applicationList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOGS_FROM_EXECUTION_ID_KEY_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogs(executionId, keyList, minTime, maxTime)">
+        <query>
+            SELECT l FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.applicationKey IN (:keyList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOGS_FROM_EXECUTION_ID_DEVICE_LIST_APPLICATION_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogs(executionId, deviceList, applicationList, minTime, maxTime)">
+        <query>
+            SELECT l FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.applicationName IN (:applicationList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOGS_FROM_EXECUTION_ID_DEVICE_LIST_KEY_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogs(executionId, deviceList, keyList, minTime, maxTime)">
+        <query>
+            SELECT l FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.applicationKey IN (:keyList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOGS_FROM_EXECUTION_ID_APPLICATION_LIST_KEY_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogs(executionId, applicationList, keyList, minTime, maxTime)">
+        <query>
+            SELECT l FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.applicationName IN (:applicationList)
+                    AND l.applicationKey IN (:keyList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_LOGS_FROM_EXECUTION_ID_DEVICE_LIST_APPLICATION_LIST_KEY_LIST_MIN_TIME_MAX_TIME -->
+    <named-query name="getApplicationLogs(executionId, deviceList, applicationList, keyList, minTime, maxTime)">
+        <query>
+            SELECT l FROM ApplicationLog l
+                WHERE l.executionId = :executionId
+                    AND l.deviceId IN (:deviceList)
+                    AND l.applicationName IN (:applicationList)
+                    AND l.applicationKey IN (:keyList)
+                    AND l.simulationTime &gt;= :minTime
+                    AND l.simulationTime &lt;= :maxTime
+        </query>
+    </named-query>
+
+</entity-mappings>

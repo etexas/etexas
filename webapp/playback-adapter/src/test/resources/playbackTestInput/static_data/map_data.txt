@@ -1,0 +1,42 @@
+reference_x:0.0
+reference_y:0.0
+==section separator==
+lane_id:1
+is_egress:False
+lane_width_in_feet:-1.0
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+==begin center points==
+x_in_feet:0.0
+y_in_feet:1.0
+width_in_feet:10
+==center point divider==
+x_in_feet:0.0
+y_in_feet:2.0
+width_in_feet:10
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:99
+is_egress:True
+lane_width_in_feet:-1.0
+lane_has_right_turn:True
+lane_has_right_turn_on_red:True
+lane_has_left_turn:True
+lane_has_left_turn_on_red:True
+lane_has_u_turn:True
+==begin center points==
+x_in_feet:-20.0
+y_in_feet:-20.0
+width_in_feet:10
+==center point divider==
+x_in_feet:20.0
+y_in_feet:20.0
+width_in_feet:10
+==end center points==
+==begin lane connector list==
+==end lane connector list==

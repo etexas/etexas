@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<etexas:VehicleManager xmlns:etexas="http://www.harmonia.com/product/etexas/">
+    <etexas:VEHICLE_HISTORY_SIZE>4</etexas:VEHICLE_HISTORY_SIZE>
+    <etexas:ERROR_TOLERANCE>0.01</etexas:ERROR_TOLERANCE>
+    <etexas:currentMessageTime>0.0</etexas:currentMessageTime>
+    <etexas:currentProjectedVehicleID>0</etexas:currentProjectedVehicleID>
+    <etexas:timeoutLength>30</etexas:timeoutLength>
+    <etexas:vehicles>
+        <etexas:entry>
+            <etexas:key>Simulation:0-Vehicle:2</etexas:key>
+            <etexas:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="etexas:vehicle">
+                <etexas:vehicleID>2</etexas:vehicleID>
+                <etexas:globalId>0</etexas:globalId>
+                <etexas:simulationId>0</etexas:simulationId>
+                <etexas:x>1619.8900800000001</etexas:x>
+                <etexas:y>6834.04272</etexas:y>
+                <etexas:z>0.0</etexas:z>
+                <etexas:speed>0.0</etexas:speed>
+                <etexas:length>426.72</etexas:length>
+                <etexas:acceleration>0.0</etexas:acceleration>
+                <etexas:width>213.36</etexas:width>
+                <etexas:laneID>6</etexas:laneID>
+                <etexas:heading>89.98303042299898</etexas:heading>
+                <etexas:height>0.0</etexas:height>
+                <etexas:type>CAR</etexas:type>
+                <etexas:brakePressed>false</etexas:brakePressed>
+                <etexas:latitude>6.180499640748502E-4</etexas:latitude>
+                <etexas:longitude>1.4551720175419734E-4</etexas:longitude>
+                <etexas:elev>0.0</etexas:elev>
+                <etexas:steeringAngle>127.0</etexas:steeringAngle>
+            </etexas:value>
+        </etexas:entry>
+    </etexas:vehicles>
+</etexas:VehicleManager>

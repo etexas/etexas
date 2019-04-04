@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="etexas-pu" transaction-type="JTA">
+        <jta-data-source>jdbc/eTEXASData</jta-data-source>
+        <mapping-file>META-INF/application_log_queries.xml</mapping-file>
+        <mapping-file>META-INF/queries.xml</mapping-file>
+        <class>org.etexascode.webapp.datamodel.AbstractEntity</class>
+        <class>org.etexascode.webapp.datamodel.ApplicationLog</class>
+        <class>org.etexascode.webapp.datamodel.CellTower</class>
+        <class>org.etexascode.webapp.datamodel.CellularConfiguration</class>
+        <class>org.etexascode.webapp.datamodel.Command</class>
+        <class>org.etexascode.webapp.datamodel.Composite</class>
+        <class>org.etexascode.webapp.datamodel.Detector</class>
+        <class>org.etexascode.webapp.datamodel.Execution</class>
+        <class>org.etexascode.webapp.datamodel.ExecutionMessage</class>
+        <class>org.etexascode.webapp.datamodel.FileData</class>
+        <class>org.etexascode.webapp.datamodel.LaneManagerData</class>
+        <class>org.etexascode.webapp.datamodel.LaneMapping</class>
+        <class>org.etexascode.webapp.datamodel.Simulation</class>
+        <class>org.etexascode.webapp.datamodel.User</class>
+        <class>org.etexascode.webapp.datamodel.application.Application</class>
+        <class>org.etexascode.webapp.datamodel.application.ApplicationParameter</class>
+        <class>org.etexascode.webapp.datamodel.application.ApplicationParameterProfile</class>
+        <class>org.etexascode.webapp.datamodel.application.ApplicationProfile</class>
+        <class>org.etexascode.webapp.datamodel.application.JarApplication</class>
+        <class>org.etexascode.webapp.datamodel.application.JarApplicationProfile</class>
+        <class>org.etexascode.webapp.datamodel.application.NativeApplication</class>
+        <class>org.etexascode.webapp.datamodel.application.NativeApplicationProfile</class>
+        <class>org.etexascode.webapp.datamodel.application.RemoteApplication</class>
+        <class>org.etexascode.webapp.datamodel.application.RemoteApplicationProfile</class>
+        <class>org.etexascode.webapp.datamodel.device.CellularDeviceProfile</class>
+        <class>org.etexascode.webapp.datamodel.device.Device</class>
+        <class>org.etexascode.webapp.datamodel.device.DeviceProfile</class>
+        <class>org.etexascode.webapp.datamodel.topography.TopographyFeature</class>
+        <class>org.etexascode.webapp.datamodel.topography.Building</class>
+        <class>org.etexascode.webapp.datamodel.device.FixedCellularDevice</class>
+        <class>org.etexascode.webapp.datamodel.device.ObuDeviceProfile</class>
+        <class>org.etexascode.webapp.datamodel.device.ReportDevice</class>
+        <class>org.etexascode.webapp.datamodel.device.RseDevice</class>
+        <class>org.etexascode.webapp.datamodel.device.StaticDevice</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
+            <property name="eclipselink.target-database" value="Derby"/>
+            <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.jdbc.batch_size" value="25"/>
+            <property name="hibernate.order_inserts" value="true"/>
+            <property name="hibernate.order_updates" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

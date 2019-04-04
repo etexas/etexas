@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://localhost:8080/etexas-war/JNLP" href="gdvsim-servlet/gdvsim.jnlp">
+    <information>
+        <title>$project.properties.webstartName</title>
+        <vendor>$project.Organization.Name</vendor>
+        <homepage>$project.Organization.Url</homepage>
+        <description kind="one-line">$project.properties.webstartDescription</description>
+    </information>
+    <security>
+        <all-permissions />
+    </security>
+    
+    <resources>
+        $dependencies
+    </resources>
+    
+    <application-desc main-class="$mainClass">
+    </application-desc>
+</jnlp>

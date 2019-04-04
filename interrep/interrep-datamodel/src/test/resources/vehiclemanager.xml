@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<VehicleManager xmlns="http://www.harmonia.com/product/etexas/">
+    <VEHICLE_HISTORY_SIZE>4</VEHICLE_HISTORY_SIZE>
+    <ERROR_TOLERANCE>0.01</ERROR_TOLERANCE>
+    <currentMessageTime>0.0</currentMessageTime>
+    <currentProjectedVehicleID>0</currentProjectedVehicleID>
+    <timeoutLength>30</timeoutLength>
+    <geoCalculatorType>1</geoCalculatorType>
+    <vehicles>
+        <entry>
+            <key>Vehicle:2</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="vehicle"
+            >
+                <vehicleID>2</vehicleID>
+                <x>1619.8900800000001</x>
+                <y>6834.04272</y>
+                <z>0.0</z>
+                <speed>0.0</speed>
+                <length>426.72</length>
+                <acceleration>0.0</acceleration>
+                <width>213.36</width>
+                <laneID>6</laneID>
+                <heading>180.01696957700102</heading>
+                <height>0.0</height>
+                <type>CAR</type>
+                <brakePressed>false</brakePressed>
+            </value>
+        </entry>
+    </vehicles>
+</VehicleManager>

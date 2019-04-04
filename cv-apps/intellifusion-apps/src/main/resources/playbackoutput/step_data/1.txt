@@ -1,0 +1,64 @@
+vehicle
+vehicle_id:1
+global_time:1
+x_offset_in_feet:0.0
+y_offset_in_feet:0.0
+latitude:-1000.0
+longitude:-1000.0
+speed_in_miles_per_hour:0.0
+acceleration_in_miles_per_hour_squared:0.0
+vehicle_length_in_feet:20
+vehicle_width_in_feet:1
+lane_id:-1
+==section separator==
+vehicle
+vehicle_id:0
+global_time:90
+x_offset_in_feet:0.0
+y_offset_in_feet:0.0
+latitude:-1000.0
+longitude:-1000.0
+speed_in_miles_per_hour:0.0
+acceleration_in_miles_per_hour_squared:0.0
+vehicle_length_in_feet:20
+vehicle_width_in_feet:1
+lane_id:-1
+==section separator==
+vehicle
+vehicle_id:9
+global_time:180
+x_offset_in_feet:0.0
+y_offset_in_feet:0.0
+latitude:-1000.0
+longitude:-1000.0
+speed_in_miles_per_hour:0.0
+acceleration_in_miles_per_hour_squared:0.0
+vehicle_length_in_feet:20
+vehicle_width_in_feet:1
+lane_id:-1
+==section separator==
+detector
+detector_number:0
+vehicle_velocity_in_miles_per_hour:0.0
+vehicle_length_in_feet:20.0
+vehicle_width_in_feet:1.0
+==section separator==
+detector
+detector_number:0
+vehicle_velocity_in_miles_per_hour:0.0
+vehicle_length_in_feet:20.0
+vehicle_width_in_feet:1.0
+==section separator==
+detector
+detector_number:0
+vehicle_velocity_in_miles_per_hour:0.0
+vehicle_length_in_feet:20.0
+vehicle_width_in_feet:1.0
+==section separator==
+signal
+lane_id:0
+signal_state:green-ball
+==section separator==
+signal
+lane_id:18
+signal_state:green-ball

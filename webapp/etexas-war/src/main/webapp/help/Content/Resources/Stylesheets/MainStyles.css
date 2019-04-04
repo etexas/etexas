@@ -1,0 +1,542 @@
+/*-
+ * #%L
+ * eTEXAS
+ * %%
+ * Copyright (C) 2016 - 2018 Harmonia Holdings Group, LLC
+ * %%
+ * All rights reserved.
+-
+SBIR DATA RIGHTS
+Harmonia Holdings Group, LLC
+2020 Kraft Drive Suite 2400
+Blacksburg, VA 24060
+Contract No: DTRT57-16-c-10008
+Start Date: 01/05/2016
+End Date: 01/05/2018
+Expiration of SBIR Data Rights Period: 01/05/2022
+-
+The Government's rights to use, modify, reproduce, release, perform,
+display, or disclose technical data or computer software marked with
+this legend are restricted during the period shown as provided in
+paragraph (b)(4) of the Rights in Noncommercial Technical Data and
+Computer Software-Small Business Innovation Research (SBIR) Program
+clause contained in the above identified contract. No restrictions
+apply after the expiration date shown above. Any reproduction of
+technical data, computer software, or portions thereof marked with
+this legend must also reproduce the markings.
+-
+Contributors:
+Harmonia Holdings Group LLC: Initial API and implementation.
+ * #L%
+ */
+@namespace MadCap url(http://www.madcapsoftware.com/Schemas/MadCap.xsd);
+/*<meta />*/
+
+body
+{
+	color: #404040;
+	font-family: Arial, Avenir, Myriad;
+	line-height: 1.7em;
+}
+
+a.MCBreadcrumbsLink
+{
+	font-style: italic;
+	text-decoration: underline;
+}
+
+a.MCBreadcrumbsLink:visited
+{
+	color: #000000;
+}
+
+a.MCBreadcrumbsLink:hover
+{
+	color: #BED230;
+}
+
+div.TopicContent
+{
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 25px;
+}
+
+h1
+{
+	font-size: 1.5em;
+	margin-bottom: 8px;
+	padding-bottom: 10px;
+	margin-top: 30px;
+	font-weight: bold;
+	color: #157fcc;
+	font-family: Calibri;
+}
+
+h2
+{
+	margin-bottom: 4px;
+	margin-top: 20px;
+	font-weight: bold;
+	font-family: Calibri;
+	font-size: 1.3em;
+	color: #228b22;
+	font-style: italic;
+}
+
+h3
+{
+	font-size: 1.1em;
+	margin-bottom: 4px;
+	margin-top: 16px;
+	font-family: Calibri;
+	font-style: italic;
+	font-weight: bold;
+}
+
+h4
+{
+	text-decoration: underline;
+}
+
+li
+{
+	margin-bottom: 6px;
+	margin-top: 6px;
+}
+
+MadCap|breadcrumbsProxy
+{
+	border-bottom: none;
+	font-size: .7em;
+	font-style: italic;
+	mc-breadcrumbs-prefix: 'You are here: ';
+}
+
+MadCap|xref
+{
+	color: #2D8DCC;
+	font-weight: bold;
+	mc-format: '{para}';
+	text-decoration: underline;
+}
+
+MadCap|xref:hover
+{
+	color: #BED230;
+}
+
+p
+{
+	margin-bottom: 8px;
+	margin-top: 8px;
+	font-family: 'Segoe UI';
+	line-height: normal;
+}
+
+div.sideContent
+{
+	float: right;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	width: 33.33%;
+}
+
+html.templateTopic div.sideContent
+{
+	display: none;
+}
+
+ol.LetteredList > li > ul
+{
+	list-style-type: lower-roman;
+}
+
+MadCap|indexProxy
+{
+	font-size: 11pt;
+}
+
+td
+{
+	vertical-align: top;
+}
+
+tr
+{
+	font-family: 'Segoe UI';
+}
+
+p.code_para
+{
+	font-family: monospace;
+	font-size: 11pt;
+	line-height: 11pt;
+}
+
+@media print
+{
+	p
+	{
+		font-family: Calibri;
+	}
+
+	h2
+	{
+		color: #228b22;
+		font-weight: bold;
+		font-style: italic;
+		font-size: 14pt;
+	}
+
+	h1
+	{
+		page-break-before: avoid;
+		mc-heading-level: 1;
+		color: #06069d;
+		font-size: 16pt;
+	}
+
+	h3
+	{
+		font-size: 13pt;
+	}
+
+	h4
+	{
+		font-size: 12pt;
+		font-family: Calibri;
+		color: #008080;
+		mc-heading-level: 0;
+	}
+
+	li.NumList
+	{
+		font-family: Calibri;
+	}
+
+	li.LetteredList
+	{
+		font-family: Calibri;
+	}
+
+	li.Bullet
+	{
+		font-family: Calibri;
+	}
+
+	ol.LetteredList
+	{
+		font-family: Calibri;
+	}
+
+	span
+	{
+		font-family: Calibri;
+	}
+
+	span.button_name
+	{
+		font-family: Calibri;
+	}
+
+	span.tip
+	{
+		font-size: 12pt;
+		font-family: Calibri;
+	}
+
+	h5
+	{
+		color: #000000;
+		font-family: Calibri;
+		font-size: 12pt;
+		mc-heading-level: 0;
+	}
+
+	h6
+	{
+		font-family: Calibri;
+		font-size: 11pt;
+		mc-heading-level: 0;
+	}
+
+	span.field_name
+	{
+		font-family: Calibri;
+		font-size: 12pt;
+	}
+
+	MadCap|indexProxy
+	{
+		font-size: 11pt;
+	}
+
+	p.Index1
+	{
+		font-size: 11pt;
+	}
+
+	p.Index2
+	{
+		font-size: 11pt;
+	}
+
+	p.TOC2
+	{
+		font-size: 11pt;
+		padding-top: 2pt;
+		padding-bottom: 2pt;
+	}
+
+	p.TOC3
+	{
+		font-size: 11pt;
+		padding-bottom: 2pt;
+		padding-top: 2pt;
+	}
+
+	p.TOC4
+	{
+		font-size: 10pt;
+		padding-top: 2pt;
+		padding-bottom: 2pt;
+	}
+
+	table
+	{
+		mc-printer-page-size: letter;
+		mc-printer-page-orientation: portrait;
+		font-family: Calibri;
+	}
+
+	td
+	{
+		vertical-align: top;
+		line-height: normal;
+	}
+
+	tr
+	{
+		font-family: Calibri;
+		line-height: normal;
+	}
+
+	p.celltext
+	{
+		font-family: Calibri;
+	}
+
+	p.TOC1
+	{
+		padding-bottom: 2pt;
+	}
+
+	MadCap|tocProxy
+	{
+		padding-top: 1px;
+	}
+
+	p.important
+	{
+		
+	}
+
+	p.note
+	{
+		background-color: #f0f7fb;
+		border-left: solid 4px #3498db;
+		font-family: Calibri;
+		padding: 12px;
+		overflow: hidden;
+		background-image: none;
+	}
+
+	p.tip_para
+	{
+		background-color: #fffacd;
+		border-left: solid 4px #ffa500;
+		font-family: Calibri;
+		padding: 12px;
+		overflow: hidden;
+		background-image: none;
+	}
+
+	p.warn
+	{
+		background-color: #ffe4e1;
+		border-left: solid 4px #de0202;
+		font-family: Calibri;
+		padding: 12px;
+		overflow: hidden;
+		background-image: none;
+	}
+
+	p.code_para
+	{
+		font-family: monospace;
+		font-size: 11 pt;
+		line-height: 11pt;
+	}
+}
+
+span.menu
+{
+	font-style: italic;
+	font-family: Calibri;
+	color: #008000;
+	font-weight: bold;
+}
+
+li.Bullet
+{
+	margin-bottom: 6pt;
+	list-style: disc;
+	font-family: 'Segoe UI';
+	line-height: normal;
+}
+
+ol.LetteredList
+{
+	font-family: 'Segoe UI';
+	line-height: normal;
+	margin-left: 0.5in;
+	padding-bottom: 4pt;
+}
+
+li.LetteredList
+{
+	padding-bottom: 4pt;
+	font-family: 'Segoe UI';
+	line-height: normal;
+	list-style-type: lower-alpha;
+	margin-left: 0in;
+}
+
+li.NumList
+{
+	list-style-type: decimal;
+	padding-bottom: 4pt;
+	font-family: 'Segoe UI';
+	line-height: normal;
+}
+
+span.command
+{
+	font-family: monospace;
+	font-size: 11pt;
+}
+
+span.field_name
+{
+	font-weight: bold;
+	font-style: italic;
+	font-family: Arial;
+	font-size: 11pt;
+}
+
+span.tip
+{
+	font-weight: bold;
+	color: #ff0000;
+	font-size: 12pt;
+	font-family: 'Segoe UI';
+}
+
+p.important
+{
+	font-weight: bold;
+	padding-left: 0.25in;
+	background-color: #98fb98;
+}
+
+p.separator
+{
+	font-weight: bold;
+	text-indent: 0.75in;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	vertical-align: middle;
+}
+
+p.subhead
+{
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+span.button_name
+{
+	font-family: 'Segoe UI';
+	font-weight: bold;
+	color: #4169e1;
+	background-color: #dcdcdc;
+}
+
+img.big_image
+{
+	mc-thumbnail: hover;
+	mc-thumbnail-max-height: 60px;
+}
+
+p.single_space
+{
+	
+}
+
+p.celltext
+{
+	font-family: 'Segoe UI';
+	line-height: normal;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	font-size: 11pt;
+}
+
+p.note
+{
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	background-color: #f0f7fb;
+	background-image: url(../Images/icons/note-icon.png);
+	background-position: 9px 0px;
+	background-repeat: no-repeat;
+	border: solid 1px #3498db;
+	overflow: hidden;
+	padding: 15px 60px;
+	border-radius: 4px;
+	line-height: 18px;
+}
+
+p.tip_para
+{
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	background-image: url(../Images/icons/tip-icon.png);
+	background-position: 9px 0px;
+	background-repeat: no-repeat;
+	line-height: 18px;
+	overflow: hidden;
+	padding: 15px 60px;
+	background-color: #fffacd;
+	border-bottom-color: #3498db;
+	border: solid 1px #ffa500;
+	border-radius: 4px;
+}
+
+p.warn
+{
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	background-image: url(../Images/icons/warn-icon.png);
+	background-position: 9px 0px;
+	background-repeat: no-repeat;
+	line-height: 18px;
+	overflow: hidden;
+	padding: 15px 60px;
+	border-bottom-color: #3498db;
+	border-radius: 4px;
+	background-color: #ffe4e1;
+	border: solid 1px #de0202;
+}
+

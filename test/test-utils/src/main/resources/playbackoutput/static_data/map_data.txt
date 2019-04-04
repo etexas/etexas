@@ -1,0 +1,1050 @@
+reference_x:0.0
+reference_y:0.0
+==section separator==
+lane_id:1
+is_egress:False
+lane_width_in_feet:2.8853
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:True
+lane_has_left_turn_on_red:False
+lane_has_u_turn:True
+south_west_point:[1.44265, -1.44265]
+north_east_point:[4.5658, 177.44265]
+==begin center points==
+x_in_feet:1.44265
+y_in_feet:0.0
+width_in_feet:2.8853
+==center point divider==
+x_in_feet:3.67615
+y_in_feet:20.0
+width_in_feet:7.3523
+==center point divider==
+x_in_feet:4.7127
+y_in_feet:40.0
+width_in_feet:9.4254
+==center point divider==
+x_in_feet:4.83635
+y_in_feet:60.0
+width_in_feet:9.6727
+==center point divider==
+x_in_feet:4.78695
+y_in_feet:80.0
+width_in_feet:9.5739
+==center point divider==
+x_in_feet:4.7179
+y_in_feet:100.0
+width_in_feet:9.4358
+==center point divider==
+x_in_feet:4.6489
+y_in_feet:140.0
+width_in_feet:9.2978
+==center point divider==
+x_in_feet:4.5799
+y_in_feet:160.0
+width_in_feet:9.1598
+==center point divider==
+x_in_feet:4.5658
+y_in_feet:176.0
+width_in_feet:9.1316
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:2
+is_egress:False
+lane_width_in_feet:8.309
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[10.6571, -4.1545]
+north_east_point:[10.8, 180.1545]
+==begin center points==
+x_in_feet:10.6571
+y_in_feet:0.0
+width_in_feet:8.309
+==center point divider==
+x_in_feet:10.3343
+y_in_feet:20.0
+width_in_feet:12.49
+==center point divider==
+x_in_feet:10.309
+y_in_feet:40.0
+width_in_feet:14.76
+==center point divider==
+x_in_feet:10.1
+y_in_feet:60.0
+width_in_feet:14.63
+==center point divider==
+x_in_feet:10.3
+y_in_feet:80.0
+width_in_feet:14.7
+==center point divider==
+x_in_feet:10.4
+y_in_feet:100.0
+width_in_feet:14.7
+==center point divider==
+x_in_feet:10.6
+y_in_feet:140.0
+width_in_feet:14.54
+==center point divider==
+x_in_feet:11.0
+y_in_feet:160.0
+width_in_feet:14.72
+==center point divider==
+x_in_feet:10.8
+y_in_feet:176.0
+width_in_feet:14.57
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:3
+is_egress:False
+lane_width_in_feet:10.01
+lane_has_right_turn:True
+lane_has_right_turn_on_red:True
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[18.57, -5.005]
+north_east_point:[24.9, 181.005]
+==begin center points==
+x_in_feet:18.57
+y_in_feet:0.0
+width_in_feet:10.01
+==center point divider==
+x_in_feet:22.65
+y_in_feet:20.0
+width_in_feet:9.9381
+==center point divider==
+x_in_feet:24.5772
+y_in_feet:40.0
+width_in_feet:9.68
+==center point divider==
+x_in_feet:24.5848
+y_in_feet:60.0
+width_in_feet:9.608
+==center point divider==
+x_in_feet:24.6803
+y_in_feet:80.0
+width_in_feet:9.52
+==center point divider==
+x_in_feet:24.6676
+y_in_feet:100.0
+width_in_feet:9.707
+==center point divider==
+x_in_feet:24.7941
+y_in_feet:140.0
+width_in_feet:9.749
+==center point divider==
+x_in_feet:25.01
+y_in_feet:160.0
+width_in_feet:9.73
+==center point divider==
+x_in_feet:24.9
+y_in_feet:176.0
+width_in_feet:9.9959
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:21
+is_egress:True
+lane_width_in_feet:13.4
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-16.62, -6.7]
+north_east_point:[-18.72, 182.7]
+==begin center points==
+x_in_feet:-16.62
+y_in_feet:0.0
+width_in_feet:13.4
+==center point divider==
+x_in_feet:-15.75
+y_in_feet:20.0
+width_in_feet:11.52
+==center point divider==
+x_in_feet:-15.71
+y_in_feet:40.0
+width_in_feet:12.36
+==center point divider==
+x_in_feet:-16.675
+y_in_feet:60.0
+width_in_feet:13.05
+==center point divider==
+x_in_feet:-16.92
+y_in_feet:80.0
+width_in_feet:13.48
+==center point divider==
+x_in_feet:-17.215
+y_in_feet:100.0
+width_in_feet:13.69
+==center point divider==
+x_in_feet:-18.3525
+y_in_feet:140.0
+width_in_feet:12.235
+==center point divider==
+x_in_feet:-18.66
+y_in_feet:160.0
+width_in_feet:12.44
+==center point divider==
+x_in_feet:-18.72
+y_in_feet:176.0
+width_in_feet:12.48
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:22
+is_egress:True
+lane_width_in_feet:9.92
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-4.96, -4.96]
+north_east_point:[-6.24, 180.96]
+==begin center points==
+x_in_feet:-4.96
+y_in_feet:0.0
+width_in_feet:9.92
+==center point divider==
+x_in_feet:-4.995
+y_in_feet:20.0
+width_in_feet:9.99
+==center point divider==
+x_in_feet:-4.765
+y_in_feet:40.0
+width_in_feet:9.53
+==center point divider==
+x_in_feet:-5.075
+y_in_feet:60.0
+width_in_feet:10.15
+==center point divider==
+x_in_feet:-5.09
+y_in_feet:80.0
+width_in_feet:10.18
+==center point divider==
+x_in_feet:-5.185
+y_in_feet:100.0
+width_in_feet:10.37
+==center point divider==
+x_in_feet:-6.1175
+y_in_feet:140.0
+width_in_feet:12.235
+==center point divider==
+x_in_feet:-6.22
+y_in_feet:160.0
+width_in_feet:12.44
+==center point divider==
+x_in_feet:-6.24
+y_in_feet:176.0
+width_in_feet:12.48
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:10
+is_egress:True
+lane_width_in_feet:9.715
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[14.5725, 267.1425]
+north_east_point:[15.524775, 689.8575]
+==begin center points==
+x_in_feet:14.5725
+y_in_feet:272.0
+width_in_feet:9.715
+==center point divider==
+x_in_feet:14.539575
+y_in_feet:292.0
+width_in_feet:9.69305
+==center point divider==
+x_in_feet:14.503425
+y_in_feet:312.0
+width_in_feet:9.66895
+==center point divider==
+x_in_feet:14.46705
+y_in_feet:332.0
+width_in_feet:9.6447
+==center point divider==
+x_in_feet:14.3925
+y_in_feet:352.0
+width_in_feet:9.595
+==center point divider==
+x_in_feet:14.338425
+y_in_feet:372.0
+width_in_feet:9.55895
+==center point divider==
+x_in_feet:14.33955
+y_in_feet:392.0
+width_in_feet:9.5597
+==center point divider==
+x_in_feet:14.32215
+y_in_feet:412.0
+width_in_feet:9.5481
+==center point divider==
+x_in_feet:14.256975
+y_in_feet:432.0
+width_in_feet:9.50465
+==center point divider==
+x_in_feet:14.162625
+y_in_feet:452.0
+width_in_feet:9.44175
+==center point divider==
+x_in_feet:14.039175
+y_in_feet:472.0
+width_in_feet:9.35945
+==center point divider==
+x_in_feet:13.954125
+y_in_feet:492.0
+width_in_feet:9.30275
+==center point divider==
+x_in_feet:13.91775
+y_in_feet:512.0
+width_in_feet:9.2785
+==center point divider==
+x_in_feet:13.880475
+y_in_feet:532.0
+width_in_feet:9.25365
+==center point divider==
+x_in_feet:13.8432
+y_in_feet:552.0
+width_in_feet:9.2288
+==center point divider==
+x_in_feet:13.9464
+y_in_feet:572.0
+width_in_feet:9.2976
+==center point divider==
+x_in_feet:14.00325
+y_in_feet:592.0
+width_in_feet:9.3355
+==center point divider==
+x_in_feet:13.9443
+y_in_feet:612.0
+width_in_feet:9.2962
+==center point divider==
+x_in_feet:14.30865
+y_in_feet:632.0
+width_in_feet:9.5391
+==center point divider==
+x_in_feet:14.87955
+y_in_feet:652.0
+width_in_feet:9.9197
+==center point divider==
+x_in_feet:15.301875
+y_in_feet:672.0
+width_in_feet:10.20125
+==center point divider==
+x_in_feet:15.524775
+y_in_feet:685.0
+width_in_feet:10.34985
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:11
+is_egress:True
+lane_width_in_feet:9.71715
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[4.858575, 267.141425]
+north_east_point:[5.174925, 689.858575]
+==begin center points==
+x_in_feet:4.858575
+y_in_feet:272.0
+width_in_feet:9.71715
+==center point divider==
+x_in_feet:4.846525
+y_in_feet:292.0
+width_in_feet:9.69305
+==center point divider==
+x_in_feet:4.834475
+y_in_feet:312.0
+width_in_feet:9.66895
+==center point divider==
+x_in_feet:4.82235
+y_in_feet:332.0
+width_in_feet:9.6447
+==center point divider==
+x_in_feet:4.7975
+y_in_feet:352.0
+width_in_feet:9.595
+==center point divider==
+x_in_feet:4.779475
+y_in_feet:372.0
+width_in_feet:9.55895
+==center point divider==
+x_in_feet:4.77985
+y_in_feet:392.0
+width_in_feet:9.5597
+==center point divider==
+x_in_feet:4.77405
+y_in_feet:412.0
+width_in_feet:9.5481
+==center point divider==
+x_in_feet:4.752325
+y_in_feet:432.0
+width_in_feet:9.50465
+==center point divider==
+x_in_feet:4.720875
+y_in_feet:452.0
+width_in_feet:9.44175
+==center point divider==
+x_in_feet:4.679725
+y_in_feet:472.0
+width_in_feet:9.35945
+==center point divider==
+x_in_feet:4.651375
+y_in_feet:492.0
+width_in_feet:9.30275
+==center point divider==
+x_in_feet:4.63925
+y_in_feet:512.0
+width_in_feet:9.2785
+==center point divider==
+x_in_feet:4.626825
+y_in_feet:532.0
+width_in_feet:9.25365
+==center point divider==
+x_in_feet:4.6144
+y_in_feet:552.0
+width_in_feet:9.2288
+==center point divider==
+x_in_feet:4.6488
+y_in_feet:572.0
+width_in_feet:9.2976
+==center point divider==
+x_in_feet:4.66775
+y_in_feet:592.0
+width_in_feet:9.3355
+==center point divider==
+x_in_feet:4.6481
+y_in_feet:612.0
+width_in_feet:9.2962
+==center point divider==
+x_in_feet:4.76955
+y_in_feet:632.0
+width_in_feet:9.5391
+==center point divider==
+x_in_feet:4.95985
+y_in_feet:652.0
+width_in_feet:9.9197
+==center point divider==
+x_in_feet:5.100625
+y_in_feet:672.0
+width_in_feet:10.20125
+==center point divider==
+x_in_feet:5.174925
+y_in_feet:685.0
+width_in_feet:10.34985
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:12
+is_egress:False
+lane_width_in_feet:9.9218
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:True
+lane_has_left_turn_on_red:False
+lane_has_u_turn:True
+south_west_point:[-4.9609, 267.0391]
+north_east_point:[-4.89775, 689.9609]
+==begin center points==
+x_in_feet:-4.9609
+y_in_feet:272.0
+width_in_feet:9.9218
+==center point divider==
+x_in_feet:-5.0253
+y_in_feet:292.0
+width_in_feet:10.0504
+==center point divider==
+x_in_feet:-5.03995
+y_in_feet:312.0
+width_in_feet:10.0798
+==center point divider==
+x_in_feet:-5.0575
+y_in_feet:332.0
+width_in_feet:10.115
+==center point divider==
+x_in_feet:-5.1048
+y_in_feet:352.0
+width_in_feet:10.2096
+==center point divider==
+x_in_feet:-5.11685
+y_in_feet:372.0
+width_in_feet:10.2324
+==center point divider==
+x_in_feet:-5.0907
+y_in_feet:392.0
+width_in_feet:10.1813
+==center point divider==
+x_in_feet:-5.026
+y_in_feet:412.0
+width_in_feet:10.129
+==center point divider==
+x_in_feet:-5.0694
+y_in_feet:432.0
+width_in_feet:10.1388
+==center point divider==
+x_in_feet:-5.0758
+y_in_feet:452.0
+width_in_feet:10.1516
+==center point divider==
+x_in_feet:-5.183
+y_in_feet:472.0
+width_in_feet:10.366
+==center point divider==
+x_in_feet:-4.9753
+y_in_feet:492.0
+width_in_feet:10.1604
+==center point divider==
+x_in_feet:-4.98155
+y_in_feet:512.0
+width_in_feet:9.9631
+==center point divider==
+x_in_feet:-4.99035
+y_in_feet:532.0
+width_in_feet:9.9807
+==center point divider==
+x_in_feet:-4.83185
+y_in_feet:552.0
+width_in_feet:9.6637
+==center point divider==
+x_in_feet:-4.96415
+y_in_feet:572.0
+width_in_feet:9.9283
+==center point divider==
+x_in_feet:-4.7077
+y_in_feet:592.0
+width_in_feet:9.4154
+==center point divider==
+x_in_feet:-4.5401
+y_in_feet:612.0
+width_in_feet:9.0802
+==center point divider==
+x_in_feet:-4.71885
+y_in_feet:632.0
+width_in_feet:9.4377
+==center point divider==
+x_in_feet:-4.75225
+y_in_feet:652.0
+width_in_feet:9.5045
+==center point divider==
+x_in_feet:-4.9244
+y_in_feet:672.0
+width_in_feet:9.8483
+==center point divider==
+x_in_feet:-4.89775
+y_in_feet:685.0
+width_in_feet:9.7918
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:13
+is_egress:False
+lane_width_in_feet:9.5881
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-14.71585, 267.20595]
+north_east_point:[-16.861425, 689.79405]
+==begin center points==
+x_in_feet:-14.71585
+y_in_feet:272.0
+width_in_feet:9.5881
+==center point divider==
+x_in_feet:-14.85635
+y_in_feet:292.0
+width_in_feet:9.6115
+==center point divider==
+x_in_feet:-14.8388
+y_in_feet:312.0
+width_in_feet:9.5178
+==center point divider==
+x_in_feet:-15.41745
+y_in_feet:332.0
+width_in_feet:10.2783
+==center point divider==
+x_in_feet:-15.459975
+y_in_feet:352.0
+width_in_feet:10.30665
+==center point divider==
+x_in_feet:-15.501225
+y_in_feet:372.0
+width_in_feet:10.33415
+==center point divider==
+x_in_feet:-15.494625
+y_in_feet:392.0
+width_in_feet:10.32975
+==center point divider==
+x_in_feet:-15.545925
+y_in_feet:412.0
+width_in_feet:10.36395
+==center point divider==
+x_in_feet:-15.434925
+y_in_feet:432.0
+width_in_feet:10.28995
+==center point divider==
+x_in_feet:-15.3795
+y_in_feet:452.0
+width_in_feet:10.253
+==center point divider==
+x_in_feet:-15.17295
+y_in_feet:472.0
+width_in_feet:10.1153
+==center point divider==
+x_in_feet:-15.4074
+y_in_feet:492.0
+width_in_feet:10.2716
+==center point divider==
+x_in_feet:-15.275475
+y_in_feet:512.0
+width_in_feet:10.18365
+==center point divider==
+x_in_feet:-15.139875
+y_in_feet:532.0
+width_in_feet:10.09325
+==center point divider==
+x_in_feet:-15.255225
+y_in_feet:552.0
+width_in_feet:10.17015
+==center point divider==
+x_in_feet:-14.9442
+y_in_feet:572.0
+width_in_feet:9.9628
+==center point divider==
+x_in_feet:-15.36315
+y_in_feet:592.0
+width_in_feet:10.2421
+==center point divider==
+x_in_feet:-15.765225
+y_in_feet:612.0
+width_in_feet:10.51015
+==center point divider==
+x_in_feet:-15.75285
+y_in_feet:632.0
+width_in_feet:10.5019
+==center point divider==
+x_in_feet:-16.093425
+y_in_feet:652.0
+width_in_feet:10.72895
+==center point divider==
+x_in_feet:-16.37445
+y_in_feet:672.0
+width_in_feet:10.9163
+==center point divider==
+x_in_feet:-16.861425
+y_in_feet:685.0
+width_in_feet:11.24095
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:14
+is_egress:False
+lane_width_in_feet:10.7084
+lane_has_right_turn:True
+lane_has_right_turn_on_red:True
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-24.8641, 266.6458]
+north_east_point:[-26.656925, 690.3542]
+==begin center points==
+x_in_feet:-24.8641
+y_in_feet:272.0
+width_in_feet:10.7084
+==center point divider==
+x_in_feet:-25.0157
+y_in_feet:292.0
+width_in_feet:10.7072
+==center point divider==
+x_in_feet:-25.059
+y_in_feet:312.0
+width_in_feet:10.9226
+==center point divider==
+x_in_feet:-25.53245
+y_in_feet:332.0
+width_in_feet:10.2783
+==center point divider==
+x_in_feet:-25.669575
+y_in_feet:352.0
+width_in_feet:10.30665
+==center point divider==
+x_in_feet:-25.734925
+y_in_feet:372.0
+width_in_feet:10.33415
+==center point divider==
+x_in_feet:-25.676025
+y_in_feet:392.0
+width_in_feet:10.32975
+==center point divider==
+x_in_feet:-25.597925
+y_in_feet:412.0
+width_in_feet:10.36395
+==center point divider==
+x_in_feet:-25.573725
+y_in_feet:432.0
+width_in_feet:10.28995
+==center point divider==
+x_in_feet:-25.5311
+y_in_feet:452.0
+width_in_feet:10.253
+==center point divider==
+x_in_feet:-25.53895
+y_in_feet:472.0
+width_in_feet:10.1153
+==center point divider==
+x_in_feet:-25.358
+y_in_feet:492.0
+width_in_feet:10.2716
+==center point divider==
+x_in_feet:-25.238575
+y_in_feet:512.0
+width_in_feet:10.18365
+==center point divider==
+x_in_feet:-25.120575
+y_in_feet:532.0
+width_in_feet:10.09325
+==center point divider==
+x_in_feet:-24.918925
+y_in_feet:552.0
+width_in_feet:10.17015
+==center point divider==
+x_in_feet:-24.8725
+y_in_feet:572.0
+width_in_feet:9.9628
+==center point divider==
+x_in_feet:-24.77855
+y_in_feet:592.0
+width_in_feet:10.2421
+==center point divider==
+x_in_feet:-24.845425
+y_in_feet:612.0
+width_in_feet:10.51015
+==center point divider==
+x_in_feet:-25.19055
+y_in_feet:632.0
+width_in_feet:10.5019
+==center point divider==
+x_in_feet:-25.597925
+y_in_feet:652.0
+width_in_feet:10.72895
+==center point divider==
+x_in_feet:-26.22325
+y_in_feet:672.0
+width_in_feet:10.9163
+==center point divider==
+x_in_feet:-26.656925
+y_in_feet:685.0
+width_in_feet:11.24095
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:9
+is_egress:False
+lane_width_in_feet:9.0988
+lane_has_right_turn:True
+lane_has_right_turn_on_red:True
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[35.6854, 252.0054]
+north_east_point:[64.7842, 251.3151]
+==begin center points==
+x_in_feet:40.2348
+y_in_feet:252.0054
+width_in_feet:9.0988
+==center point divider==
+x_in_feet:60.2348
+y_in_feet:251.3151
+width_in_feet:9.851
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:8
+is_egress:False
+lane_width_in_feet:10.0648
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[35.2024, 242.4236]
+north_east_point:[65.2672, 241.74665]
+==begin center points==
+x_in_feet:40.2348
+y_in_feet:242.4236
+width_in_feet:10.0648
+==center point divider==
+x_in_feet:60.2348
+y_in_feet:241.74665
+width_in_feet:9.2859
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:7
+is_egress:False
+lane_width_in_feet:9.2606
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:True
+lane_has_left_turn_on_red:False
+lane_has_u_turn:True
+south_west_point:[35.6045, 232.7609]
+north_east_point:[64.8651, 232.61715]
+==begin center points==
+x_in_feet:40.2348
+y_in_feet:232.7609
+width_in_feet:9.2606
+==center point divider==
+x_in_feet:60.2348
+y_in_feet:232.61715
+width_in_feet:8.9731
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:6
+is_egress:True
+lane_width_in_feet:10.399125
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[35.0352375, 222.9310375]
+north_east_point:[65.4343625, 222.936961]
+==begin center points==
+x_in_feet:40.2348
+y_in_feet:222.9310375
+width_in_feet:10.399125
+==center point divider==
+x_in_feet:60.2348
+y_in_feet:222.936961
+width_in_feet:10.387278
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:5
+is_egress:True
+lane_width_in_feet:10.387278
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[35.041161, 212.37435]
+north_east_point:[65.428439, 212.3923]
+==begin center points==
+x_in_feet:40.2348
+y_in_feet:212.37435
+width_in_feet:10.387278
+==center point divider==
+x_in_feet:60.2348
+y_in_feet:212.3923
+width_in_feet:10.387278
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:4
+is_egress:True
+lane_width_in_feet:10.387278
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[35.041161, 201.8701833]
+north_east_point:[65.428439, 201.9001]
+==begin center points==
+x_in_feet:40.2348
+y_in_feet:201.8701833
+width_in_feet:10.387278
+==center point divider==
+x_in_feet:60.2348
+y_in_feet:201.9001
+width_in_feet:10.387278
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:15
+is_egress:True
+lane_width_in_feet:12.22
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-84.54, 249.15]
+north_east_point:[-31.860000000000003, 246.84]
+==begin center points==
+x_in_feet:-38.2
+y_in_feet:246.84
+width_in_feet:12.22
+==center point divider==
+x_in_feet:-58.2
+y_in_feet:237.265
+width_in_feet:12.56
+==center point divider==
+x_in_feet:-78.2
+y_in_feet:249.15
+width_in_feet:12.68
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:16
+is_egress:True
+lane_width_in_feet:9.53
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-82.97, 238.04]
+north_east_point:[-33.43000000000001, 235.965]
+==begin center points==
+x_in_feet:-38.2
+y_in_feet:235.965
+width_in_feet:9.53
+==center point divider==
+x_in_feet:-58.2
+y_in_feet:237.265
+width_in_feet:9.39
+==center point divider==
+x_in_feet:-78.2
+y_in_feet:238.04
+width_in_feet:9.54
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:17
+is_egress:False
+lane_width_in_feet:10.42
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:True
+lane_has_left_turn_on_red:False
+lane_has_u_turn:True
+south_west_point:[-84.44500000000001, 227.025]
+north_east_point:[-31.955000000000002, 225.99]
+==begin center points==
+x_in_feet:-38.2
+y_in_feet:225.99
+width_in_feet:10.42
+==center point divider==
+x_in_feet:-58.2
+y_in_feet:226.675
+width_in_feet:11.79
+==center point divider==
+x_in_feet:-78.2
+y_in_feet:227.025
+width_in_feet:12.49
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:18
+is_egress:False
+lane_width_in_feet:10.28
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-83.48, 226.06]
+north_east_point:[-32.92, 215.64]
+==begin center points==
+x_in_feet:-38.2
+y_in_feet:215.64
+width_in_feet:10.28
+==center point divider==
+x_in_feet:-58.2
+y_in_feet:226.265
+width_in_feet:10.97
+==center point divider==
+x_in_feet:-78.2
+y_in_feet:226.06
+width_in_feet:10.56
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:19
+is_egress:False
+lane_width_in_feet:11.89
+lane_has_right_turn:False
+lane_has_right_turn_on_red:False
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-84.295, 204.125]
+north_east_point:[-32.105000000000004, 204.555]
+==begin center points==
+x_in_feet:-38.2
+y_in_feet:204.555
+width_in_feet:11.89
+==center point divider==
+x_in_feet:-58.2
+y_in_feet:204.165
+width_in_feet:11.29
+==center point divider==
+x_in_feet:-78.2
+y_in_feet:204.125
+width_in_feet:12.19
+==end center points==
+==begin lane connector list==
+==end lane connector list==
+==section separator==
+lane_id:20
+is_egress:False
+lane_width_in_feet:12.85
+lane_has_right_turn:True
+lane_has_right_turn_on_red:True
+lane_has_left_turn:False
+lane_has_left_turn_on_red:False
+lane_has_u_turn:False
+south_west_point:[-83.24000000000001, 192.99]
+north_east_point:[-33.160000000000004, 192.275]
+==begin center points==
+x_in_feet:-38.2
+y_in_feet:192.275
+width_in_feet:12.85
+==center point divider==
+x_in_feet:-58.2
+y_in_feet:193.56
+width_in_feet:9.92
+==center point divider==
+x_in_feet:-78.2
+y_in_feet:192.99
+width_in_feet:10.08
+==end center points==
+==begin lane connector list==
+==end lane connector list==

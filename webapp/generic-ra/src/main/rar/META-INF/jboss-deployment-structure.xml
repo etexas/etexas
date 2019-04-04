@@ -1,0 +1,7 @@
+<jboss-deployment-structure>
+	<deployment>
+		<dependencies>
+			<module name="org.etexascode" services="export" />
+		</dependencies>
+	</deployment>
+</jboss-deployment-structure>

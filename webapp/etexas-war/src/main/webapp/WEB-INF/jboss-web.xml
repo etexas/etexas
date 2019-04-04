@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-web>
+  <context-root>/</context-root>
+  <resource-ref>
+    <res-ref-name>genericAdapter</res-ref-name>
+    <jndi-name>java:/genericAdapter</jndi-name>
+  </resource-ref>
+  <security-domain>etexasdb</security-domain>
+</jboss-web>

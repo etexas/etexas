@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+  <!-- Schema for a JNLP 1.0 -->
+  <xs:element name="jnlp" type="jnlpType"/>
+  <xs:complexType name="jnlpType">
+    <xs:sequence>
+      <xs:element name="information" type="informationType" maxOccurs="unbounded"/>
+      <xs:element name="security" type="securityType" minOccurs="0"/>
+      <xs:element name="resources" type="resourcesType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:choice>
+        <xs:element name="application-desc" type="applicationDescType"/>
+        <xs:element name="applet-desc" type="appletDescType"/>
+        <xs:element name="component-desc" type="xs:string"/>
+        <xs:element name="installer-desc" type="xs:string"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="spec" type="xs:string" use="optional"/>
+    <xs:attribute name="version" type="xs:string" use="optional"/>
+    <xs:attribute name="codebase" type="xs:anyURI" use="optional"/>
+    <xs:attribute name="href" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="informationType">
+    <xs:sequence>
+      <xs:element name="title" type="xs:string" minOccurs="0"/>
+      <xs:element name="vendor" type="xs:string" minOccurs="0"/>
+      <xs:element name="homepage" type="homepageType" minOccurs="0"/>
+      <xs:element name="description" type="descriptionType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="icon" type="iconType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="offline-allowed" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="locale" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="homepageType">
+    <xs:attribute name="href" type="xs:anyURI" use="required"/>
+  </xs:complexType>
+  <xs:simpleType name="descriptionKindType">
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:enumeration value="one-line"/>
+      <xs:enumeration value="short"/>
+      <xs:enumeration value="tooltip"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="descriptionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="kind" type="descriptionKindType" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="iconKindType">
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:enumeration value="default"/>
+      <xs:enumeration value="selected"/>
+      <xs:enumeration value="disabled"/>
+      <xs:enumeration value="rollover"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="iconType">
+    <xs:attribute name="href" type="xs:anyURI" use="required"/>
+    <xs:attribute name="version" type="xs:string" use="optional"/>
+    <xs:attribute name="width" type="xs:positiveInteger" use="optional"/>
+    <xs:attribute name="height" type="xs:positiveInteger" use="optional"/>
+    <xs:attribute name="kind" type="iconKindType" use="optional"/>
+    <xs:attribute name="depth" type="xs:positiveInteger" use="optional"/>
+    <xs:attribute name="size" type="xs:positiveInteger" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="securityType">
+    <xs:sequence>
+      <xs:element name="all-permissions" type="xs:string" minOccurs="0"/>
+      <xs:element name="j2ee-application-client-permissions" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="resourcesType">
+    <xs:sequence>
+      <xs:element name="j2se" type="j2seType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="jar" type="jarType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="nativelib" type="nativelibType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="extension" type="extensionType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="property" type="propertyType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="package" type="packageType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="os" type="xs:string" use="optional"/>
+    <xs:attribute name="arch" type="xs:string" use="optional"/>
+    <xs:attribute name="locale" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="j2seType">
+    <xs:sequence>
+      <xs:element name="resources" type="resourcesType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:string" use="required"/>
+    <xs:attribute name="href" type="xs:anyURI" use="optional"/>
+    <xs:attribute name="initial-heap-size" type="xs:string" use="optional"/>
+    <xs:attribute name="max-heap-size" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:simpleType name="booleanType">
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="false"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="downloadType">
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:enumeration value="eager"/>
+      <xs:enumeration value="lazy"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="jarType">
+    <xs:attribute name="href" type="xs:anyURI" use="required"/>
+    <xs:attribute name="version" type="xs:string" use="optional"/>
+    <xs:attribute name="main" type="booleanType" use="optional"/>
+    <xs:attribute name="download" type="downloadType" use="optional"/>
+    <xs:attribute name="size" type="xs:string" use="optional"/>
+    <xs:attribute name="part" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="nativelibType">
+    <xs:attribute name="href" type="xs:anyURI" use="required"/>
+    <xs:attribute name="version" type="xs:string" use="optional"/>
+    <xs:attribute name="download" type="downloadType" use="optional"/>
+    <xs:attribute name="size" type="xs:string" use="optional"/>
+    <xs:attribute name="part" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="extensionType">
+    <xs:sequence>
+      <xs:element name="ext-download" type="extDownloadType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:string" use="optional"/>
+    <xs:attribute name="name" type="xs:string" use="optional"/>
+    <xs:attribute name="href" type="xs:anyURI" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="extDownloadType">
+    <xs:attribute name="ext-part" type="xs:string" use="required"/>
+    <xs:attribute name="download" type="downloadType" use="optional"/>
+    <xs:attribute name="part" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="propertyType">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="packageType">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="part" type="xs:string" use="required"/>
+    <xs:attribute name="recursive" type="booleanType" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="applicationDescType">
+    <xs:sequence>
+      <xs:element name="argument" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="main-class" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="appletDescType">
+    <xs:sequence>
+      <xs:element name="param" type="paramType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="documentbase" type="xs:anyURI" use="optional"/>
+    <xs:attribute name="main-class" type="xs:string" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="width" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="height" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="paramType">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="installerDescType">
+    <xs:attribute name="main-class" type="xs:string" use="optional"/>
+  </xs:complexType>
+</xs:schema>

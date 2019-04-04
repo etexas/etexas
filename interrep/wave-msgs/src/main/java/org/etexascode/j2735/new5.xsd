@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="simData" type="simData" />
+
+    <xs:complexType name="message">
+        <xs:sequence />
+    </xs:complexType>
+
+    <xs:complexType name="simData">
+        <xs:complexContent>
+            <xs:extension base="message">
+                <xs:sequence>
+                    <xs:element name="geoCalculatorType"
+                        type="xs:int" />
+                    <xs:element name="simTime" type="xs:double" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>
+

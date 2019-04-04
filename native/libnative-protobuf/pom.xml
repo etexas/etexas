@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.harmonia.etexas</groupId>
+        <artifactId>native</artifactId>
+        <version>3.5</version>
+    </parent>
+    <artifactId>libnative-protobuf</artifactId>
+    <packaging>a</packaging>
+    <name>Native App Protobuf Lib</name>
+    <build>
+        <plugins>
+            <!-- This plugin is commented out in case it is needed again.
+                It was needed to create the Google Protocol Buffer code for this C++ project. -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-protoc-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <exec executable="protoc">
+                                    <arg value="--proto_path=.."/>
+                                    <arg value="--cpp_out=src/main/source"/>
+                                    <arg value="../NativeAppProtobuf.proto"/>
+                                </exec>
+                                <move file="src/main/source/NativeAppProtobuf.pb.h" todir="src/main/include"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>ranlib</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>ranlib</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <compilerStartOptions>
+                        <compilerStartOption>-fPIC</compilerStartOption>
+                    </compilerStartOptions>
+                    <sources>
+                        <source>
+                            <directory>src/main/source</directory>
+                            <fileNames>
+                                <fileName>NativeAppProtobuf.pb.cc</fileName>
+                            </fileNames>
+                        </source>
+                        <source>
+                            <deployable>true</deployable>
+                            <directory>src/main/include</directory>
+                        </source>
+                    </sources>
+
+                    <!-- Create a library archive of object files -->
+                    <linkerProvider>ar</linkerProvider>
+                    <linkerStartOptions>
+                        <!-- Add files to archive with verbose output -->
+                        <linkerStartOption>rv</linkerStartOption>
+                    </linkerStartOptions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

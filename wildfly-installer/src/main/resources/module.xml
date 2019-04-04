@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.0" name="org.etexascode">
+	<resources>
+		<resource-root path="etexas-adapter.jar"/>
+		<resource-root path="etexas-ra-api.jar"/>
+		<resource-root path="interrep-datamodel.jar"/>
+		<resource-root path="playback-adapter.jar"/>
+		<resource-root path="app-layer.jar"/>
+		<resource-root path="app-shutdown-layer.jar"/>
+		<resource-root path="data-layer.jar"/>
+		<resource-root path="sim-driver.jar"/>
+		<resource-root path="vehicle-manager.jar"/>
+		<resource-root path="wave-sim.jar"/>
+		<resource-root path="interrep-model.jar"/>
+		<resource-root path="generic-app.jar"/>
+		<resource-root path="wave-msgs.jar"/>
+		<resource-root path="commons-codec.jar"/>
+	</resources>
+	<dependencies>
+        <module name="javax.xml.bind.api"/>
+		<system>
+			<paths>
+				<path name="javax/swing/tree"/>
+				<path name="javax/swing/event"/>
+				<path name="javax/sql"/>
+				<path name="javax/imageio/spi"/>
+				<path name="javax/xml/namespace"/>
+			</paths>
+		</system>
+	</dependencies>
+</module>

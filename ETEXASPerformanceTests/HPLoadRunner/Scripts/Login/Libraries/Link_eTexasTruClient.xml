@@ -1,0 +1,3 @@
+<truLibraryRef engineVersion="12.53.1875.0" timestamp="Wed Dec 21 2016 17:29:20 GMT-0500 (Eastern Standard Time)">
+<step type="library" stepId="step:{0ef5f567-bb06-4661-a46e-8803e67255ff}" action="eTexasTruClient" level="43" arguments="{}" global="true" location="\\dev\DevSites\HPLoadRunner\FunctionLibraries\eTexas\eTexasTruClient.xml"/>
+</truLibraryRef>

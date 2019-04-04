@@ -1,0 +1,110 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>webapp</artifactId>
+        <groupId>org.etexascode.webapp</groupId>
+        <version>3.5</version>
+    </parent>
+    <artifactId>webstart-test</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Web Start Test</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <keystore-location>${project.basedir}/../webstart/target/keystore.jks</keystore-location>
+        <keystore-password>changeit</keystore-password>
+        <keystore-alias>alias</keystore-alias>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all-main</artifactId>
+            <version>2.0-rc10</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt-main</artifactId>
+            <version>2.0-rc10</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jnlp-inline</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jnlp>
+                        <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
+                        <inputTemplate>testTemplate.vm</inputTemplate>
+                        <outputFile>testBase.jnlp</outputFile>
+                        <mainClass>org.etexascode.webapp.test.App</mainClass>
+                    </jnlp>
+
+                    <pack200>
+                        <enabled>true</enabled>
+                    </pack200>
+                    <verbose>true</verbose>
+                    <updateManifestEntries>
+                        <Application-Name>Web Start Test</Application-Name>
+                        <Permissions>all-permissions</Permissions>
+                        <Codebase>*</Codebase>
+                    </updateManifestEntries>
+                    <!-- SIGNING -->
+                    <!-- defining this will automatically sign the jar and its dependencies -->
+                    <sign>
+                        <keystore>${keystore-location}</keystore>
+                        <keypass>${keystore-password}</keypass>
+                        <storepass>${keystore-password}</storepass>
+                        <alias>${keystore-alias}</alias>
+                    </sign>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>findbugs-profile</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>findbugs</goal>
+                                </goals>
+                                <configuration>
+                                    <xmlOutput>true</xmlOutput>
+                                    <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

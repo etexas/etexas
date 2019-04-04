@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
+
+    <!-- APPLICATION_PARAMETERS_FROM_USER_ID_COMPOSITE_ID_APPLICATION_ID_APPLICATION_PARAMETER_ID -->
+    <named-query name="getApplicationParameters(userId, compositeId, applicationId, applicationParameterId)">
+        <query>
+            SELECT p FROM Application a, ApplicationParameter p, Composite c, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND a.id = :applicationId
+                    AND p.id = :applicationParameterId
+                    AND c MEMBER OF u.composites
+                    AND a MEMBER OF c.reportDevice.applications
+                    AND p MEMBER OF a.parameters
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_PARAMETERS_FROM_USER_ID_COMPOSITE_ID_DEVICE_ID_APPLICATION_ID_APPLICATION_PARAMETER_ID -->
+    <named-query name="getApplicationParameters(userId, compositeId, deviceId, applicationId, applicationParameterId)">
+        <query>
+            SELECT p FROM Application a, ApplicationParameter p, Composite c, Device d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceId
+                    AND a.id = :applicationId
+                    AND p.id = :applicationParameterId
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.devices
+                    AND a MEMBER OF d.applications
+                    AND p MEMBER OF a.parameters
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_PARAMETERS_FROM_USER_ID_COMPOSITE_ID_DEVICE_PROFILE_ID_APPLICATION_ID_APPLICATION_PARAMETER_ID -->
+    <named-query name="getApplicationParameters(userId, compositeId, deviceProfileId, applicationId, applicationParameterId)">
+        <query>
+            SELECT p FROM Application a, ApplicationParameter p, Composite c, DeviceProfile d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceProfileId
+                    AND a.id = :applicationId
+                    AND p.id = :applicationParameterId
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.deviceProfiles
+                    AND a MEMBER OF d.applications
+                    AND p MEMBER OF a.parameters
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_PROFILES_FROM_USER_ID -->
+    <named-query name="getApplicationProfiles(userId)">
+        <query>
+            SELECT a FROM ApplicationProfile a, User u
+                WHERE u.id = :userId
+                    AND a MEMBER OF u.applicationProfiles
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_PROFILES_FROM_USER_ID_APPLICATION_PROFILE_ID -->
+    <named-query name="getApplicationProfiles(userId, applicationProfileId)">
+        <query>
+            SELECT a FROM ApplicationProfile a, User u
+                WHERE u.id = :userId
+                    AND a.id = :applicationProfileId
+                    AND a MEMBER OF u.applicationProfiles
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_PROFILES_FROM_USER_ID_APPLICATION_PROFILE_NAME -->
+    <named-query name="getApplicationProfiles(userId, applicationProfileName)">
+        <query>
+            SELECT a FROM ApplicationProfile a, User u
+                WHERE u.id = :userId
+                    AND a.name = :applicationProfileName
+                    AND a MEMBER OF u.applicationProfiles
+        </query>
+    </named-query>
+
+    <!-- APPLICATION_PROFILES_FROM_USER_ID_FILE_NAME -->
+    <named-query name="getApplicationProfiles(userId, fileName)">
+        <query>
+            SELECT a FROM JarApplicationProfile a, User u
+                WHERE u.id = :userId
+                    AND a.fileName = :fileName
+                    AND a MEMBER OF u.applicationProfiles
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getApplications(userId, compositeId)">
+        <query>
+            SELECT a FROM Application a, Composite c, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+                    AND a MEMBER OF c.reportDevice.applications
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID_APPLICATION_ID -->
+    <named-query name="getApplications(userId, compositeId, applicationId)">
+        <query>
+            SELECT a FROM Application a, Composite c, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND a.id = :applicationId
+                    AND c MEMBER OF u.composites
+                    AND a MEMBER OF c.reportDevice.applications
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID_APPLICATION_NAME -->
+    <named-query name="getApplications(userId, compositeId, applicationName)">
+        <query>
+            SELECT a FROM Application a, Composite c, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND a.name = :applicationName
+                    AND c MEMBER OF u.composites
+                    AND a MEMBER OF c.reportDevice.applications
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID_DEVICE_ID -->
+    <named-query name="getApplications(userId, compositeId, deviceId)">
+        <query>
+            SELECT a FROM Application a, Composite c, Device d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceId
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.devices
+                    AND a MEMBER OF d.applications
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID_DEVICE_ID_APPLICATION_ID -->
+    <named-query name="getApplications(userId, compositeId, deviceId, applicationId)">
+        <query>
+            SELECT a FROM Application a, Composite c, Device d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceId
+                    AND a.id = :applicationId
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.devices
+                    AND a MEMBER OF d.applications
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID_DEVICE_ID_APPLICATION_NAME -->
+    <named-query name="getApplications(userId, compositeId, deviceId, applicationName)">
+        <query>
+            SELECT a FROM Application a, Composite c, Device d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceId
+                    AND a.name = :applicationName
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.devices
+                    AND a MEMBER OF d.applications
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID_DEVICE_PROFILE_ID -->
+    <named-query name="getApplications(userId, compositeId, deviceProfileId)">
+        <query>
+            SELECT a FROM Application a, Composite c, DeviceProfile d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceProfileId
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.deviceProfiles
+                    AND a MEMBER OF d.applications
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID_DEVICE_PROFILE_ID_APPLICATION_ID -->
+    <named-query name="getApplications(userId, compositeId, deviceProfileId, applicationId)">
+        <query>
+            SELECT a FROM Application a, Composite c, DeviceProfile d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceProfileId
+                    AND a.id = :applicationId
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.deviceProfiles
+                    AND a MEMBER OF d.applications
+        </query>
+    </named-query>
+
+    <!-- APPLICATIONS_FROM_USER_ID_COMPOSITE_ID_DEVICE_PROFILE_ID_APPLICATION_NAME -->
+    <named-query name="getApplications(userId, compositeId, deviceProfileId, applicationName)">
+        <query>
+            SELECT a FROM Application a, Composite c, DeviceProfile d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceProfileId
+                    AND a.name = :applicationName
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.deviceProfiles
+                    AND a MEMBER OF d.applications
+        </query>
+    </named-query>
+
+    <!-- CELL_TOWERS_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getCellTowers(userId, compositeId)">
+        <query>
+            SELECT t FROM CellTower t, Composite c, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+                    AND t MEMBER OF c.cellTowers
+        </query>
+    </named-query>
+
+    <!-- CELL_TOWERS_FROM_USER_ID_COMPOSITE_ID_CELL_TOWER_ID -->
+    <named-query name="getCellTowers(userId, compositeId, cellTowerId)">
+        <query>
+            SELECT t FROM CellTower t, Composite c, User u 
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND t.id = :cellTowerId
+                    AND c MEMBER OF u.composites
+                    AND t MEMBER OF c.cellTowers
+        </query>
+    </named-query>
+
+    <!-- CELLULAR_CONFIGURATIONS_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getCellularConfigurations(userId, compositeId)">
+        <query>
+            SELECT c.cellularConfiguration FROM Composite c, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+        </query>
+    </named-query>
+
+    <!-- COMMANDS_FROM_EXECUTION_ID -->
+    <named-query name="getCommands(executionId)">
+        <query>
+            SELECT c FROM Command c
+                WHERE c.executionId = :executionId
+        </query>
+    </named-query>
+
+    <!-- COMPOSITES_FROM_USER_ID -->
+    <named-query name="getComposites(userId)">
+        <query>
+            SELECT c FROM Composite c, User u
+                WHERE u.id = :userId
+                    AND c MEMBER OF u.composites
+        </query>
+    </named-query>
+
+    <!-- COMPOSITES_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getComposites(userId, compositeId)">
+        <query>
+            SELECT c FROM Composite c, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+        </query>
+    </named-query>
+
+    <!-- COMPOSITES_FROM_USER_ID_COMPOSITE_NAME -->
+    <named-query name="getComposites(userId, compositeName)">
+        <query>
+            SELECT c FROM Composite c, User u
+                WHERE u.id = :userId
+                    AND c.name = :compositeName
+                    AND c MEMBER OF u.composites
+        </query>
+    </named-query>
+
+    <!-- DELETE_APPLICATION_LOGS_FROM_EXECUTION_LIST -->
+    <named-query name="deleteApplicationLogs(executionList)">
+        <query>
+            DELETE ApplicationLog
+                WHERE executionId IN (:executionList)
+        </query>
+    </named-query>
+
+    <!-- DELETE_COMMANDS_FROM_EXECUTION_LIST -->
+    <named-query name="deleteCommands(executionList)">
+        <query>
+            DELETE Command
+                WHERE executionId IN (:executionList)
+        </query>
+    </named-query>
+
+    <!-- DELETE_LANE_MAPPINGS_FROM_SIMULATION_LIST -->
+    <named-query name="deleteLaneMappings(simulationList)">
+        <query>
+            DELETE LaneMapping
+                WHERE sourceSimulation IN (:simulationList)
+                    OR targetSimulation IN (:simulationList)
+        </query>
+    </named-query>
+
+    <!-- DETECTORS_FROM_USER_ID_COMPOSITE_ID_SIMULATION_ID -->
+    <named-query name="getDetectors(userId, compositeId, simulationId)">
+        <query>
+            SELECT d FROM Composite c, Detector d, Simulation s, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND s.id = :simulationId
+                    AND c MEMBER OF u.composites
+                    AND s MEMBER OF c.simulations
+                    AND d MEMBER OF s.detectors
+        </query>
+    </named-query>
+
+    <!-- DETECTORS_FROM_USER_ID_COMPOSITE_ID_SIMULATION_ID_DETECTOR_ID -->
+    <named-query name="getDetectors(userId, compositeId, simulationId, detectorId)">
+        <query>
+            SELECT d FROM Composite c, Detector d, Simulation s, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND s.id = :simulationId
+                    AND d.id = :detectorId
+                    AND c MEMBER OF u.composites
+                    AND s MEMBER OF c.simulations
+                    AND d MEMBER OF s.detectors
+        </query>
+    </named-query>
+
+    <!-- DEVICE_PROFILES_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getDeviceProfiles(userId, compositeId)">
+        <query>
+            SELECT d FROM Composite c, DeviceProfile d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d MEMBER OF c.deviceProfiles
+        </query>
+    </named-query>
+
+    <!-- DEVICE_PROFILES_FROM_USER_ID_COMPOSITE_ID_DEVICE_PROFILE_ID -->
+    <named-query name="getDeviceProfiles(userId, compositeId, deviceProfileId)">
+        <query>
+            SELECT d FROM Composite c, DeviceProfile d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceProfileId
+                    AND d MEMBER OF c.deviceProfiles
+        </query>
+    </named-query>
+
+    <!-- DEVICE_PROFILES_FROM_USER_ID_COMPOSITE_ID_DEVICE_PROFILE_NAME -->
+    <named-query name="getDeviceProfiles(userId, compositeId, deviceProfileName)">
+        <query>
+            SELECT d FROM Composite c, DeviceProfile d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.name = :deviceProfileName
+                    AND d MEMBER OF c.deviceProfiles
+        </query>
+    </named-query>
+
+    <!-- DEVICES_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getDevices(userId, compositeId)">
+        <query>
+            SELECT d FROM Composite c, Device d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.devices
+        </query>
+    </named-query>
+
+    <!-- DEVICES_FROM_USER_ID_COMPOSITE_ID_DEVICE_ID -->
+    <named-query name="getDevices(userId, compositeId, deviceId)">
+        <query>
+            SELECT d FROM Composite c, Device d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.id = :deviceId
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.devices
+        </query>
+    </named-query>
+
+    <!-- DEVICES_FROM_USER_ID_COMPOSITE_ID_DEVICE_NAME -->
+    <named-query name="getDevices(userId, compositeId, deviceName)">
+        <query>
+            SELECT d FROM Composite c, Device d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.name = :deviceName
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.devices
+        </query>
+    </named-query>
+
+    <!-- DEVICES_FROM_USER_ID_COMPOSITE_ID_MAC_ADDRESS -->
+    <named-query name="getDevices(userId, compositeId, macAddress)">
+        <query>
+            SELECT d FROM Composite c, Device d, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND d.macAddress = :macAddress
+                    AND c MEMBER OF u.composites
+                    AND d MEMBER OF c.devices
+        </query>
+    </named-query>
+
+    <!-- EXECUTIONS_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getExecutions(userId, compositeId)">
+        <query>
+            SELECT e FROM Composite C, Execution e, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+                    AND e MEMBER OF c.executions
+        </query>
+    </named-query>
+
+    <!-- EXECUTIONS_FROM_USER_ID_COMPOSITE_ID_EXECUTION_ID -->
+    <named-query name="getExecutions(userId, compositeId, executionId)">
+        <query>
+            SELECT e FROM Composite C, Execution e, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND e.id = :executionId
+                    AND c MEMBER OF u.composites
+                    AND e MEMBER OF c.executions
+        </query>
+    </named-query>
+
+    <!-- EXECUTIONS_FROM_USER_ID_COMPOSITE_ID_EXECUTION_NAME -->
+    <named-query name="getExecutions(userId, compositeId, executionName)">
+        <query>
+            SELECT e FROM Composite C, Execution e, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND e.name = :executionName
+                    AND c MEMBER OF u.composites
+                    AND e MEMBER OF c.executions
+        </query>
+    </named-query>
+
+    <!-- EXECUTIONS_FROM_USER_ID_EXECUTION_STATUS -->
+    <named-query name="getExecutions(userId, executionStatus)">
+        <query>
+            SELECT e FROM Composite c, Execution e, User u
+                WHERE u.id = :userId
+                    AND e.status = :executionStatus
+                    AND c MEMBER OF u.composites
+                    AND e MEMBER OF c.executions
+        </query>
+    </named-query>
+
+    <!-- EXECUTION_MESSAGES_FROM_USER_ID_COMPOSITE_ID_EXECUTION_ID -->
+    <named-query name="getExecutionMessages(userId, compositeId, executionId)">
+        <query>
+            SELECT em FROM ExecutionMessage em, Composite c, Execution e, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND e.id = :executionId
+                    AND c MEMBER OF u.composites
+                    AND e MEMBER OF c.executions
+                    AND em MEMBER OF e.executionMessages
+        </query>
+    </named-query>
+
+    <!-- FILE_DATA_FROM_SIMULATION_ID -->
+    <named-query name="getFileData(simulationId)">
+        <query>
+            SELECT s.fileData FROM Simulation s
+                WHERE s.id = :simulationId
+        </query>
+    </named-query>
+
+    <!-- LANE_MANAGER_DATA_FROM_USER_ID_COMPOSITE_ID_SIMULATION_ID -->
+    <named-query name="getLaneManagerData(userId, compositeId, simulationId)">
+        <query>
+            SELECT s.laneManagerData FROM Composite c, Simulation s, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND s.id = :simulationId
+                    AND c MEMBER OF u.composites
+                    AND s MEMBER OF c.simulations
+        </query>
+    </named-query>
+
+    <!-- LANE_MAPPINGS_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getLaneMappings(userId, compositeId)">
+        <query>
+            SELECT l FROM Composite c, LaneMapping l, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+                    AND l MEMBER OF c.laneMappings
+        </query>
+    </named-query>
+
+    <!-- LANE_MAPPINGS_FROM_USER_ID_COMPOSITE_ID_LANE_MAPPING_ID -->
+    <named-query name="getLaneMappings(userId, compositeId, laneMappingId)">
+        <query>
+            SELECT l FROM Composite c, LaneMapping l, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND l.id = :laneMappingId
+                    AND c MEMBER OF u.composites
+                    AND l MEMBER OF c.laneMappings
+        </query>
+    </named-query>
+
+    <!-- REMOVE_FILE_DATA_FROM_APPLICATIONS -->
+    <named-query name="removeFileDataFromApplications(fileName)">
+        <query>
+            UPDATE JarApplication a SET fileData.id = NULL
+                WHERE a.fileName = :fileName
+        </query>
+    </named-query>
+
+    <!-- SIMULATIONS_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getSimulations(userId, compositeId)">
+        <query>
+            SELECT s FROM Composite c, Simulation s, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+                    AND s MEMBER OF c.simulations
+        </query>
+    </named-query>
+
+    <!-- SIMULATIONS_FROM_USER_ID_COMPOSITE_ID_SIMULATION_ID -->
+    <named-query name="getSimulations(userId, compositeId, simulationId)">
+        <query>
+            SELECT s FROM Composite c, Simulation s, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND s.id = :simulationId
+                    AND c MEMBER OF u.composites
+                    AND s MEMBER OF c.simulations
+        </query>
+    </named-query>
+
+    <!-- SIMULATIONS_FROM_USER_ID_COMPOSITE_ID_SIMULATION_NAME -->
+    <named-query name="getSimulations(userId, compositeId, simulationName)">
+        <query>
+            SELECT s FROM Composite c, Simulation s, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND s.name = :simulationName
+                    AND c MEMBER OF u.composites
+                    AND s MEMBER OF c.simulations
+        </query>
+    </named-query>
+
+    <!-- TOPOGRAPHY_FEATURES_FROM_USER_ID_COMPOSITE_ID -->
+    <named-query name="getTopographyFeatures(userId, compositeId)">
+        <query>
+            SELECT f FROM Composite c, TopographyFeature f, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND c MEMBER OF u.composites
+                    AND f MEMBER OF c.topographyFeatures
+        </query>
+    </named-query>
+
+    <!-- TOPOGRAPHY_FEATURES_FROM_USER_ID_COMPOSITE_ID_FEATURE_ID -->
+    <named-query name="getTopographyFeatures(userId, compositeId, featureId)">
+        <query>
+            SELECT f FROM Composite c, TopographyFeature f, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND f.id = :featureId
+                    AND c MEMBER OF u.composites
+                    AND f MEMBER OF c.topographyFeatures
+        </query>
+    </named-query>
+
+    <!-- TOPOGRAPHY_FEATURES_FROM_USER_ID_COMPOSITE_ID_FEATURE_NAME -->
+    <named-query name="getTopographyFeatures(userId, compositeId, featureName)">
+        <query>
+            SELECT f FROM Composite c, TopographyFeature f, User u
+                WHERE u.id = :userId
+                    AND c.id = :compositeId
+                    AND f.name = :featureName
+                    AND c MEMBER OF u.composites
+                    AND f MEMBER OF c.topographyFeatures
+        </query>
+    </named-query>
+
+    <!-- UPDATE_STALE_EXECUTIONS -->
+    <named-query name="updateStaleExecutions()">
+        <query>
+            UPDATE Execution e SET e.status = 'ERROR'
+                WHERE e.status = 'IN_PROGRESS'
+        </query>
+    </named-query>
+
+    <!-- USERS_FROM_EMAIL -->
+    <named-query name="getUsers(email)">
+        <query>
+            SELECT u FROM User u
+                WHERE u.email = :email
+        </query>
+    </named-query>
+
+    <!-- USERS_FROM_USERNAME -->
+    <named-query name="getUsers(username)">
+        <query>
+            SELECT u FROM User u
+                WHERE u.username = :username
+        </query>
+    </named-query>
+
+</entity-mappings>

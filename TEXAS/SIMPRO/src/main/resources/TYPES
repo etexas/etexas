@@ -1,0 +1,172 @@
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** *  COPYRIGHT (C) 1989 by The University of Texas at Austin   * ***
+C *** *                                                            * ***
+C *** * Permission is hereby granted to use, modify, copy, and     * ***
+C *** * distribute this software and its documentation for any     * ***
+C *** * purpose only without profit, provided that the above       * ***
+C *** * Copyright Notice appears in all copies and that both the   * ***
+C *** * Copyright Notice and this Permission Notice appears in     * ***
+C *** * every copy of supporting documentation.  No title to nor   * ***
+C *** * ownership of the software is transferred hereby.  The name * ***
+C *** * of The University of Texas at Austin shall not be used in  * ***
+C *** * advertising or publicity related to the distribution of    * ***
+C *** * the software without specific, written, prior permission.  * ***
+C *** * This software is provided as-delivered without expressed   * ***
+C *** * or implied warranty.  The University of Texas at Austin    * ***
+C *** * makes no representation about the suitability of this      * ***
+C *** * software for any purpose and accepts no responsibility for * ***
+C *** * its use.                                                   * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C *** *                                                            * ***
+C *** * This program is free software; you can redistribute it     * ***
+C *** * and/or modify it under the terms of the GNU General Public * ***
+C *** * License as published by the Free Software Foundation;      * ***
+C *** * either version 2 of the License, or (at your option) any   * ***
+C *** * later version.                                             * ***
+C *** *                                                            * ***
+C *** * This program is distributed in the hope that it will be    * ***
+C *** * useful, but WITHOUT ANY WARRANTY; without even the implied * ***
+C *** * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR    * ***
+C *** * PURPOSE.  See the GNU General Public License for more      * ***
+C *** * details.                                                   * ***
+C *** *                                                            * ***
+C *** * You should have received a copy of the GNU General Public  * ***
+C *** * License along with this program; if not, write to the Free * ***
+C *** * Software Foundation, Inc., 51 Franklin Street, Fifth       * ***
+C *** * Floor, Boston, MA 02110-1301, USA.                         * ***
+C *** *                                                            * ***
+C *** * For more information: http://www.gnu.org/licenses/gpl.html * ***
+C *** *                                                            * ***
+C *** ************************************************************** ***
+C
+C-----LANE AND PATH DATA FOR A VEHICLE
+C-----ILP(LNCHMX,5) - FIRST SUBSCRIPT: LANE AFTER LANE CHANGE(S)
+C                     SECOND SUBSCRIPT INDEXES: INBOUND LANE, PATH AND 
+C                                               OUTBOUND LANE
+C                       OR FOR DIAMOND: INBOUND LANE, FIRST PATH,INTERNAL LANES,
+C                                       SECOND PATH AND OUTBOUND LANE
+C-----ILPDIS(LNCHMX,5) - INITIAL DISTANCE FOR EACH OF ABOVE LANES/PATHS
+C-----ILNCHG - HOW MANY LANE CHANGES ON THIS APPROACH
+C-----ILPNOW - HOW MANY INBOUND/OUTBOUND/PATHS HAVE BEEN OCCUPIED SO FAR
+C              NOT AFFECTED BY LANE CHANGES
+C-----LLP(5) - LANE - .TRUE.  PATH - .FALSE.
+      TYPE LNPAVE
+        SEQUENCE
+        DOUBLE PRECISION ILPDIS(LNCHMX,5) 
+        INTEGER ILP(LNCHMX,5) 
+        INTEGER ILNCHG(5)
+        INTEGER ILPNOW
+        LOGICAL LLP(5)
+        LOGICAL PLACEHOLDER
+      END TYPE LNPAVE
+C
+C-----CLASS DATA FOR A VEHICLE UNIT 
+C-----TRLEN - UNIT TRANSITION LENGTH
+C-----TRWID - UNIT TRANSITION WIDTH
+C-----LEN - UNIT LENGTH
+C-----WID - UNIT WIDTH
+C-----FPD - DISTANCE FROM FRONT OF VEHICLE TO FRONT POSITIONING POINT
+C-----RPD - DISTANCE FROM FRONT OF VEHICLE TO REAR POSITIONING POINT
+C-----HPD - DISTANCE FROM FRONT OF VEHICLE TO HITCH
+C-----UDWRSQ - DRAWING SEQUENCE, LOWEST DRAWN FIRST
+      TYPE CLSUNI
+        SEQUENCE
+        DOUBLE PRECISION TRLEN
+        DOUBLE PRECISION TRWID
+        DOUBLE PRECISION LEN
+        DOUBLE PRECISION WID
+        INTEGER FPD 
+        INTEGER RPD
+        INTEGER HPD
+        INTEGER UDRGSQ
+      END TYPE CLSUNI
+C
+C-----DATA FOR A VEHICLE CLASS
+C-----LEN - VEHICLE LENGTH
+C-----UNITS - NUMBER OF UNITS IN THIS VEHICLE CLASS
+C-----RAIL - IS THIS A RAIL CLASS
+C-----TYPE - DESCRIPTION OF VEHICLE CLASS
+C-----DATA FOR EACH VEHICLE UNIT 
+      TYPE VEHCL
+        SEQUENCE
+        DOUBLE PRECISION LEN
+        INTEGER UNITS
+        INTEGER HEIGHT
+        LOGICAL RAIL
+        INTEGER PLACEHOLDER
+        CHARACTER*8 TYPE
+        TYPE   (CLSUNI) :: UNIT(MNU)
+      END TYPE VEHCL
+C
+C-----DATA FOR A VEHICLE UNIT
+C-----FPX,FPY - COORDINATES OF FRONT POINT
+C-----RPX,RPY - COORDINATES OF REAR POINT
+C-----HPX,HPY - COORDINATES OF HITCH POINT
+C-----ANG - ROTATION ANGLE OF VEHICLE, RADIANS
+C-----X,Y - COORDINATES OF VEHICLE CENTER
+C-----FPS,RPS,HPS - STATUS OF FRONT POINT, REAR POINT AND HITCH
+C-----ANGNO - ROTATION ANGLE OF VEHICLE, INTEGER DEGREES
+C-----LNCHGD - LANE CHANGE LATERAL DISTANCE
+      TYPE VEHUNI
+        SEQUENCE
+        DOUBLE PRECISION FPX
+        DOUBLE PRECISION FPY
+        DOUBLE PRECISION RPX
+        DOUBLE PRECISION RPY
+        DOUBLE PRECISION HPX
+        DOUBLE PRECISION HPY
+        DOUBLE PRECISION ANG
+        DOUBLE PRECISION LNCHGD
+        REAL X
+        REAL Y
+        INTEGER FPS
+        INTEGER RPS
+        INTEGER HPS
+        INTEGER ANGNO
+      END TYPE VEHUNI
+C
+C-----DATA FOR A VEHICLE
+C-----FBX,FBY - COORDINATES OF FRONT BUMPER
+C-----LENLP - DISTANCE FROM FRONT TO REAR BUMPER ALONG LANE AND/OR PATH
+C-----LNCHGD - LANE CHANGE LATERAL DISTANCE
+C-----FBS - STATUS OF FRONT BUMPER
+C-----      2 - ON INBOUND LANE
+C-----      3 - ON FIRST OR ONLY PATH
+C-----     -3 - ON SECOND PATH
+C-----      4 - ON OUTBOUND LANE
+C-----     -4 - ON INTERNAL LANE
+C-----INUSE - IS THIS STRUCTURE MEMBER CURRENTLY IN USE 
+C-----LTPDST - 0 LEFT TURN PULLOUT NOT ACTIVE
+C-----         >0 LEFT TURN PULLOUT ACTIVE, LTPDST IS LENGTH OF LANE
+C-----CLASS - VEHICLE CLASS
+C-----UNITS - NUMBER OF UNITS FOR THIS VEHICLE
+C-----LNCHGC - IS LANE CHANGE CLEANUP IN PROGRESS
+C-----LNCHGC - IS LANE CHANGE IN PROGRESS
+      TYPE VEH
+        SEQUENCE
+        DOUBLE PRECISION FBX
+        DOUBLE PRECISION FBY
+        DOUBLE PRECISION LENLP
+        DOUBLE PRECISION LNCHGD
+        INTEGER FBS
+        INTEGER INUSE
+        INTEGER LTPDST
+        INTEGER PLACEHOLDER
+        INTEGER*2 CLASS
+        INTEGER*2 UNITS
+        LOGICAL*2 LNCHGC
+        LOGICAL*2 LNCHG
+        TYPE (VEHUNI) :: UNIT(MNU)
+        TYPE (LNPAVE) :: LNPA
+      END TYPE VEH
+C
+C-----DATA FOR HARDWARE-IN-THE-LOOP PHASE INTERVALS
+C
+      TYPE OVLBIT
+        INTEGER*4 R
+        INTEGER*4 Y
+        INTEGER*4 G
+      END TYPE OVLBIT
+

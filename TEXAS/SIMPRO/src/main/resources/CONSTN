@@ -1,0 +1,7 @@
+      COMMON / CONSTN  / DEG2RD,FPS2MH,MPH2FS,ONED3 ,ONED6 ,PI    ,
+     *                   PID2  ,PIT1P5,PIT2  ,RAD2DG,SQR2D2,SQRT2P,
+     *                   SQRT3 ,TWOD3
+      DOUBLE PRECISION   DEG2RD,FPS2MH,MPH2FS,ONED3 ,ONED6 ,PI    ,
+     *                   PID2  ,PIT1P5,PIT2  ,RAD2DG,SQR2D2,SQRT2P,
+     *                   SQRT3 ,TWOD3
+

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.etexascode</groupId>
+        <artifactId>etexas</artifactId>
+        <version>3.5</version>
+    </parent>
+    <groupId>com.harmonia.etexas</groupId>
+    <artifactId>native</artifactId>
+    <packaging>pom</packaging>
+    <name>Native System</name>
+    <modules>
+        <module>native-java</module>
+    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.harmonia.apps</groupId>
+            <artifactId>j2735-apps</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <profiles>
+        <profile>
+            <id>build-native</id>
+            <modules>
+                <module>libnative-protobuf</module>
+                <module>libnative-messages</module>
+                <module>libnative-lib</module>
+                <module>libnative-logging</module>
+                <module>libnative-arada</module>
+                <module>libnative-intellifusion</module>
+                <module>native-agent</module>
+                <module>native-base-app</module>
+                <module>native-detector-app</module>
+                <module>native-detector-controller</module>
+                <module>native-detector-sensor</module>
+                <module>native-intellifusion-moe</module>
+                <!--<module>intellifusion-test</module> -->
+            </modules>
+
+            <!-- To define the plugin version in your parent POM -->
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>license-maven-plugin</artifactId>
+                            <version>1.12</version>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.etexascode</groupId>
+                                    <artifactId>build-tools</artifactId>
+                                    <version>${project.version}</version>
+                                </dependency>
+                            </dependencies>
+                            <configuration>
+                                <organizationName>Harmonia Holdings Group, LLC</organizationName>
+                                <projectName>eTEXAS</projectName>
+                                <verbose>false</verbose>
+                                <licenseName>harmonia_v1</licenseName>
+                                <licenseResolver>classpath://license</licenseResolver>
+                                <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                                <skipUpdateLicense>true</skipUpdateLicense>
+                                <ignoreNoFileToScan>true</ignoreNoFileToScan>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>primary</id>
+                                    <goals>
+                                        <goal>update-file-header</goal>
+                                        <goal>update-project-license</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <excludes>
+                                            <exclude>**/libs/*.js</exclude>
+                                            <exclude>**/*.json</exclude>
+                                        </excludes>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+
+        </profile>
+    </profiles>
+</project>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>DVPRO</artifactId>
+        <groupId>org.etexascode.texas</groupId>
+        <version>3.5</version>
+    </parent>
+    <groupId>org.etexascode.texas.linux64</groupId>
+    <artifactId>DVPRO</artifactId>
+    <version>3.5</version>
+    <packaging>exe</packaging>
+    <name>linux64</name>
+    <dependencies>
+        <!-- ORDER MATTERS HERE for libTEXASLIB -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>libTEXASLIB</artifactId>
+            <version>${project.version}</version>
+            <type>a</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <!--This managed plugin is defined in parent project -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <compilerExecutable>gfortran</compilerExecutable>
+                    <compilerStartOptions>
+                        <compilerStartOption>-m64</compilerStartOption>
+                        <compilerStartOption>-fno-range-check</compilerStartOption>
+                        <compilerStartOption>-fno-underscoring</compilerStartOption>
+                        <compilerStartOption>-fPIC</compilerStartOption>
+                    </compilerStartOptions>
+
+                    <sources>
+                        <source>
+                            <directory>target/generated-sources</directory>
+                            <fileNames>
+                                <fileName>dvpro.for</fileName>
+                            </fileNames>
+                        </source>
+                    </sources>
+
+                    <!-- Create a library archive of object files -->
+                    <linkerExecutable>gfortran</linkerExecutable>
+                    <linkerStartOptions>
+                        <linkerStartOption>-m64</linkerStartOption>
+                    </linkerStartOptions>
+
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
